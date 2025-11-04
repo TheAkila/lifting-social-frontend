@@ -38,18 +38,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      // TODO: Implement actual API call
-      const response = await fetch('/api/auth/login', {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       })
 
-      if (response.ok) {
-        const data = await response.json()
-        setUser(data.user)
-        localStorage.setItem('authToken', data.token)
+      if (!response.ok) {
+        throw new Error('Login failed')
       }
+
+      const data = await response.json()
+      const userData = {
+        id: data.user._id,
+        email: data.user.email,
+        name: data.user.name,
+        role: 'admin' as const,
+      }
+      setUser(userData)
+      localStorage.setItem('authToken', data.token)
     } catch (error) {
       console.error('Login failed:', error)
       throw error
@@ -58,18 +66,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signup = async (email: string, password: string, name: string) => {
     try {
-      // TODO: Implement actual API call
-      const response = await fetch('/api/auth/signup', {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+      const response = await fetch(`${API_URL}/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, name }),
       })
 
-      if (response.ok) {
-        const data = await response.json()
-        setUser(data.user)
-        localStorage.setItem('authToken', data.token)
+      if (!response.ok) {
+        throw new Error('Signup failed')
       }
+
+      const data = await response.json()
+      const userData = {
+        id: data.user._id,
+        email: data.user.email,
+        name: data.user.name,
+        role: 'admin' as const,
+      }
+      setUser(userData)
+      localStorage.setItem('authToken', data.token)
     } catch (error) {
       console.error('Signup failed:', error)
       throw error

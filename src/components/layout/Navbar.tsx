@@ -78,10 +78,10 @@ export default function Navbar() {
 
             {/* User */}
             <Link
-              href={user ? '/dashboard' : '/login'}
+              href={user ? '/admin' : '/login'}
               className="text-brand-light hover:text-brand-accent transition-colors"
             >
-              <FaUser className="text-xl" />
+              <FaUser className="text-2xl" />
             </Link>
 
             {/* Mobile Menu Toggle */}

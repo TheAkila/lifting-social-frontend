@@ -24,7 +24,10 @@ export default function LoginPage() {
 
     try {
       await login(email, password)
-      router.push('/dashboard')
+      // Check if there's a redirect query parameter
+      const searchParams = new URLSearchParams(window.location.search)
+      const redirect = searchParams.get('redirect') || '/admin'
+      router.push(redirect)
     } catch (err) {
       setError('Invalid email or password')
     } finally {
