@@ -89,7 +89,7 @@ export default function Navbar() {
             {user ? (
               <>
                 <Link
-                  href={user.role === 'admin' ? '/admin' : '/'}
+                  href={user.role === 'admin' ? '/admin' : '/dashboard'}
                   className="text-brand-light hover:text-brand-accent transition-colors"
                   title={user.name}
                 >

@@ -208,7 +208,7 @@ export default function AdminEventsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-brand-dark py-12">
+    <div className="min-h-screen bg-brand-dark pt-28 pb-12">
       <div className="container-custom">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

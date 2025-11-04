@@ -150,7 +150,7 @@ export default function AdminAthletes() {
   if (!user) return null
 
   return (
-    <div className="min-h-screen bg-brand-dark py-12">
+    <div className="min-h-screen bg-brand-dark pt-28 pb-12">
       <div className="container-custom">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">

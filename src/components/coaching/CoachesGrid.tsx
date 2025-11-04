@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { FaMedal, FaEnvelope, FaPhone, FaCheckCircle } from 'react-icons/fa'
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+import api from '@/lib/api'
 
 interface Coach {
   _id: string
@@ -33,11 +32,8 @@ export default function CoachesGrid() {
 
   const fetchCoaches = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/coaches`)
-      if (response.ok) {
-        const data = await response.json()
-        setCoaches(data)
-      }
+      const response = await api.get('/coaches')
+      setCoaches(response.data)
     } catch (error) {
       console.error('Error fetching coaches:', error)
     } finally {
