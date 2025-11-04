@@ -25,15 +25,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Check for stored token and validate
+    // Check for stored token and user data
     const token = localStorage.getItem('authToken')
-    if (token) {
-      // TODO: Validate token with backend
-      // For now, just set loading to false
-      setIsLoading(false)
-    } else {
-      setIsLoading(false)
+    const userData = localStorage.getItem('userData')
+    
+    if (token && userData) {
+      try {
+        const parsedUser = JSON.parse(userData)
+        setUser(parsedUser)
+      } catch (err) {
+        console.error('Failed to parse user data', err)
+        localStorage.removeItem('authToken')
+        localStorage.removeItem('userData')
+      }
     }
+    setIsLoading(false)
   }, [])
 
   const login = async (email: string, password: string) => {
@@ -51,13 +57,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const data = await response.json()
       const userData = {
-        id: data.user._id,
+        id: data.user.id || data.user._id,
         email: data.user.email,
         name: data.user.name,
         role: 'admin' as const,
       }
       setUser(userData)
       localStorage.setItem('authToken', data.token)
+      localStorage.setItem('userData', JSON.stringify(userData))
     } catch (error) {
       console.error('Login failed:', error)
       throw error
@@ -79,13 +86,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const data = await response.json()
       const userData = {
-        id: data.user._id,
+        id: data.user.id || data.user._id,
         email: data.user.email,
         name: data.user.name,
         role: 'admin' as const,
       }
       setUser(userData)
       localStorage.setItem('authToken', data.token)
+      localStorage.setItem('userData', JSON.stringify(userData))
     } catch (error) {
       console.error('Signup failed:', error)
       throw error
@@ -95,6 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setUser(null)
     localStorage.removeItem('authToken')
+    localStorage.removeItem('userData')
   }
 
   return (

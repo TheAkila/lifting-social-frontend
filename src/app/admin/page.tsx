@@ -8,7 +8,7 @@ import { FaBox, FaNewspaper, FaUsers, FaChartBar } from 'react-icons/fa'
 import api from '@/lib/api'
 
 export default function AdminDashboard() {
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
   const router = useRouter()
   const [stats, setStats] = useState({
     products: 0,
@@ -57,9 +57,20 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-brand-dark py-12">
       <div className="container-custom">
-        <div className="mb-8">
-          <h1 className="text-4xl font-display font-bold mb-2">Admin Dashboard</h1>
-          <p className="text-brand-light/70">Manage your content and data</p>
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-4xl font-display font-bold mb-2">Admin Dashboard</h1>
+            <p className="text-brand-light/70">Welcome, {user?.name || 'Admin'}! Manage your content and data</p>
+          </div>
+          <button
+            onClick={() => {
+              logout()
+              router.push('/login')
+            }}
+            className="btn-outline"
+          >
+            Logout
+          </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
