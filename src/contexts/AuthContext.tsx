@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         id: data.user.id || data.user._id,
         email: data.user.email,
         name: data.user.name,
-        role: 'admin' as const,
+        role: data.user.role || 'user',
       }
       setUser(userData)
       localStorage.setItem('authToken', data.token)
@@ -89,7 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         id: data.user.id || data.user._id,
         email: data.user.email,
         name: data.user.name,
-        role: 'admin' as const,
+        role: data.user.role || 'user',
       }
       setUser(userData)
       localStorage.setItem('authToken', data.token)

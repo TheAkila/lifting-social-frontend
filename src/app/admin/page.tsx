@@ -20,6 +20,10 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (user === null) {
       router.push('/login?redirect=/admin')
+    } else if (user && user.role !== 'admin') {
+      // User is logged in but not an admin
+      alert('Access denied. Admin privileges required.')
+      router.push('/')
     } else if (user) {
       loadStats()
     }
