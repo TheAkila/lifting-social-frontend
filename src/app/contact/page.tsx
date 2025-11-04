@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaFacebook, FaInstagram, FaYoutube } from 'react-icons/fa'
+import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaFacebook, FaInstagram, FaYoutube, FaWhatsapp } from 'react-icons/fa'
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -124,12 +124,12 @@ export default function ContactPage() {
                       <FaInstagram className="text-xl" />
                     </a>
                     <a
-                      href="https://youtube.com/@liftingsocial"
+                      href="https://whatsapp.com/channel/0029Vb6anfUDjiOUZhVkSe1h"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-10 h-10 rounded-full bg-brand-secondary/50 flex items-center justify-center hover:bg-brand-accent transition-colors"
                     >
-                      <FaYoutube className="text-xl" />
+                      <FaWhatsapp className="text-xl" />
                     </a>
                   </div>
                 </div>

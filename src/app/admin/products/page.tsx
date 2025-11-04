@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import api from '@/lib/api'
 import Link from 'next/link'
-import { FaPlus, FaEdit, FaTrash, FaArrowLeft } from 'react-icons/fa'
+import { FaPlus, FaEdit, FaTrash, FaArrowLeft, FaUpload, FaTimes, FaImage } from 'react-icons/fa'
 
 export default function AdminProducts() {
   const { user } = useAuth()
@@ -14,18 +14,28 @@ export default function AdminProducts() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState<any>(null)
+  const [uploading, setUploading] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
     price: '',
     comparePrice: '',
     image: '',
+    images: [] as string[],
     description: '',
     category: 'Apparel',
     inventory: '0',
     inStock: true,
     featured: false,
+    sizes: [] as string[],
+    colors: [] as string[],
+    material: '',
+    care: '',
+    features: [] as string[],
   })
+  const [newSize, setNewSize] = useState('')
+  const [newColor, setNewColor] = useState('')
+  const [newFeature, setNewFeature] = useState('')
 
   useEffect(() => {
     if (!user) {
@@ -44,6 +54,53 @@ export default function AdminProducts() {
       console.error('Failed to load products', err)
       setLoading(false)
     }
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files || files.length === 0) return
+
+    setUploading(true)
+    const uploadedUrls: string[] = []
+
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        const formDataUpload = new FormData()
+        formDataUpload.append('file', file)
+
+        const response = await api.post('/uploads', formDataUpload, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+
+        if (response.data.url) {
+          uploadedUrls.push(response.data.url)
+        }
+      }
+
+      // Set first image as main image if not already set
+      const newImages = [...formData.images, ...uploadedUrls]
+      setFormData({
+        ...formData,
+        image: formData.image || uploadedUrls[0] || '',
+        images: newImages,
+      })
+
+      alert(`Successfully uploaded ${uploadedUrls.length} image(s)`)
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to upload images')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const removeImage = (index: number) => {
+    const newImages = formData.images.filter((_, i) => i !== index)
+    setFormData({
+      ...formData,
+      images: newImages,
+      image: newImages[0] || '',
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -74,10 +131,15 @@ export default function AdminProducts() {
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this product?')) return
     try {
-      await api.delete(`/products/${id}`)
+      console.log('Deleting product with ID:', id)
+      const response = await api.delete(`/products/${id}`)
+      console.log('Delete response:', response.data)
+      alert('Product deleted successfully!')
       loadProducts()
-    } catch (err) {
-      alert('Failed to delete product')
+    } catch (err: any) {
+      console.error('Delete error:', err)
+      const errorMsg = err.response?.data?.message || err.message || 'Failed to delete product'
+      alert(`Error: ${errorMsg}`)
     }
   }
 
@@ -89,11 +151,17 @@ export default function AdminProducts() {
       price: product.price.toString(),
       comparePrice: product.comparePrice?.toString() || '',
       image: product.image || '',
+      images: product.images || [],
       description: product.description || '',
       category: product.category || 'Apparel',
       inventory: product.inventory?.toString() || '0',
       inStock: product.inStock !== false,
       featured: product.featured || false,
+      sizes: product.sizes || [],
+      colors: product.colors || [],
+      material: product.material || '',
+      care: product.care || '',
+      features: product.features || [],
     })
     setShowForm(true)
   }
@@ -105,12 +173,51 @@ export default function AdminProducts() {
       price: '',
       comparePrice: '',
       image: '',
+      images: [],
       description: '',
       category: 'Apparel',
       inventory: '0',
       inStock: true,
       featured: false,
+      sizes: [],
+      colors: [],
+      material: '',
+      care: '',
+      features: [],
     })
+  }
+
+  const addSize = () => {
+    if (newSize.trim() && !formData.sizes.includes(newSize.trim())) {
+      setFormData({ ...formData, sizes: [...formData.sizes, newSize.trim()] })
+      setNewSize('')
+    }
+  }
+
+  const removeSize = (size: string) => {
+    setFormData({ ...formData, sizes: formData.sizes.filter(s => s !== size) })
+  }
+
+  const addColor = () => {
+    if (newColor.trim() && !formData.colors.includes(newColor.trim())) {
+      setFormData({ ...formData, colors: [...formData.colors, newColor.trim()] })
+      setNewColor('')
+    }
+  }
+
+  const removeColor = (color: string) => {
+    setFormData({ ...formData, colors: formData.colors.filter(c => c !== color) })
+  }
+
+  const addFeature = () => {
+    if (newFeature.trim() && !formData.features.includes(newFeature.trim())) {
+      setFormData({ ...formData, features: [...formData.features, newFeature.trim()] })
+      setNewFeature('')
+    }
+  }
+
+  const removeFeature = (index: number) => {
+    setFormData({ ...formData, features: formData.features.filter((_, i) => i !== index) })
   }
 
   if (!user) return null
@@ -147,7 +254,8 @@ export default function AdminProducts() {
             <h2 className="text-2xl font-bold mb-6">
               {editingProduct ? 'Edit Product' : 'Add New Product'}
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Basic Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold mb-2">Name *</label>
@@ -166,6 +274,7 @@ export default function AdminProducts() {
                     value={formData.slug}
                     onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                     className="input-field"
+                    placeholder="product-name-slug"
                     required
                   />
                 </div>
@@ -186,6 +295,7 @@ export default function AdminProducts() {
                     value={formData.comparePrice}
                     onChange={(e) => setFormData({ ...formData, comparePrice: e.target.value })}
                     className="input-field"
+                    placeholder="Original price for discount display"
                   />
                 </div>
                 <div>
@@ -210,27 +320,270 @@ export default function AdminProducts() {
                   />
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-semibold mb-2">Image URL</label>
-                <input
-                  type="text"
-                  value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  className="input-field"
-                  placeholder="/images/products/example.jpg"
-                />
+
+              {/* Image Upload */}
+              <div className="border-t border-brand-light/10 pt-6">
+                <label className="block text-sm font-semibold mb-3">Product Images</label>
+                <div className="space-y-4">
+                  {/* Upload Button */}
+                  <div>
+                    <input
+                      type="file"
+                      id="image-upload"
+                      multiple
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      disabled={uploading}
+                    />
+                    <label
+                      htmlFor="image-upload"
+                      className={`btn-outline flex items-center justify-center space-x-2 cursor-pointer ${
+                        uploading ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                    >
+                      {uploading ? (
+                        <>
+                          <div className="animate-spin rounded-full h-5 w-5 border-2 border-brand-accent border-t-transparent" />
+                          <span>Uploading...</span>
+                        </>
+                      ) : (
+                        <>
+                          <FaUpload />
+                          <span>Upload Images</span>
+                        </>
+                      )}
+                    </label>
+                    <p className="text-xs text-brand-light/50 mt-2">
+                      Upload multiple images. First image will be the main product image.
+                    </p>
+                  </div>
+
+                  {/* Image Preview Grid */}
+                  {formData.images.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                      {formData.images.map((img, index) => (
+                        <div key={index} className="relative group">
+                          <div className="aspect-square rounded-lg overflow-hidden bg-brand-light/5 border border-brand-light/10">
+                            {img ? (
+                              <img
+                                src={img}
+                                alt={`Product ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <FaImage className="text-3xl text-brand-light/30" />
+                              </div>
+                            )}
+                          </div>
+                          {index === 0 && (
+                            <div className="absolute top-2 left-2 bg-brand-primary text-white text-xs px-2 py-1 rounded">
+                              Main
+                            </div>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <FaTimes />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Or use URL */}
+                  <div>
+                    <label className="block text-sm font-semibold mb-2">Or paste image URL</label>
+                    <div className="flex space-x-2">
+                      <input
+                        type="text"
+                        placeholder="https://example.com/image.jpg"
+                        className="input-field flex-1"
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault()
+                            const url = (e.target as HTMLInputElement).value.trim()
+                            if (url) {
+                              setFormData({
+                                ...formData,
+                                images: [...formData.images, url],
+                                image: formData.image || url,
+                              })
+                              ;(e.target as HTMLInputElement).value = ''
+                            }
+                          }
+                        }}
+                      />
+                      <button
+                        type="button"
+                        className="btn-outline"
+                        onClick={(e) => {
+                          const input = e.currentTarget.previousElementSibling as HTMLInputElement
+                          const url = input.value.trim()
+                          if (url) {
+                            setFormData({
+                              ...formData,
+                              images: [...formData.images, url],
+                              image: formData.image || url,
+                            })
+                            input.value = ''
+                          }
+                        }}
+                      >
+                        Add
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
+
+              {/* Description */}
               <div>
                 <label className="block text-sm font-semibold mb-2">Description</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="input-field"
-                  rows={3}
+                  rows={4}
+                  placeholder="Detailed product description..."
                 />
               </div>
-              <div className="flex items-center space-x-6">
-                <label className="flex items-center space-x-2">
+
+              {/* Sizes */}
+              <div className="border-t border-brand-light/10 pt-6">
+                <label className="block text-sm font-semibold mb-3">Available Sizes</label>
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {formData.sizes.map((size) => (
+                    <span
+                      key={size}
+                      className="bg-brand-accent/20 text-brand-accent px-3 py-1 rounded-full text-sm flex items-center space-x-2"
+                    >
+                      <span>{size}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeSize(size)}
+                        className="hover:text-red-400"
+                      >
+                        <FaTimes className="text-xs" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <div className="flex space-x-2">
+                  <input
+                    type="text"
+                    value={newSize}
+                    onChange={(e) => setNewSize(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSize())}
+                    placeholder="e.g., S, M, L, XL"
+                    className="input-field flex-1"
+                  />
+                  <button type="button" onClick={addSize} className="btn-outline">
+                    Add Size
+                  </button>
+                </div>
+              </div>
+
+              {/* Colors */}
+              <div className="border-t border-brand-light/10 pt-6">
+                <label className="block text-sm font-semibold mb-3">Available Colors</label>
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {formData.colors.map((color) => (
+                    <span
+                      key={color}
+                      className="bg-brand-secondary/20 text-brand-secondary px-3 py-1 rounded-full text-sm flex items-center space-x-2"
+                    >
+                      <span>{color}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeColor(color)}
+                        className="hover:text-red-400"
+                      >
+                        <FaTimes className="text-xs" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <div className="flex space-x-2">
+                  <input
+                    type="text"
+                    value={newColor}
+                    onChange={(e) => setNewColor(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addColor())}
+                    placeholder="e.g., Black, Navy, Red"
+                    className="input-field flex-1"
+                  />
+                  <button type="button" onClick={addColor} className="btn-outline">
+                    Add Color
+                  </button>
+                </div>
+              </div>
+
+              {/* Material & Care */}
+              <div className="border-t border-brand-light/10 pt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Material</label>
+                  <input
+                    type="text"
+                    value={formData.material}
+                    onChange={(e) => setFormData({ ...formData, material: e.target.value })}
+                    className="input-field"
+                    placeholder="e.g., 100% Cotton"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Care Instructions</label>
+                  <input
+                    type="text"
+                    value={formData.care}
+                    onChange={(e) => setFormData({ ...formData, care: e.target.value })}
+                    className="input-field"
+                    placeholder="e.g., Machine wash cold"
+                  />
+                </div>
+              </div>
+
+              {/* Features */}
+              <div className="border-t border-brand-light/10 pt-6">
+                <label className="block text-sm font-semibold mb-3">Product Features</label>
+                <ul className="space-y-2 mb-3">
+                  {formData.features.map((feature, index) => (
+                    <li
+                      key={index}
+                      className="flex items-center justify-between bg-brand-light/5 px-4 py-2 rounded-lg"
+                    >
+                      <span className="text-sm">{feature}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeFeature(index)}
+                        className="text-red-400 hover:text-red-300"
+                      >
+                        <FaTimes />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex space-x-2">
+                  <input
+                    type="text"
+                    value={newFeature}
+                    onChange={(e) => setNewFeature(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addFeature())}
+                    placeholder="Add a product feature..."
+                    className="input-field flex-1"
+                  />
+                  <button type="button" onClick={addFeature} className="btn-outline">
+                    Add Feature
+                  </button>
+                </div>
+              </div>
+
+              {/* Checkboxes */}
+              <div className="flex items-center space-x-6 border-t border-brand-light/10 pt-6">
+                <label className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={formData.inStock}
@@ -239,17 +592,19 @@ export default function AdminProducts() {
                   />
                   <span>In Stock</span>
                 </label>
-                <label className="flex items-center space-x-2">
+                <label className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={formData.featured}
                     onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
                     className="w-5 h-5"
                   />
-                  <span>Featured</span>
+                  <span>Featured Product</span>
                 </label>
               </div>
-              <div className="flex space-x-4">
+
+              {/* Submit Buttons */}
+              <div className="flex space-x-4 border-t border-brand-light/10 pt-6">
                 <button type="submit" className="btn-primary">
                   {editingProduct ? 'Update Product' : 'Create Product'}
                 </button>
