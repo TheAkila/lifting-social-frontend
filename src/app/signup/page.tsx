@@ -44,7 +44,8 @@ export default function SignupPage() {
 
     try {
       await signup(email, password, name)
-      router.push('/admin')
+      // Redirect to homepage after successful signup
+      router.push('/')
     } catch (err) {
       setError('Failed to create account. Email may already be in use.')
     } finally {

@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { FaShoppingCart, FaUser, FaBars, FaTimes } from 'react-icons/fa'
+import { useRouter } from 'next/navigation'
+import { FaShoppingCart, FaUser, FaBars, FaTimes, FaSignOutAlt } from 'react-icons/fa'
 import { useCart } from '@/contexts/CartContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -13,6 +14,7 @@ const navLinks = [
   { name: 'Shop', href: '/shop' },
   { name: 'Stories', href: '/stories' },
   { name: 'Athletes', href: '/athletes' },
+  { name: 'Events', href: '/events' },
   { name: 'Coaching', href: '/coaching' },
   { name: 'About', href: '/about' },
   { name: 'Contact', href: '/contact' },
@@ -22,7 +24,8 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { totalItems } = useCart()
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
+  const router = useRouter()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,6 +34,12 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  const handleLogout = () => {
+    logout()
+    router.push('/')
+    setIsMobileMenuOpen(false)
+  }
 
   return (
     <nav
@@ -76,13 +85,35 @@ export default function Navbar() {
               )}
             </Link>
 
-            {/* User */}
-            <Link
-              href={user ? '/admin' : '/login'}
-              className="text-brand-light hover:text-brand-accent transition-colors"
-            >
-              <FaUser className="text-2xl" />
-            </Link>
+            {/* User/Login */}
+            {user ? (
+              <>
+                <Link
+                  href={user.role === 'admin' ? '/admin' : '/'}
+                  className="text-brand-light hover:text-brand-accent transition-colors"
+                  title={user.name}
+                >
+                  <FaUser className="text-2xl" />
+                </Link>
+                
+                {/* Logout Button */}
+                <button
+                  onClick={handleLogout}
+                  className="hidden lg:flex items-center space-x-2 px-4 py-2 bg-brand-primary hover:bg-brand-accent text-white rounded-lg transition-colors font-medium"
+                  title="Logout"
+                >
+                  <FaSignOutAlt />
+                  <span>Logout</span>
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                className="text-brand-light hover:text-brand-accent transition-colors"
+              >
+                <FaUser className="text-2xl" />
+              </Link>
+            )}
 
             {/* Mobile Menu Toggle */}
             <button
@@ -119,6 +150,17 @@ export default function Navbar() {
                   {link.name}
                 </Link>
               ))}
+              
+              {/* Mobile Logout Button */}
+              {user && (
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center space-x-2 text-brand-light hover:text-brand-accent transition-colors font-medium py-2 w-full"
+                >
+                  <FaSignOutAlt />
+                  <span>Logout ({user.name})</span>
+                </button>
+              )}
             </div>
           </motion.div>
         )}

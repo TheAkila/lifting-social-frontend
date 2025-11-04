@@ -2,35 +2,89 @@
 
 import { motion } from 'framer-motion'
 import { FaUsers, FaTrophy, FaHeart, FaFire } from 'react-icons/fa'
+import { useState, useEffect } from 'react'
+import api from '@/lib/api'
 
-const stats = [
-  {
-    icon: FaUsers,
-    value: '1000+',
-    label: 'Community Members',
-    color: 'text-brand-accent',
-  },
-  {
-    icon: FaTrophy,
-    value: '50+',
-    label: 'Championship Medals',
-    color: 'text-yellow-400',
-  },
-  {
-    icon: FaHeart,
-    value: '500+',
-    label: 'Athlete Stories',
-    color: 'text-brand-primary',
-  },
-  {
-    icon: FaFire,
-    value: '100K+',
-    label: 'Kilos Lifted Daily',
-    color: 'text-orange-500',
-  },
-]
+interface Stats {
+  athletes: number
+  stories: number
+  events: number
+  products: number
+  users: number
+  medals: {
+    total: number
+    gold: number
+    silver: number
+    bronze: number
+  }
+  storyViews: number
+}
 
 export default function StatsSection() {
+  const [stats, setStats] = useState<Stats | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadStats()
+  }, [])
+
+  const loadStats = async () => {
+    try {
+      const response = await api.get('/stats')
+      setStats(response.data)
+    } catch (error) {
+      console.error('Error fetching stats:', error)
+      // Fallback to default values if API fails
+      setStats({
+        athletes: 0,
+        stories: 0,
+        events: 0,
+        products: 0,
+        users: 0,
+        medals: { total: 0, gold: 0, silver: 0, bronze: 0 },
+        storyViews: 0,
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading || !stats) {
+    return (
+      <section className="section-padding bg-brand-dark relative overflow-hidden">
+        <div className="container-custom text-center">
+          <p className="text-brand-light/70">Loading statistics...</p>
+        </div>
+      </section>
+    )
+  }
+
+  const displayStats = [
+    {
+      icon: FaUsers,
+      value: `${stats.users}+`,
+      label: 'Community Members',
+      color: 'text-brand-accent',
+    },
+    {
+      icon: FaTrophy,
+      value: `${stats.medals.total}+`,
+      label: 'Championship Medals',
+      color: 'text-yellow-400',
+    },
+    {
+      icon: FaHeart,
+      value: `${stats.stories}+`,
+      label: 'Athlete Stories',
+      color: 'text-brand-primary',
+    },
+    {
+      icon: FaFire,
+      value: `${stats.athletes}+`,
+      label: 'Featured Athletes',
+      color: 'text-orange-500',
+    },
+  ]
   return (
     <section className="section-padding bg-brand-dark relative overflow-hidden">
       {/* Background decoration */}
@@ -53,7 +107,7 @@ export default function StatsSection() {
         </motion.div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-          {stats.map((stat, index) => (
+          {displayStats.map((stat, index) => (
             <motion.div
               key={stat.label}
               initial={{ opacity: 0, scale: 0.8 }}

@@ -3,38 +3,56 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { FaArrowRight } from 'react-icons/fa'
+import { useState, useEffect } from 'react'
+import api from '@/lib/api'
 
-const relatedStories = [
-  {
-    id: '2',
-    slug: 'science-of-snatch',
-    title: 'The Science of the Snatch',
-    excerpt: 'Breaking down biomechanics...',
-    category: 'Training',
-    categoryColor: 'bg-brand-accent',
-    readTime: '8 min read',
-  },
-  {
-    id: '3',
-    slug: 'championship-2024',
-    title: 'National Championship 2024 Highlights',
-    excerpt: 'Record-breaking performances...',
-    category: 'Events',
-    categoryColor: 'bg-yellow-500',
-    readTime: '3 min read',
-  },
-  {
-    id: '4',
-    slug: 'nutrition-guide',
-    title: 'Nutrition Guide for Lifters',
-    excerpt: 'Essential dietary strategies...',
-    category: 'Training',
-    categoryColor: 'bg-brand-accent',
-    readTime: '6 min read',
-  },
-]
+interface Story {
+  _id: string
+  slug: string
+  title: string
+  excerpt: string
+  category: string
+  categoryColor?: string
+  readTime?: string
+}
 
 export default function RelatedStories({ currentStoryId }: { currentStoryId: string }) {
+  const [relatedStories, setRelatedStories] = useState<Story[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadRelatedStories()
+  }, [currentStoryId])
+
+  const loadRelatedStories = async () => {
+    try {
+      const response = await api.get('/stories')
+      // Filter out current story and get up to 3 related stories
+      const filtered = response.data
+        .filter((story: Story) => story._id !== currentStoryId)
+        .slice(0, 3)
+      setRelatedStories(filtered)
+    } catch (error) {
+      console.error('Error fetching related stories:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <section className="mt-20">
+        <h2 className="text-3xl font-display font-bold mb-8">Related Stories</h2>
+        <div className="text-center py-8">
+          <p className="text-brand-light/70">Loading related stories...</p>
+        </div>
+      </section>
+    )
+  }
+
+  if (relatedStories.length === 0) {
+    return null
+  }
   return (
     <section className="mt-20">
       <h2 className="text-3xl font-display font-bold mb-8">Related Stories</h2>
@@ -42,7 +60,7 @@ export default function RelatedStories({ currentStoryId }: { currentStoryId: str
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {relatedStories.map((story, index) => (
           <motion.article
-            key={story.id}
+            key={story._id}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}

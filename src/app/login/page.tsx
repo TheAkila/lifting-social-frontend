@@ -23,13 +23,25 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      await login(email, password)
+      const userData = await login(email, password)
+      
       // Check if there's a redirect query parameter
       const searchParams = new URLSearchParams(window.location.search)
-      const redirect = searchParams.get('redirect') || '/admin'
-      router.push(redirect)
-    } catch (err) {
-      setError('Invalid email or password')
+      const redirect = searchParams.get('redirect')
+      
+      if (redirect) {
+        router.push(redirect)
+      } else {
+        // Redirect based on user role
+        if (userData.role === 'admin') {
+          router.push('/admin')
+        } else {
+          router.push('/')
+        }
+      }
+    } catch (err: any) {
+      console.error('Login error:', err)
+      setError(err.message || 'Invalid email or password. Please try again.')
     } finally {
       setIsLoading(false)
     }

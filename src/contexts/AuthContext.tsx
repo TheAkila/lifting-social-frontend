@@ -12,8 +12,8 @@ interface User {
 
 interface AuthContextType {
   user: User | null
-  login: (email: string, password: string) => Promise<void>
-  signup: (email: string, password: string, name: string) => Promise<void>
+  login: (email: string, password: string) => Promise<User>
+  signup: (email: string, password: string, name: string) => Promise<User>
   logout: () => void
   isLoading: boolean
 }
@@ -42,20 +42,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false)
   }, [])
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<User> => {
     try {
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+      console.log('Login attempt to:', `${API_URL}/auth/login`)
       const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       })
 
+      console.log('Login response status:', response.status)
+      
       if (!response.ok) {
-        throw new Error('Login failed')
+        const errorData = await response.json().catch(() => ({}))
+        console.error('Login failed with error:', errorData)
+        throw new Error(errorData.message || 'Login failed')
       }
 
       const data = await response.json()
+      console.log('Login successful, user data:', { email: data.user.email, role: data.user.role })
+      
       const userData = {
         id: data.user.id || data.user._id,
         email: data.user.email,
@@ -65,13 +72,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(userData)
       localStorage.setItem('authToken', data.token)
       localStorage.setItem('userData', JSON.stringify(userData))
+      return userData
     } catch (error) {
       console.error('Login failed:', error)
       throw error
     }
   }
 
-  const signup = async (email: string, password: string, name: string) => {
+  const signup = async (email: string, password: string, name: string): Promise<User> => {
     try {
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
       const response = await fetch(`${API_URL}/auth/signup`, {
@@ -94,6 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(userData)
       localStorage.setItem('authToken', data.token)
       localStorage.setItem('userData', JSON.stringify(userData))
+      return userData
     } catch (error) {
       console.error('Signup failed:', error)
       throw error

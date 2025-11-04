@@ -22,7 +22,7 @@ export default function Footer() {
             </p>
             <div className="flex space-x-4">
               <a
-                href="https://facebook.com"
+                href="https://web.facebook.com/profile.php?id=61568217705957"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-brand-light hover:text-brand-accent transition-colors"
@@ -30,7 +30,7 @@ export default function Footer() {
                 <FaFacebook className="text-2xl" />
               </a>
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/theliftingsocial?igsh=MXBoenJvdzlzZTBsZQ=="
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-brand-light hover:text-brand-accent transition-colors"

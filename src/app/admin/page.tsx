@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { FaBox, FaNewspaper, FaUsers, FaChartBar } from 'react-icons/fa'
+import { FaBox, FaNewspaper, FaUsers, FaChartBar, FaCalendar, FaUserTie } from 'react-icons/fa'
 import api from '@/lib/api'
 
 export default function AdminDashboard() {
@@ -14,6 +14,7 @@ export default function AdminDashboard() {
     products: 0,
     stories: 0,
     athletes: 0,
+    events: 0,
   })
   const [loading, setLoading] = useState(true)
 
@@ -31,15 +32,17 @@ export default function AdminDashboard() {
 
   const loadStats = async () => {
     try {
-      const [productsRes, storiesRes, athletesRes] = await Promise.all([
+      const [productsRes, storiesRes, athletesRes, eventsRes] = await Promise.all([
         api.get('/products'),
         api.get('/stories'),
         api.get('/athletes'),
+        api.get('/events'),
       ])
       setStats({
         products: productsRes.data.length,
         stories: storiesRes.data.length,
         athletes: athletesRes.data.length,
+        events: eventsRes.data.length,
       })
       setLoading(false)
     } catch (err) {
@@ -123,10 +126,40 @@ export default function AdminDashboard() {
             </div>
           </Link>
 
+          {/* Coaches Card */}
+          <Link href="/admin/coaches">
+            <div className="card hover:scale-105 transition-transform cursor-pointer bg-gradient-to-br from-green-500/20 to-teal-500/20">
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center">
+                  <FaUserTie className="text-3xl text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold">Coaches</h3>
+                  <p className="text-brand-light/70">Manage coaches</p>
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          {/* Events Card */}
+          <Link href="/admin/events">
+            <div className="card hover:scale-105 transition-transform cursor-pointer bg-gradient-to-br from-purple-500/20 to-blue-500/20">
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 rounded-full bg-purple-500 flex items-center justify-center">
+                  <FaCalendar className="text-3xl text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold">Events</h3>
+                  <p className="text-brand-light/70">Manage events</p>
+                </div>
+              </div>
+            </div>
+          </Link>
+
           {/* Analytics Card */}
-          <div className="card bg-gradient-to-br from-purple-500/20 to-pink-500/20">
+          <div className="card bg-gradient-to-br from-pink-500/20 to-red-500/20">
             <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 rounded-full bg-purple-500 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-pink-500 flex items-center justify-center">
                 <FaChartBar className="text-3xl text-white" />
               </div>
               <div>
@@ -143,7 +176,7 @@ export default function AdminDashboard() {
           {loading ? (
             <p className="text-center py-8 text-brand-light/70">Loading stats...</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="text-center p-6 bg-brand-secondary/20 rounded-lg">
                 <div className="text-4xl font-bold text-brand-primary mb-2">{stats.products}</div>
                 <div className="text-brand-light/70">Total Products</div>
@@ -155,6 +188,10 @@ export default function AdminDashboard() {
               <div className="text-center p-6 bg-brand-secondary/20 rounded-lg">
                 <div className="text-4xl font-bold text-brand-secondary mb-2">{stats.athletes}</div>
                 <div className="text-brand-light/70">Active Athletes</div>
+              </div>
+              <div className="text-center p-6 bg-brand-secondary/20 rounded-lg">
+                <div className="text-4xl font-bold text-purple-400 mb-2">{stats.events}</div>
+                <div className="text-brand-light/70">Total Events</div>
               </div>
             </div>
           )}
