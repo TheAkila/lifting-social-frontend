@@ -3,120 +3,53 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { FaMedal, FaTrophy, FaInstagram, FaFacebook } from 'react-icons/fa'
-
-const athletes = [
-  {
-    id: '1',
-    slug: 'dilanka-isuru',
-    name: 'Dilanka Isuru',
-    category: '73kg',
-    gender: 'Male',
-    snatch: 145,
-    cleanAndJerk: 175,
-    total: 320,
-    achievements: 'National Champion 2024',
-    medals: { gold: 5, silver: 3, bronze: 2 },
-    image: '/images/athletes/dilanka.jpg',
-    featured: true,
-    socialMedia: {
-      instagram: '@dilanka_lifts',
-      facebook: 'dilanka.isuru',
-    },
-  },
-  {
-    id: '2',
-    slug: 'chamodi-dilrukshi',
-    name: 'Chamodi Dilrukshi',
-    category: '64kg',
-    gender: 'Female',
-    snatch: 85,
-    cleanAndJerk: 110,
-    total: 195,
-    achievements: 'South Asian Games Silver Medalist',
-    medals: { gold: 3, silver: 5, bronze: 1 },
-    image: '/images/athletes/chamodi.jpg',
-    featured: true,
-    socialMedia: {
-      instagram: '@chamodi_lifts',
-    },
-  },
-  {
-    id: '3',
-    slug: 'kasun-rajitha',
-    name: 'Kasun Rajitha',
-    category: '81kg',
-    gender: 'Male',
-    snatch: 155,
-    cleanAndJerk: 190,
-    total: 345,
-    achievements: 'Commonwealth Games Qualifier',
-    medals: { gold: 7, silver: 2, bronze: 3 },
-    image: '/images/athletes/kasun.jpg',
-    featured: false,
-    socialMedia: {
-      instagram: '@kasun_rajitha',
-      facebook: 'kasun.rajitha',
-    },
-  },
-  {
-    id: '4',
-    slug: 'sanduni-fernando',
-    name: 'Sanduni Fernando',
-    category: '55kg',
-    gender: 'Female',
-    snatch: 72,
-    cleanAndJerk: 92,
-    total: 164,
-    achievements: 'National Record Holder',
-    medals: { gold: 4, silver: 2, bronze: 1 },
-    image: '/images/athletes/sanduni.jpg',
-    featured: true,
-    socialMedia: {
-      instagram: '@sanduni_lifts',
-    },
-  },
-  {
-    id: '5',
-    slug: 'nimal-silva',
-    name: 'Nimal Silva',
-    category: '89kg',
-    gender: 'Male',
-    snatch: 165,
-    cleanAndJerk: 200,
-    total: 365,
-    achievements: 'Olympic Hopeful 2028',
-    medals: { gold: 6, silver: 4, bronze: 2 },
-    image: '/images/athletes/nimal.jpg',
-    featured: false,
-    socialMedia: {
-      facebook: 'nimal.silva.lifts',
-    },
-  },
-  {
-    id: '6',
-    slug: 'tharika-jayasinghe',
-    name: 'Tharika Jayasinghe',
-    category: '76kg',
-    gender: 'Female',
-    snatch: 95,
-    cleanAndJerk: 120,
-    total: 215,
-    achievements: 'Asian Championship Participant',
-    medals: { gold: 2, silver: 3, bronze: 4 },
-    image: '/images/athletes/tharika.jpg',
-    featured: false,
-    socialMedia: {
-      instagram: '@tharika_strong',
-    },
-  },
-]
+import { useState, useEffect } from 'react'
+import api from '@/lib/api'
 
 export default function AthletesGrid() {
+  const [athletes, setAthletes] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let mounted = true
+    setLoading(true)
+    api
+      .get('/athletes')
+      .then((res) => {
+        if (!mounted) return
+        setAthletes(res.data)
+        setLoading(false)
+      })
+      .catch((err) => {
+        console.error('Failed to fetch athletes', err)
+        setLoading(false)
+      })
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-brand-light/70">Loading athletes...</p>
+      </div>
+    )
+  }
+
+  if (athletes.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-brand-light/70">No athletes found.</p>
+      </div>
+    )
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {athletes.map((athlete, index) => (
         <motion.div
-          key={athlete.id}
+          key={athlete._id || athlete.id}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -132,9 +65,13 @@ export default function AthletesGrid() {
 
               {/* Athlete Image */}
               <div className="relative h-80 mb-4 rounded-lg overflow-hidden bg-gradient-to-br from-brand-primary to-brand-secondary">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <FaTrophy className="text-white/30 text-8xl" />
-                </div>
+                {athlete.image ? (
+                  <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${athlete.image})` }} />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <FaTrophy className="text-white/30 text-8xl" />
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-transparent to-transparent" />
                 
                 {/* Category Badge */}
@@ -176,24 +113,24 @@ export default function AthletesGrid() {
               <div className="flex items-center justify-center space-x-4 mb-4">
                 <div className="flex items-center space-x-1">
                   <div className="w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center">
-                    <span className="text-brand-dark text-xs font-bold">{athlete.medals.gold}</span>
+                    <span className="text-brand-dark text-xs font-bold">{athlete.medals?.gold || 0}</span>
                   </div>
                 </div>
                 <div className="flex items-center space-x-1">
                   <div className="w-6 h-6 rounded-full bg-gray-400 flex items-center justify-center">
-                    <span className="text-brand-dark text-xs font-bold">{athlete.medals.silver}</span>
+                    <span className="text-brand-dark text-xs font-bold">{athlete.medals?.silver || 0}</span>
                   </div>
                 </div>
                 <div className="flex items-center space-x-1">
                   <div className="w-6 h-6 rounded-full bg-orange-600 flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">{athlete.medals.bronze}</span>
+                    <span className="text-white text-xs font-bold">{athlete.medals?.bronze || 0}</span>
                   </div>
                 </div>
               </div>
 
               {/* Social Media */}
               <div className="flex items-center justify-center space-x-3">
-                {athlete.socialMedia.instagram && (
+                {athlete.socialMedia?.instagram && (
                   <a
                     href={`https://instagram.com/${athlete.socialMedia.instagram.replace('@', '')}`}
                     target="_blank"
@@ -204,7 +141,7 @@ export default function AthletesGrid() {
                     <FaInstagram className="text-2xl" />
                   </a>
                 )}
-                {athlete.socialMedia.facebook && (
+                {athlete.socialMedia?.facebook && (
                   <a
                     href={`https://facebook.com/${athlete.socialMedia.facebook}`}
                     target="_blank"

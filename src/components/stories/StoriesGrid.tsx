@@ -3,102 +3,48 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { FaArrowRight, FaClock, FaUser, FaYoutube } from 'react-icons/fa'
-
-const stories = [
-  {
-    id: '1',
-    slug: 'from-village-to-victory',
-    title: 'From Village Gym to National Stage: Dilanka\'s Journey',
-    excerpt: 'How a young lifter from rural Sri Lanka overcame obstacles to become a national champion through dedication and perseverance.',
-    author: 'Lifting Social Team',
-    authorAvatar: '/images/authors/team.jpg',
-    date: '2024-10-25',
-    readTime: '5 min read',
-    category: 'Athlete Story',
-    categoryColor: 'bg-brand-primary',
-    image: '/images/stories/story-1.jpg',
-    views: 1250,
-    featured: true,
-  },
-  {
-    id: '2',
-    slug: 'science-of-snatch',
-    title: 'The Science of the Snatch: Biomechanics Explained',
-    excerpt: 'Breaking down the technical aspects of Olympic weightlifting\'s most challenging lift with expert analysis.',
-    author: 'Coach Pradeep Fernando',
-    authorAvatar: '/images/authors/coach.jpg',
-    date: '2024-10-20',
-    readTime: '8 min read',
-    category: 'Training',
-    categoryColor: 'bg-brand-accent',
-    image: '/images/stories/story-2.jpg',
-    views: 980,
-    featured: false,
-  },
-  {
-    id: '3',
-    slug: 'championship-2024-highlights',
-    title: 'National Championship 2024: Record-Breaking Performances',
-    excerpt: 'Relive the most exciting moments from this year\'s competition with highlights and athlete interviews.',
-    author: 'Kasun Rajapaksa',
-    authorAvatar: '/images/authors/kasun.jpg',
-    date: '2024-10-15',
-    readTime: '3 min read',
-    category: 'Events',
-    categoryColor: 'bg-yellow-500',
-    image: '/images/stories/story-3.jpg',
-    views: 2100,
-    featured: true,
-    videoId: 'dQw4w9WgXcQ', // YouTube video ID
-  },
-  {
-    id: '4',
-    slug: 'nutrition-for-lifters',
-    title: 'Nutrition Guide for Serious Lifters',
-    excerpt: 'Essential dietary strategies for building strength and maintaining optimal weight class.',
-    author: 'Dr. Chamari Silva',
-    authorAvatar: '/images/authors/dr-silva.jpg',
-    date: '2024-10-10',
-    readTime: '6 min read',
-    category: 'Training',
-    categoryColor: 'bg-brand-accent',
-    image: '/images/stories/story-4.jpg',
-    views: 1450,
-    featured: false,
-  },
-  {
-    id: '5',
-    slug: 'womens-weightlifting-rise',
-    title: 'The Rise of Women\'s Weightlifting in Sri Lanka',
-    excerpt: 'How female athletes are breaking barriers and setting new standards in the sport.',
-    author: 'Nadeesha Perera',
-    authorAvatar: '/images/authors/nadeesha.jpg',
-    date: '2024-10-05',
-    readTime: '7 min read',
-    category: 'News',
-    categoryColor: 'bg-purple-500',
-    image: '/images/stories/story-5.jpg',
-    views: 1680,
-    featured: true,
-  },
-  {
-    id: '6',
-    slug: 'olympic-dreams',
-    title: 'Olympic Dreams: Next Generation of Lifters',
-    excerpt: 'Meet the young athletes training for a shot at representing Sri Lanka on the world stage.',
-    author: 'Lifting Social Team',
-    authorAvatar: '/images/authors/team.jpg',
-    date: '2024-09-28',
-    readTime: '5 min read',
-    category: 'Athlete Story',
-    categoryColor: 'bg-brand-primary',
-    image: '/images/stories/story-6.jpg',
-    views: 1920,
-    featured: false,
-  },
-]
+import { useState, useEffect } from 'react'
+import api from '@/lib/api'
 
 export default function StoriesGrid() {
+  const [stories, setStories] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let mounted = true
+    setLoading(true)
+    api
+      .get('/stories')
+      .then((res) => {
+        if (!mounted) return
+        setStories(res.data)
+        setLoading(false)
+      })
+      .catch((err) => {
+        console.error('Failed to fetch stories', err)
+        setLoading(false)
+      })
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-brand-light/70">Loading stories...</p>
+      </div>
+    )
+  }
+
+  if (stories.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-brand-light/70">No stories found.</p>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-12">
       {/* Featured Story */}
@@ -117,7 +63,7 @@ export default function StoriesGrid() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {stories.slice(1).map((story, index) => (
           <motion.article
-            key={story.id}
+            key={story._id || story.id}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -126,15 +72,19 @@ export default function StoriesGrid() {
             <Link href={`/stories/${story.slug}`}>
               {/* Image */}
               <div className="relative h-56 mb-4 rounded-lg overflow-hidden bg-gradient-to-br from-brand-primary to-brand-secondary">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  {story.videoId ? (
-                    <FaYoutube className="text-white/50 text-6xl" />
-                  ) : (
-                    <span className="text-white/50 font-bold text-lg">
-                      {story.category}
-                    </span>
-                  )}
-                </div>
+                {story.image ? (
+                  <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${story.image})` }} />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    {story.videoId ? (
+                      <FaYoutube className="text-white/50 text-6xl" />
+                    ) : (
+                      <span className="text-white/50 font-bold text-lg">
+                        {story.category}
+                      </span>
+                    )}
+                  </div>
+                )}
                 
                 {/* Category Badge */}
                 <div className="absolute top-4 left-4">
@@ -167,14 +117,14 @@ export default function StoriesGrid() {
                 <div className="flex items-center space-x-3">
                   <div className="flex items-center space-x-1">
                     <FaUser />
-                    <span>{story.author}</span>
+                    <span>{story.author || 'Anonymous'}</span>
                   </div>
                   <div className="flex items-center space-x-1">
                     <FaClock />
-                    <span>{story.readTime}</span>
+                    <span>{story.readTime || '5 min read'}</span>
                   </div>
                 </div>
-                <span>{story.views.toLocaleString()} views</span>
+                <span>{(story.views || 0).toLocaleString()} views</span>
               </div>
 
               {/* Read More */}
@@ -197,18 +147,22 @@ export default function StoriesGrid() {
   )
 }
 
-function FeaturedStory({ story }: { story: typeof stories[0] }) {
+function FeaturedStory({ story }: { story: any }) {
   return (
     <div className="card overflow-hidden">
       <Link href={`/stories/${story.slug}`}>
         <div className="grid md:grid-cols-2 gap-6">
           {/* Image */}
           <div className="relative h-80 md:h-auto rounded-lg overflow-hidden bg-gradient-to-br from-brand-primary to-brand-secondary">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-white/50 font-bold text-2xl">
-                FEATURED
-              </span>
-            </div>
+            {story.image ? (
+              <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${story.image})` }} />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-white/50 font-bold text-2xl">
+                  FEATURED
+                </span>
+              </div>
+            )}
             
             {/* Category Badge */}
             <div className="absolute top-4 left-4">
@@ -238,13 +192,13 @@ function FeaturedStory({ story }: { story: typeof stories[0] }) {
             <div className="flex items-center space-x-4 text-sm text-brand-light/60 mb-6">
               <div className="flex items-center space-x-2">
                 <FaUser />
-                <span>{story.author}</span>
+                <span>{story.author || 'Anonymous'}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <FaClock />
-                <span>{story.readTime}</span>
+                <span>{story.readTime || '5 min read'}</span>
               </div>
-              <span>{story.views.toLocaleString()} views</span>
+              <span>{(story.views || 0).toLocaleString()} views</span>
             </div>
 
             <div className="flex items-center text-brand-accent font-bold text-lg group hover:gap-3 transition-all">
