@@ -6,6 +6,7 @@ import {
   FaTwitter,
   FaDumbbell,
 } from 'react-icons/fa'
+import Logo from '@/components/layout/Logo'
 
 export default function Footer() {
   return (
@@ -14,14 +15,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div>
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-brand-primary to-brand-accent rounded-lg flex items-center justify-center">
-                <FaDumbbell className="text-white text-xl" />
-              </div>
-              <span className="font-display font-bold text-xl text-white">
-                Lifting Social
-              </span>
-            </div>
+            <Logo className="mb-4" />
             <p className="text-brand-light/70 text-sm mb-4">
               Fusing Olympic weightlifting culture, Sri Lankan athletic pride,
               and modern fitness fashion.

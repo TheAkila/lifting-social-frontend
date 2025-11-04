@@ -6,6 +6,7 @@ import { FaShoppingCart, FaUser, FaBars, FaTimes } from 'react-icons/fa'
 import { useCart } from '@/contexts/CartContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { motion, AnimatePresence } from 'framer-motion'
+import Logo from '@/components/layout/Logo'
 
 const navLinks = [
   { name: 'Home', href: '/' },
@@ -43,16 +44,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
-            <motion.div
-              whileHover={{ rotate: 180 }}
-              transition={{ duration: 0.5 }}
-              className="w-10 h-10 bg-gradient-to-br from-brand-primary to-brand-accent rounded-lg flex items-center justify-center font-bold text-white text-xl"
-            >
-              LS
-            </motion.div>
-            <span className="font-display font-bold text-xl text-white group-hover:text-brand-accent transition-colors">
-              Lifting Social
-            </span>
+            <Logo />
           </Link>
 
           {/* Desktop Navigation */}
