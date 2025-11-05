@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import api from '@/lib/api'
 import Link from 'next/link'
-import { FaPlus, FaEdit, FaTrash, FaArrowLeft } from 'react-icons/fa'
+import { FaPlus, FaEdit, FaTrash, FaArrowLeft, FaUpload, FaTimes, FaImage } from 'react-icons/fa'
 
 export default function AdminStories() {
   const { user } = useAuth()
@@ -14,6 +14,7 @@ export default function AdminStories() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingStory, setEditingStory] = useState<any>(null)
+  const [uploading, setUploading] = useState(false)
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
@@ -43,6 +44,30 @@ export default function AdminStories() {
     } catch (err) {
       console.error('Failed to load stories', err)
       setLoading(false)
+    }
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    try {
+      const formDataUpload = new FormData()
+      formDataUpload.append('file', file)
+
+      const response = await api.post('/uploads', formDataUpload, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+
+      if (response.data.url) {
+        setFormData({ ...formData, coverImage: response.data.url })
+        alert('Image uploaded successfully!')
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to upload image')
+    } finally {
+      setUploading(false)
     }
   }
 
@@ -211,16 +236,74 @@ export default function AdminStories() {
                   />
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-semibold mb-2">Cover Image URL</label>
-                <input
-                  type="text"
-                  value={formData.coverImage}
-                  onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
-                  className="input-field"
-                  placeholder="/images/stories/example.jpg"
-                />
+              
+              {/* Cover Image Upload */}
+              <div className="space-y-4">
+                <label className="block text-sm font-semibold mb-2">Cover Image</label>
+                
+                {/* Upload Button */}
+                <div>
+                  <input
+                    type="file"
+                    id="story-image-upload"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    disabled={uploading}
+                  />
+                  <label
+                    htmlFor="story-image-upload"
+                    className={`btn-outline flex items-center justify-center space-x-2 cursor-pointer w-full ${
+                      uploading ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                  >
+                    {uploading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-brand-accent border-t-transparent" />
+                        <span>Uploading...</span>
+                      </>
+                    ) : (
+                      <>
+                        <FaUpload />
+                        <span>Upload Cover Image</span>
+                      </>
+                    )}
+                  </label>
+                </div>
+
+                {/* Image Preview */}
+                {formData.coverImage && (
+                  <div className="relative group">
+                    <div className="aspect-video rounded-lg overflow-hidden bg-brand-light/5 border border-brand-light/10">
+                      <img
+                        src={formData.coverImage}
+                        alt="Cover preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, coverImage: '' })}
+                      className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <FaTimes />
+                    </button>
+                  </div>
+                )}
+
+                {/* Or use URL */}
+                <div>
+                  <label className="block text-sm text-brand-light/70 mb-2">Or paste image URL</label>
+                  <input
+                    type="text"
+                    value={formData.coverImage}
+                    onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
+                    className="input-field"
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
               </div>
+              
               <div>
                 <label className="block text-sm font-semibold mb-2">Excerpt *</label>
                 <textarea

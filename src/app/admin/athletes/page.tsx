@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import api from '@/lib/api'
 import Link from 'next/link'
-import { FaPlus, FaEdit, FaTrash, FaArrowLeft } from 'react-icons/fa'
+import { FaPlus, FaEdit, FaTrash, FaArrowLeft, FaUpload, FaTimes, FaImage } from 'react-icons/fa'
 
 export default function AdminAthletes() {
   const { user } = useAuth()
@@ -14,6 +14,7 @@ export default function AdminAthletes() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingAthlete, setEditingAthlete] = useState<any>(null)
+  const [uploading, setUploading] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
@@ -49,6 +50,33 @@ export default function AdminAthletes() {
     } catch (err) {
       console.error('Failed to load athletes', err)
       setLoading(false)
+    }
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    try {
+      const formDataUpload = new FormData()
+      formDataUpload.append('file', file)
+      
+      const response = await api.post('/uploads', formDataUpload, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+
+      if (response.data.url) {
+        setFormData({ ...formData, image: response.data.url })
+        alert('Image uploaded successfully!')
+      }
+    } catch (err: any) {
+      console.error('Upload failed:', err)
+      alert(err.response?.data?.message || 'Failed to upload image')
+    } finally {
+      setUploading(false)
     }
   }
 
@@ -263,16 +291,72 @@ export default function AdminAthletes() {
                   />
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-semibold mb-2">Image URL</label>
+              
+              {/* Profile Image Upload */}
+              <div className="space-y-4">
+                <label className="block text-sm font-semibold">Profile Image</label>
+                
+                {/* Upload Button */}
                 <input
-                  type="text"
-                  value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  className="input-field"
-                  placeholder="/images/athletes/example.jpg"
+                  type="file"
+                  id="athlete-image-upload"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  disabled={uploading}
                 />
+                <label
+                  htmlFor="athlete-image-upload"
+                  className={`btn-outline flex items-center justify-center space-x-2 cursor-pointer w-full ${
+                    uploading ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  {uploading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-brand-accent border-t-transparent" />
+                      <span>Uploading...</span>
+                    </>
+                  ) : (
+                    <>
+                      <FaUpload />
+                      <span>Upload Profile Image</span>
+                    </>
+                  )}
+                </label>
+
+                {/* Image Preview */}
+                {formData.image && (
+                  <div className="relative group">
+                    <div className="aspect-square rounded-lg overflow-hidden bg-brand-light/5 border border-brand-light/10 max-w-xs mx-auto">
+                      <img
+                        src={formData.image}
+                        alt="Profile preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, image: '' })}
+                      className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <FaTimes />
+                    </button>
+                  </div>
+                )}
+
+                {/* Or use URL */}
+                <div>
+                  <label className="block text-sm text-brand-light/70 mb-2">Or paste image URL</label>
+                  <input
+                    type="text"
+                    value={formData.image}
+                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                    className="input-field"
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
               </div>
+              
               <div>
                 <label className="block text-sm font-semibold mb-2">Bio</label>
                 <textarea
