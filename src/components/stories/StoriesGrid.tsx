@@ -3,12 +3,17 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { FaArrowRight, FaClock, FaUser, FaYoutube } from 'react-icons/fa'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import api from '@/lib/api'
 
-export default function StoriesGrid() {
+interface StoriesGridProps {
+  selectedCategory: string
+}
+
+export default function StoriesGrid({ selectedCategory }: StoriesGridProps) {
   const [stories, setStories] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [displayCount, setDisplayCount] = useState(10)
 
   useEffect(() => {
     let mounted = true
@@ -29,6 +34,28 @@ export default function StoriesGrid() {
     }
   }, [])
 
+  // Filter stories by category
+  const filteredStories = useMemo(() => {
+    if (selectedCategory === 'all') {
+      return stories
+    }
+    return stories.filter(
+      (story) => story.category?.toLowerCase().replace(/\s+/g, '-') === selectedCategory
+    )
+  }, [stories, selectedCategory])
+
+  // Reset display count when category changes
+  useEffect(() => {
+    setDisplayCount(10)
+  }, [selectedCategory])
+
+  const displayedStories = filteredStories.slice(0, displayCount)
+  const hasMore = displayCount < filteredStories.length
+
+  const loadMore = () => {
+    setDisplayCount((prev) => prev + 9)
+  }
+
   if (loading) {
     return (
       <div className="text-center py-12">
@@ -37,31 +64,36 @@ export default function StoriesGrid() {
     )
   }
 
-  if (stories.length === 0) {
+  if (filteredStories.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-brand-light/70">No stories found.</p>
+        <p className="text-brand-light/70">
+          No stories found in this category.
+        </p>
       </div>
     )
   }
 
+  const featuredStory = displayedStories.find(s => s.featured)
+  const regularStories = displayedStories.filter(s => !s.featured)
+
   return (
     <div className="space-y-12">
       {/* Featured Story */}
-      {stories.filter(s => s.featured)[0] && (
+      {featuredStory && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="mb-12"
         >
-          <FeaturedStory story={stories.filter(s => s.featured)[0]} />
+          <FeaturedStory story={featuredStory} />
         </motion.div>
       )}
 
       {/* Stories Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {stories.slice(1).map((story, index) => (
+        {regularStories.map((story, index) => (
           <motion.article
             key={story._id || story.id}
             initial={{ opacity: 0, y: 30 }}
@@ -138,10 +170,17 @@ export default function StoriesGrid() {
       </div>
 
       {/* Load More Button */}
-      <div className="text-center mt-12">
-        <button className="btn-secondary">
-          Load More Stories
-        </button>
+      {hasMore && (
+        <div className="text-center mt-12">
+          <button onClick={loadMore} className="btn-secondary">
+            Load More Stories
+          </button>
+        </div>
+      )}
+
+      {/* Showing count */}
+      <div className="text-center text-brand-light/70 text-sm">
+        Showing {displayedStories.length} of {filteredStories.length} stories
       </div>
     </div>
   )

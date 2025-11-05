@@ -94,16 +94,12 @@ export default function AdminAthletes() {
         cleanAndJerk: formData.cleanAndJerk ? Number(formData.cleanAndJerk) : undefined,
         total: formData.total ? Number(formData.total) : undefined,
         achievements: formData.achievements || undefined,
-        medals: {
-          gold: Number(formData.goldMedals),
-          silver: Number(formData.silverMedals),
-          bronze: Number(formData.bronzeMedals),
-        },
+        goldMedals: Number(formData.goldMedals) || 0,
+        silverMedals: Number(formData.silverMedals) || 0,
+        bronzeMedals: Number(formData.bronzeMedals) || 0,
         featured: formData.featured,
-        socialMedia: {
-          instagram: formData.instagram || undefined,
-          facebook: formData.facebook || undefined,
-        },
+        instagram: formData.instagram || undefined,
+        facebook: formData.facebook || undefined,
       }
 
       if (editingAthlete) {
@@ -144,12 +140,12 @@ export default function AdminAthletes() {
       cleanAndJerk: athlete.cleanAndJerk?.toString() || '',
       total: athlete.total?.toString() || '',
       achievements: athlete.achievements || '',
-      goldMedals: athlete.medals?.gold?.toString() || '0',
-      silverMedals: athlete.medals?.silver?.toString() || '0',
-      bronzeMedals: athlete.medals?.bronze?.toString() || '0',
+      goldMedals: athlete.goldMedals?.toString() || '0',
+      silverMedals: athlete.silverMedals?.toString() || '0',
+      bronzeMedals: athlete.bronzeMedals?.toString() || '0',
       featured: athlete.featured || false,
-      instagram: athlete.socialMedia?.instagram || '',
-      facebook: athlete.socialMedia?.facebook || '',
+      instagram: athlete.instagram || '',
+      facebook: athlete.facebook || '',
     })
     setShowForm(true)
   }

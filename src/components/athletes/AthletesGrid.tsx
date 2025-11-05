@@ -3,12 +3,22 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { FaMedal, FaTrophy, FaInstagram, FaFacebook } from 'react-icons/fa'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import api from '@/lib/api'
 
-export default function AthletesGrid() {
+interface AthletesGridProps {
+  filters: {
+    category: string
+    gender: string
+    searchQuery: string
+  }
+}
+
+export default function AthletesGrid({ filters }: AthletesGridProps) {
   const [athletes, setAthletes] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [sortBy, setSortBy] = useState('featured')
+  const [displayCount, setDisplayCount] = useState(9)
 
   useEffect(() => {
     let mounted = true
@@ -29,6 +39,80 @@ export default function AthletesGrid() {
     }
   }, [])
 
+  // Filter and sort athletes
+  const filteredAndSortedAthletes = useMemo(() => {
+    let filtered = [...athletes]
+
+    // Apply category filter
+    if (filters.category && filters.category !== 'All') {
+      filtered = filtered.filter(
+        (athlete) => athlete.category === filters.category
+      )
+    }
+
+    // Apply gender filter
+    if (filters.gender && filters.gender !== 'All') {
+      filtered = filtered.filter(
+        (athlete) => {
+          // Case-insensitive comparison and handle undefined
+          const athleteGender = athlete.gender?.toLowerCase()
+          const filterGender = filters.gender.toLowerCase()
+          return athleteGender === filterGender
+        }
+      )
+    }
+
+    // Apply search filter
+    if (filters.searchQuery) {
+      const query = filters.searchQuery.toLowerCase()
+      filtered = filtered.filter((athlete) =>
+        athlete.name.toLowerCase().includes(query)
+      )
+    }
+
+    // Apply sorting
+    switch (sortBy) {
+      case 'total-high':
+        filtered.sort((a, b) => (b.total || 0) - (a.total || 0))
+        break
+      case 'total-low':
+        filtered.sort((a, b) => (a.total || 0) - (b.total || 0))
+        break
+      case 'medals':
+        filtered.sort((a, b) => {
+          const aMedals = (a.goldMedals || 0) + (a.silverMedals || 0) + (a.bronzeMedals || 0)
+          const bMedals = (b.goldMedals || 0) + (b.silverMedals || 0) + (b.bronzeMedals || 0)
+          return bMedals - aMedals
+        })
+        break
+      case 'name':
+        filtered.sort((a, b) => a.name.localeCompare(b.name))
+        break
+      case 'featured':
+      default:
+        filtered.sort((a, b) => {
+          if (a.featured && !b.featured) return -1
+          if (!a.featured && b.featured) return 1
+          return 0
+        })
+        break
+    }
+
+    return filtered
+  }, [athletes, filters, sortBy])
+
+  // Reset display count when filters change
+  useEffect(() => {
+    setDisplayCount(9)
+  }, [filters, sortBy])
+
+  const displayedAthletes = filteredAndSortedAthletes.slice(0, displayCount)
+  const hasMore = displayCount < filteredAndSortedAthletes.length
+
+  const loadMore = () => {
+    setDisplayCount((prev) => prev + 9)
+  }
+
   if (loading) {
     return (
       <div className="text-center py-12">
@@ -37,17 +121,41 @@ export default function AthletesGrid() {
     )
   }
 
-  if (athletes.length === 0) {
+  if (filteredAndSortedAthletes.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-brand-light/70">No athletes found.</p>
+        <p className="text-brand-light/70">
+          No athletes found matching your filters.
+        </p>
       </div>
     )
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {athletes.map((athlete, index) => (
+    <div>
+      {/* Sort Options */}
+      <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
+        <p className="text-brand-light/70">
+          Showing{' '}
+          <span className="text-white font-semibold">{displayedAthletes.length}</span> of{' '}
+          <span className="text-white font-semibold">{filteredAndSortedAthletes.length}</span> athletes
+        </p>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="input-field max-w-xs"
+        >
+          <option value="featured">Featured First</option>
+          <option value="total-high">Total: High to Low</option>
+          <option value="total-low">Total: Low to High</option>
+          <option value="medals">Most Medals</option>
+          <option value="name">Name (A-Z)</option>
+        </select>
+      </div>
+
+      {/* Athletes Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {displayedAthletes.map((athlete, index) => (
         <motion.div
           key={athlete._id || athlete.id}
           initial={{ opacity: 0, y: 30 }}
@@ -113,26 +221,26 @@ export default function AthletesGrid() {
               <div className="flex items-center justify-center space-x-4 mb-4">
                 <div className="flex items-center space-x-1">
                   <div className="w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center">
-                    <span className="text-brand-dark text-xs font-bold">{athlete.medals?.gold || 0}</span>
+                    <span className="text-brand-dark text-xs font-bold">{athlete.goldMedals || 0}</span>
                   </div>
                 </div>
                 <div className="flex items-center space-x-1">
                   <div className="w-6 h-6 rounded-full bg-gray-400 flex items-center justify-center">
-                    <span className="text-brand-dark text-xs font-bold">{athlete.medals?.silver || 0}</span>
+                    <span className="text-brand-dark text-xs font-bold">{athlete.silverMedals || 0}</span>
                   </div>
                 </div>
                 <div className="flex items-center space-x-1">
                   <div className="w-6 h-6 rounded-full bg-orange-600 flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">{athlete.medals?.bronze || 0}</span>
+                    <span className="text-white text-xs font-bold">{athlete.bronzeMedals || 0}</span>
                   </div>
                 </div>
               </div>
 
               {/* Social Media */}
               <div className="flex items-center justify-center space-x-3">
-                {athlete.socialMedia?.instagram && (
+                {athlete.instagram && (
                   <a
-                    href={`https://instagram.com/${athlete.socialMedia.instagram.replace('@', '')}`}
+                    href={`https://instagram.com/${athlete.instagram.replace('@', '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-brand-light hover:text-brand-accent transition-colors"
@@ -141,9 +249,9 @@ export default function AthletesGrid() {
                     <FaInstagram className="text-2xl" />
                   </a>
                 )}
-                {athlete.socialMedia?.facebook && (
+                {athlete.facebook && (
                   <a
-                    href={`https://facebook.com/${athlete.socialMedia.facebook}`}
+                    href={`https://facebook.com/${athlete.facebook}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-brand-light hover:text-brand-accent transition-colors"
@@ -162,6 +270,21 @@ export default function AthletesGrid() {
           </Link>
         </motion.div>
       ))}
+      </div>
+
+      {/* Load More Button */}
+      {hasMore && (
+        <div className="text-center mt-12">
+          <button onClick={loadMore} className="btn-secondary">
+            Load More Athletes
+          </button>
+        </div>
+      )}
+
+      {/* Count Display */}
+      <div className="text-center text-brand-light/70 text-sm mt-6">
+        Showing {displayedAthletes.length} of {filteredAndSortedAthletes.length} athletes
+      </div>
     </div>
   )
 }

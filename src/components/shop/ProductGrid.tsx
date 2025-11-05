@@ -19,6 +19,8 @@ export default function ProductGrid({ filters }: ProductGridProps) {
   const [sortBy, setSortBy] = useState('featured')
   const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const productsPerPage = 9
 
   useEffect(() => {
     let mounted = true
@@ -101,6 +103,53 @@ export default function ProductGrid({ filters }: ProductGridProps) {
     return filtered
   }, [products, filters, sortBy])
 
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredAndSortedProducts.length / productsPerPage)
+  const startIndex = (currentPage - 1) * productsPerPage
+  const endIndex = startIndex + productsPerPage
+  const currentProducts = filteredAndSortedProducts.slice(startIndex, endIndex)
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [filters, sortBy])
+
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
+
+  const renderPageNumbers = () => {
+    const pages = []
+    const maxVisiblePages = 5
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2))
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1)
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1)
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(
+        <button
+          key={i}
+          onClick={() => goToPage(i)}
+          className={`px-4 py-2 rounded-lg transition-colors ${
+            currentPage === i
+              ? 'bg-brand-accent text-brand-dark font-bold'
+              : 'bg-brand-secondary hover:bg-brand-accent text-brand-light'
+          }`}
+        >
+          {i}
+        </button>
+      )
+    }
+
+    return pages
+  }
+
   return (
     <div>
       {/* Sort Options */}
@@ -110,8 +159,11 @@ export default function ProductGrid({ filters }: ProductGridProps) {
             'Loading...'
           ) : (
             <>
-              Showing <span className="text-white font-semibold">{filteredAndSortedProducts.length}</span> of{' '}
-              <span className="text-white font-semibold">{products.length}</span> products
+              Showing{' '}
+              <span className="text-white font-semibold">
+                {startIndex + 1}-{Math.min(endIndex, filteredAndSortedProducts.length)}
+              </span>{' '}
+              of <span className="text-white font-semibold">{filteredAndSortedProducts.length}</span> products
             </>
           )}
         </p>
@@ -140,7 +192,7 @@ export default function ProductGrid({ filters }: ProductGridProps) {
             </p>
           </div>
         ) : (
-          filteredAndSortedProducts.map((product, index) => (
+          currentProducts.map((product, index) => (
             <motion.div
               key={product._id || product.id}
               initial={{ opacity: 0, y: 20 }}
@@ -216,21 +268,38 @@ export default function ProductGrid({ filters }: ProductGridProps) {
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-center mt-12 space-x-2">
-        <button className="px-4 py-2 bg-brand-secondary rounded-lg hover:bg-brand-accent transition-colors">
-          Previous
-        </button>
-        <button className="px-4 py-2 bg-brand-accent rounded-lg">1</button>
-        <button className="px-4 py-2 bg-brand-secondary rounded-lg hover:bg-brand-accent transition-colors">
-          2
-        </button>
-        <button className="px-4 py-2 bg-brand-secondary rounded-lg hover:bg-brand-accent transition-colors">
-          3
-        </button>
-        <button className="px-4 py-2 bg-brand-secondary rounded-lg hover:bg-brand-accent transition-colors">
-          Next
-        </button>
-      </div>
+      {!loading && filteredAndSortedProducts.length > 0 && totalPages > 1 && (
+        <div className="flex items-center justify-center mt-12 space-x-2">
+          {/* Previous Button */}
+          <button
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`px-4 py-2 rounded-lg transition-colors ${
+              currentPage === 1
+                ? 'bg-brand-secondary/50 text-brand-light/50 cursor-not-allowed'
+                : 'bg-brand-secondary hover:bg-brand-accent text-brand-light'
+            }`}
+          >
+            Previous
+          </button>
+
+          {/* Page Numbers */}
+          {renderPageNumbers()}
+
+          {/* Next Button */}
+          <button
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={`px-4 py-2 rounded-lg transition-colors ${
+              currentPage === totalPages
+                ? 'bg-brand-secondary/50 text-brand-light/50 cursor-not-allowed'
+                : 'bg-brand-secondary hover:bg-brand-accent text-brand-light'
+            }`}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   )
 }
