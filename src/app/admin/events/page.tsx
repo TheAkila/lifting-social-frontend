@@ -250,7 +250,7 @@ export default function AdminEventsPage() {
                     name="title"
                     value={formData.title}
                     onChange={handleInputChange}
-                    className="input"
+                    className="input-field"
                     required
                   />
                 </div>
@@ -261,7 +261,7 @@ export default function AdminEventsPage() {
                     name="eventType"
                     value={formData.eventType}
                     onChange={handleInputChange}
-                    className="input"
+                    className="input-field"
                     required
                   >
                     <option value="competition">Competition</option>
@@ -280,7 +280,7 @@ export default function AdminEventsPage() {
                     name="organizer"
                     value={formData.organizer}
                     onChange={handleInputChange}
-                    className="input"
+                    className="input-field"
                     placeholder="e.g., Sri Lanka Weightlifting Federation"
                     required
                   />
@@ -293,7 +293,7 @@ export default function AdminEventsPage() {
                     name="location"
                     value={formData.location}
                     onChange={handleInputChange}
-                    className="input"
+                    className="input-field"
                     placeholder="e.g., Colombo, Sri Lanka"
                     required
                   />
@@ -306,7 +306,7 @@ export default function AdminEventsPage() {
                     name="venue"
                     value={formData.venue}
                     onChange={handleInputChange}
-                    className="input"
+                    className="input-field"
                     placeholder="e.g., Sugathadasa Indoor Stadium"
                   />
                 </div>
@@ -319,7 +319,7 @@ export default function AdminEventsPage() {
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  className="input"
+                  className="input-field"
                   rows={4}
                   required
                 />
@@ -334,7 +334,7 @@ export default function AdminEventsPage() {
                     name="startDate"
                     value={formData.startDate}
                     onChange={handleInputChange}
-                    className="input"
+                    className="input-field"
                     required
                   />
                 </div>
@@ -346,7 +346,7 @@ export default function AdminEventsPage() {
                     name="endDate"
                     value={formData.endDate}
                     onChange={handleInputChange}
-                    className="input"
+                    className="input-field"
                   />
                 </div>
 
@@ -357,7 +357,7 @@ export default function AdminEventsPage() {
                     name="registrationDeadline"
                     value={formData.registrationDeadline}
                     onChange={handleInputChange}
-                    className="input"
+                    className="input-field"
                   />
                 </div>
               </div>
@@ -371,7 +371,7 @@ export default function AdminEventsPage() {
                     name="registrationLink"
                     value={formData.registrationLink}
                     onChange={handleInputChange}
-                    className="input"
+                    className="input-field"
                     placeholder="https://..."
                   />
                 </div>
@@ -383,7 +383,7 @@ export default function AdminEventsPage() {
                     name="maxParticipants"
                     value={formData.maxParticipants}
                     onChange={handleInputChange}
-                    className="input"
+                    className="input-field"
                     min="0"
                   />
                 </div>
@@ -395,7 +395,7 @@ export default function AdminEventsPage() {
                     name="entryFee"
                     value={formData.entryFee}
                     onChange={handleInputChange}
-                    className="input"
+                    className="input-field"
                     min="0"
                   />
                 </div>
@@ -410,7 +410,7 @@ export default function AdminEventsPage() {
                     name="contactEmail"
                     value={formData.contactEmail}
                     onChange={handleInputChange}
-                    className="input"
+                    className="input-field"
                   />
                 </div>
 
@@ -421,7 +421,7 @@ export default function AdminEventsPage() {
                     name="contactPhone"
                     value={formData.contactPhone}
                     onChange={handleInputChange}
-                    className="input"
+                    className="input-field"
                   />
                 </div>
               </div>
@@ -434,7 +434,7 @@ export default function AdminEventsPage() {
                   name="coverImage"
                   value={formData.coverImage}
                   onChange={handleInputChange}
-                  className="input"
+                  className="input-field"
                   placeholder="/images/events/event-name.jpg"
                 />
               </div>
@@ -447,7 +447,7 @@ export default function AdminEventsPage() {
                   name="categories"
                   value={formData.categories}
                   onChange={handleInputChange}
-                  className="input"
+                  className="input-field"
                   placeholder="e.g., Men 73kg, Women 64kg, Youth"
                 />
               </div>
@@ -459,7 +459,7 @@ export default function AdminEventsPage() {
                   name="schedule"
                   value={formData.schedule}
                   onChange={handleInputChange}
-                  className="input"
+                  className="input-field"
                   rows={3}
                   placeholder="e.g., Day 1: Women categories | Day 2: Men categories"
                 />
@@ -472,7 +472,7 @@ export default function AdminEventsPage() {
                   name="rules"
                   value={formData.rules}
                   onChange={handleInputChange}
-                  className="input"
+                  className="input-field"
                   rows={3}
                   placeholder="e.g., IWF rules apply. Medical certificates required."
                 />
