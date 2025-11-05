@@ -25,8 +25,9 @@ export default function ProductGrid({ filters }: ProductGridProps) {
   useEffect(() => {
     let mounted = true
     setLoading(true)
+    // Add timestamp to prevent caching
     api
-      .get('/products')
+      .get(`/products?t=${Date.now()}`)
       .then((res) => {
         if (!mounted) return
         setProducts(res.data)

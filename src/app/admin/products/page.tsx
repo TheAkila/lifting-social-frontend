@@ -78,11 +78,11 @@ export default function AdminProducts() {
         }
       }
 
-      // Set first image as main image if not already set
+      // Set first image as main image
       const newImages = [...formData.images, ...uploadedUrls]
       setFormData({
         ...formData,
-        image: formData.image || uploadedUrls[0] || '',
+        image: newImages[0] || '',
         images: newImages,
       })
 
@@ -100,6 +100,17 @@ export default function AdminProducts() {
       ...formData,
       images: newImages,
       image: newImages[0] || '',
+    })
+  }
+
+  const setMainImage = (index: number) => {
+    const newImages = [...formData.images]
+    const [selectedImage] = newImages.splice(index, 1)
+    newImages.unshift(selectedImage)
+    setFormData({
+      ...formData,
+      images: newImages,
+      image: selectedImage,
     })
   }
 
@@ -364,7 +375,10 @@ export default function AdminProducts() {
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                       {formData.images.map((img, index) => (
                         <div key={index} className="relative group">
-                          <div className="aspect-square rounded-lg overflow-hidden bg-brand-light/5 border border-brand-light/10">
+                          <div 
+                            onClick={() => setMainImage(index)}
+                            className="aspect-square rounded-lg overflow-hidden bg-brand-light/5 border border-brand-light/10 cursor-pointer hover:border-brand-primary transition-colors"
+                          >
                             {img ? (
                               <img
                                 src={img}
