@@ -5,6 +5,7 @@ import {
   FaYoutube,
   FaTwitter,
   FaDumbbell,
+  FaWhatsapp,
 } from 'react-icons/fa'
 import Logo from '@/components/layout/Logo'
 
@@ -46,12 +47,12 @@ export default function Footer() {
                 <FaYoutube className="text-2xl" />
               </a>
               <a
-                href="https://twitter.com"
+                href="https://whatsapp.com/channel/0029Vb6anfUDjiOUZhVkSe1h"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-brand-light hover:text-brand-accent transition-colors"
               >
-                <FaTwitter className="text-2xl" />
+                <FaWhatsapp className="text-2xl" />
               </a>
             </div>
           </div>
