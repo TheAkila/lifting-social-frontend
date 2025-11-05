@@ -18,8 +18,9 @@ export default function StoriesGrid({ selectedCategory }: StoriesGridProps) {
   useEffect(() => {
     let mounted = true
     setLoading(true)
+    // Add timestamp to prevent caching
     api
-      .get('/stories')
+      .get(`/stories?t=${Date.now()}`)
       .then((res) => {
         if (!mounted) return
         setStories(res.data)

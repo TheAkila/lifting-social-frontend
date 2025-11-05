@@ -36,12 +36,8 @@ export default function StoryPage({ params }: { params: { slug: string } }) {
 
   const loadStory = async () => {
     try {
-      const response = await api.get('/stories')
-      const foundStory = response.data.find((s: Story) => s.slug === params.slug)
-      
-      if (foundStory) {
-        setStory(foundStory)
-      }
+      const response = await api.get(`/stories/${params.slug}`)
+      setStory(response.data)
     } catch (error) {
       console.error('Error fetching story:', error)
     } finally {

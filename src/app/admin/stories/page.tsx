@@ -22,11 +22,15 @@ export default function AdminStories() {
     content: '',
     author: '',
     coverImage: '',
-    category: 'Athlete Story',
+    image: '',
+    category: 'Athlete Stories',
+    categoryColor: 'bg-brand-primary',
+    tags: [] as string[],
     readTime: '5 min read',
     featured: false,
     videoId: '',
   })
+  const [newTag, setNewTag] = useState('')
 
   useEffect(() => {
     if (!user) {
@@ -61,7 +65,11 @@ export default function AdminStories() {
       })
 
       if (response.data.url) {
-        setFormData({ ...formData, coverImage: response.data.url })
+        setFormData({ 
+          ...formData, 
+          coverImage: response.data.url,
+          image: response.data.url 
+        })
         alert('Image uploaded successfully!')
       }
     } catch (err: any) {
@@ -113,7 +121,10 @@ export default function AdminStories() {
       content: story.content || '',
       author: story.author || '',
       coverImage: story.coverImage || '',
-      category: story.category || 'Athlete Story',
+      image: story.image || story.coverImage || '',
+      category: story.category || 'Athlete Stories',
+      categoryColor: story.categoryColor || 'bg-brand-primary',
+      tags: story.tags || [],
       readTime: story.readTime || '5 min read',
       featured: story.featured || false,
       videoId: story.videoId || '',
@@ -129,7 +140,10 @@ export default function AdminStories() {
       content: '',
       author: '',
       coverImage: '',
-      category: 'Athlete Story',
+      image: '',
+      category: 'Athlete Stories',
+      categoryColor: 'bg-brand-primary',
+      tags: [],
       readTime: '5 min read',
       featured: false,
       videoId: '',
@@ -208,11 +222,10 @@ export default function AdminStories() {
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     className="input-field"
                   >
-                    <option value="Athlete Story">Athlete Story</option>
-                    <option value="Training">Training</option>
+                    <option value="Athlete Stories">Athlete Stories</option>
+                    <option value="Training Tips">Training Tips</option>
                     <option value="Events">Events</option>
                     <option value="News">News</option>
-                    <option value="Nutrition">Nutrition</option>
                   </select>
                 </div>
                 <div>
@@ -234,6 +247,73 @@ export default function AdminStories() {
                     className="input-field"
                     placeholder="dQw4w9WgXcQ"
                   />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Category Color</label>
+                  <select
+                    value={formData.categoryColor}
+                    onChange={(e) => setFormData({ ...formData, categoryColor: e.target.value })}
+                    className="input-field"
+                  >
+                    <option value="bg-brand-primary">Primary (Blue)</option>
+                    <option value="bg-brand-secondary">Secondary (Gold)</option>
+                    <option value="bg-brand-accent">Accent (Orange)</option>
+                    <option value="bg-purple-600">Purple</option>
+                    <option value="bg-green-600">Green</option>
+                    <option value="bg-red-600">Red</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Tags</label>
+                  <div className="flex space-x-2 mb-2">
+                    <input
+                      type="text"
+                      value={newTag}
+                      onChange={(e) => setNewTag(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault()
+                          if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
+                            setFormData({ ...formData, tags: [...formData.tags, newTag.trim()] })
+                            setNewTag('')
+                          }
+                        }
+                      }}
+                      className="input-field flex-1"
+                      placeholder="Add a tag and press Enter"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
+                          setFormData({ ...formData, tags: [...formData.tags, newTag.trim()] })
+                          setNewTag('')
+                        }
+                      }}
+                      className="btn-outline px-4"
+                    >
+                      Add
+                    </button>
+                  </div>
+                  {formData.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {formData.tags.map((tag, idx) => (
+                        <span
+                          key={idx}
+                          className="px-3 py-1 bg-brand-secondary/20 rounded-full text-sm flex items-center space-x-2"
+                        >
+                          <span>{tag}</span>
+                          <button
+                            type="button"
+                            onClick={() => setFormData({ ...formData, tags: formData.tags.filter((_, i) => i !== idx) })}
+                            className="text-red-500 hover:text-red-400"
+                          >
+                            <FaTimes />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
               
