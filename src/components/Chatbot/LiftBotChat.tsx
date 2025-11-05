@@ -1,6 +1,8 @@
 'use client'
+
 import { useState, useRef, useEffect } from 'react'
 import axios from 'axios'
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Message {
   role: 'user' | 'assistant'
@@ -20,7 +22,7 @@ export default function OlympicWeightliftingChat() {
     {
       role: 'assistant',
       content:
-        "Hey lifter! 🤖 I'm LiftBot — your Olympic Weightlifting AI coach! 🏋️ I can help you with technique tips, programming ideas, event updates, and even recommend gear. What would you like to work on today?",
+        "Hi there! I'm your Olympic Weightlifting AI assistant. I can help with technique, programming, competitions, and gear recommendations. What would you like to know?",
       timestamp: new Date(),
     },
   ])
@@ -28,7 +30,7 @@ export default function OlympicWeightliftingChat() {
   const [isLoading, setIsLoading] = useState(false)
   const [recommendations, setRecommendations] = useState<Recommendation>({})
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLTextAreaElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -84,7 +86,7 @@ export default function OlympicWeightliftingChat() {
       const errorMessage: Message = {
         role: 'assistant',
         content:
-          "⚠️ Sorry, I'm having trouble connecting right now. Please make sure the AI service is running and try again.",
+          "I'm having trouble connecting. Please check the service and try again.",
         timestamp: new Date(),
       }
       setMessages((prev) => [...prev, errorMessage])
@@ -94,7 +96,7 @@ export default function OlympicWeightliftingChat() {
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter') {
       e.preventDefault()
       handleSend()
     }
@@ -105,7 +107,7 @@ export default function OlympicWeightliftingChat() {
       {
         role: 'assistant',
         content:
-          "Chat cleared! 🚀 LiftBot is ready to guide your next Olympic weightlifting session!",
+          "Chat cleared. Ready to help with your training!",
         timestamp: new Date(),
       },
     ])
@@ -114,61 +116,44 @@ export default function OlympicWeightliftingChat() {
 
   return (
     <>
-      {/* Chat Button */}
-      {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 bg-gradient-to-br from-blue-700 to-slate-800 text-white rounded-full p-4 shadow-2xl hover:shadow-blue-900/50 transform hover:scale-110 transition-all duration-300 group border-2 border-blue-800 flex items-center justify-center"
-          aria-label="Open chat"
-        >
-          <img
-            src="/robot.png"
-            alt="LiftBot"
-            className="w-9 h-9 animate-bounce"
-          />
-          <span className="absolute -top-1 -right-1 bg-green-400 w-3 h-3 rounded-full animate-pulse border-2 border-white"></span>
-        </button>
-      )}
+     {/* Chat Button */}
+{!isOpen && (
+  <motion.button
+    onClick={() => setIsOpen(true)}
+    className="fixed bottom-6 right-6 z-50 w-20 h-20 rounded-full shadow-lg hover:scale-110 transition-transform duration-300 flex items-center justify-center bg-transparent"
+    aria-label="Open chat"
+    whileHover={{ scale: 1.15 }}
+    whileTap={{ scale: 0.9 }}
+    initial={{ opacity: 0, y: 30 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4 }}
+  >
+    <motion.img
+      src="/robot.png"
+      alt="LiftBot"
+      className="w-20 h-20 object-contain select-none pointer-events-none"
+      animate={{
+        y: [0, -6, 0],
+        rotate: [0, 3, -3, 0],
+      }}
+      transition={{
+        duration: 3,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+    />
+  </motion.button>
+)}
 
-      {/* Chat Window */}
-      {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-96 h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border-4 border-slate-900">
-          {/* Header */}
-          <div className="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 text-white p-5 flex items-center justify-between border-b-4 border-blue-800">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-blue-800">
-                <img
-                  src="/robot.png"
-                  alt="LiftBot avatar"
-                  className="w-10 h-10 animate-[float_3s_ease-in-out_infinite]"
-                />
-              </div>
-              <div>
-                <h3 className="font-bold text-lg tracking-tight">LiftBot</h3>
-                <p className="text-xs opacity-90 font-medium">
-                  Olympic Weightlifting AI Coach
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={clearChat}
-                className="p-2 hover:bg-white/20 rounded-lg transition-all duration-200 hover:scale-110"
-                title="Clear chat"
-              >
-                🧹
-              </button>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="p-2 hover:bg-white/20 rounded-lg transition-all duration-200 hover:scale-110"
-              >
-                ❌
-              </button>
-            </div>
-          </div>
+
+    
+
+{/* Chat Window */} {isOpen && ( <div className="fixed bottom-6 right-6 z-50 w-[350px] h-[480px] bg-white rounded-lg shadow-2xl flex flex-col overflow-hidden border border-gray-200"> {/* Header */} <div className="bg-blue-600 px-3 py-2.5 flex items-center justify-between"> <div className="flex items-center gap-2"> <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center p-1"> <img src="/robot.png" alt="LiftBot" className="w-full h-full object-contain" /> </div> <div> <h3 className="font-semibold text-white text-sm">LiftBot</h3> <p className="text-xs text-blue-100">AI Assistant</p> </div> </div> <div className="flex items-center gap-0.5"> <button onClick={clearChat} className="p-1.5 hover:bg-white/20 rounded transition text-white" title="Clear chat" > <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /> </svg> </button> <button onClick={() => setIsOpen(false)} className="p-1.5 hover:bg-white/20 rounded transition text-white" > <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /> </svg> </button> </div> </div>
+
+
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-gray-50 to-gray-100">
+          <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-gray-50">
             {messages.map((message, index) => (
               <div
                 key={index}
@@ -176,21 +161,30 @@ export default function OlympicWeightliftingChat() {
                   message.role === 'user' ? 'justify-end' : 'justify-start'
                 }`}
               >
+                {message.role === 'assistant' && (
+                  <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center mr-2 flex-shrink-0 shadow-sm p-1">
+                    <img 
+                      src="/robot.png" 
+                      alt="LiftBot" 
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                )}
                 <div
-                  className={`max-w-[80%] rounded-2xl p-4 shadow-md ${
+                  className={`max-w-[75%] rounded-lg px-3 py-2 ${
                     message.role === 'user'
-                      ? 'bg-gradient-to-br from-blue-900 to-slate-800 text-white border-2 border-blue-800'
-                      : 'bg-white text-gray-900 border-2 border-slate-200'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-white text-gray-900 shadow-sm'
                   }`}
                 >
-                  <p className="text-sm whitespace-pre-wrap leading-relaxed">
+                  <p className="text-sm leading-relaxed">
                     {message.content}
                   </p>
                   <p
-                    className={`text-xs mt-2 ${
+                    className={`text-xs mt-1 ${
                       message.role === 'user'
-                        ? 'text-blue-200'
-                        : 'text-gray-500'
+                        ? 'text-blue-100'
+                        : 'text-gray-400'
                     }`}
                   >
                     {message.timestamp.toLocaleTimeString([], {
@@ -204,17 +198,18 @@ export default function OlympicWeightliftingChat() {
 
             {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-md">
-                  <div className="flex gap-2">
-                    <div className="w-2.5 h-2.5 bg-blue-900 rounded-full animate-bounce"></div>
-                    <div
-                      className="w-2.5 h-2.5 bg-blue-900 rounded-full animate-bounce"
-                      style={{ animationDelay: '0.1s' }}
-                    ></div>
-                    <div
-                      className="w-2.5 h-2.5 bg-blue-900 rounded-full animate-bounce"
-                      style={{ animationDelay: '0.2s' }}
-                    ></div>
+                <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center mr-2 shadow-sm p-1">
+                  <img 
+                    src="/robot.png" 
+                    alt="LiftBot" 
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="bg-white rounded-lg px-3 py-2 shadow-sm">
+                  <div className="flex gap-1">
+                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></div>
+                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
                   </div>
                 </div>
               </div>
@@ -222,20 +217,21 @@ export default function OlympicWeightliftingChat() {
 
             {/* Recommendations */}
             {recommendations.products && recommendations.products.length > 0 && (
-              <div className="bg-white border-2 border-blue-900 rounded-xl p-4 shadow-lg">
-                <h4 className="font-bold text-slate-900 text-sm mb-3 flex items-center gap-2">
-                  🏋️ Recommended Equipment
+              <div className="bg-white rounded-lg p-3 shadow-sm">
+                <h4 className="font-semibold text-xs mb-2 text-gray-700 flex items-center gap-1.5">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                  Recommended Gear
                 </h4>
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   {recommendations.products.map((product) => (
                     <div
                       key={product.id}
-                      className="bg-gradient-to-r from-slate-50 to-blue-50 p-3 rounded-lg border border-slate-200 hover:border-blue-900 transition-colors"
+                      className="flex justify-between items-center p-2 hover:bg-gray-50 rounded transition text-xs"
                     >
-                      <p className="font-semibold text-gray-900">
-                        {product.name}
-                      </p>
-                      <p className="text-blue-900 font-bold">${product.price}</p>
+                      <span className="text-gray-900">{product.name}</span>
+                      <span className="font-semibold text-blue-600">${product.price}</span>
                     </div>
                   ))}
                 </div>
@@ -243,79 +239,74 @@ export default function OlympicWeightliftingChat() {
             )}
 
             {recommendations.events && recommendations.events.length > 0 && (
-              <div className="bg-white border-2 border-slate-900 rounded-xl p-4 shadow-lg">
-                <h4 className="font-bold text-slate-900 text-sm mb-3 flex items-center gap-2">
-                  🏆 Upcoming Competitions
+              <div className="bg-white rounded-lg p-3 shadow-sm">
+                <h4 className="font-semibold text-xs mb-2 text-gray-700 flex items-center gap-1.5">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Upcoming Events
                 </h4>
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   {recommendations.events.map((event) => (
                     <div
                       key={event.id}
-                      className="bg-gradient-to-r from-slate-50 to-gray-100 p-3 rounded-lg border border-slate-200 hover:border-slate-900 transition-colors"
+                      className="p-2 hover:bg-gray-50 rounded transition"
                     >
-                      <p className="font-semibold text-gray-900">
-                        {event.name}
-                      </p>
-                      <p className="text-slate-700 font-medium text-sm">
-                        {event.date}
-                      </p>
+                      <p className="text-xs font-medium text-gray-900">{event.name}</p>
+                      <p className="text-xs text-gray-500">{event.date}</p>
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
-            {recommendations.athletes &&
-              recommendations.athletes.length > 0 && (
-                <div className="bg-white border-2 border-blue-900 rounded-xl p-4 shadow-lg">
-                  <h4 className="font-bold text-slate-900 text-sm mb-3 flex items-center gap-2">
-                    🥇 Featured Athletes
-                  </h4>
-                  <div className="space-y-2">
-                    {recommendations.athletes.map((athlete) => (
-                      <div
-                        key={athlete.id}
-                        className="bg-gradient-to-r from-blue-50 to-slate-50 p-3 rounded-lg border border-blue-200 hover:border-blue-900 transition-colors"
-                      >
-                        <p className="font-semibold text-gray-900">
-                          {athlete.name}
-                        </p>
-                        <p className="text-blue-900 font-medium text-sm">
-                          {athlete.sport}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
+            {recommendations.athletes && recommendations.athletes.length > 0 && (
+              <div className="bg-white rounded-lg p-3 shadow-sm">
+                <h4 className="font-semibold text-xs mb-2 text-gray-700 flex items-center gap-1.5">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Featured Athletes
+                </h4>
+                <div className="space-y-1.5">
+                  {recommendations.athletes.map((athlete) => (
+                    <div
+                      key={athlete.id}
+                      className="p-2 hover:bg-gray-50 rounded transition"
+                    >
+                      <p className="text-xs font-medium text-gray-900">{athlete.name}</p>
+                      <p className="text-xs text-gray-500">{athlete.sport}</p>
+                    </div>
+                  ))}
                 </div>
-              )}
+              </div>
+            )}
 
             <div ref={messagesEndRef} />
           </div>
 
           {/* Input */}
-          <div className="p-4 bg-gradient-to-r from-slate-900 to-blue-900 border-t-4 border-blue-800">
-            <div className="flex gap-2">
-              <textarea
+          <div className="p-3 bg-white border-t border-gray-200">
+            <div className="flex gap-2 items-center">
+              <input
                 ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask LiftBot anything about your training..."
-                className="flex-1 resize-none border-2 border-slate-700 bg-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 placeholder-gray-500"
-                rows={2}
+                placeholder="Ask me anything..."
+                className="flex-1 bg-gray-100 rounded-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 placeholder-gray-500"
                 disabled={isLoading}
               />
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || isLoading}
-                className="bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-xl px-5 py-2 hover:shadow-xl hover:from-blue-700 hover:to-blue-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 self-end border-2 border-blue-700 font-semibold"
+                className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-full w-9 h-9 flex items-center justify-center transition-colors flex-shrink-0"
               >
-                🚀
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
               </button>
             </div>
-            <p className="text-xs text-blue-200 mt-2 font-medium">
-              Press Enter to send • Shift+Enter for new line
-            </p>
           </div>
         </div>
       )}
