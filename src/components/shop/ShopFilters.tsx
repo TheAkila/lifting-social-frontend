@@ -12,23 +12,49 @@ const priceRanges = [
 ]
 const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
 
-export default function ShopFilters() {
+interface ShopFiltersProps {
+  filters: {
+    category: string
+    sizes: string[]
+    priceRange: { min: number; max: number } | null
+    inStockOnly: boolean
+  }
+  setFilters: (filters: any) => void
+}
+
+export default function ShopFilters({ filters, setFilters }: ShopFiltersProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState('All')
-  const [selectedSizes, setSelectedSizes] = useState<string[]>([])
-  const [priceRange, setPriceRange] = useState<number | null>(null)
 
   const toggleSize = (size: string) => {
-    setSelectedSizes((prev) =>
-      prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
-    )
+    const newSizes = filters.sizes.includes(size)
+      ? filters.sizes.filter((s) => s !== size)
+      : [...filters.sizes, size]
+    setFilters({ ...filters, sizes: newSizes })
   }
 
   const clearFilters = () => {
-    setSelectedCategory('All')
-    setSelectedSizes([])
-    setPriceRange(null)
+    setFilters({
+      category: 'All',
+      sizes: [],
+      priceRange: null,
+      inStockOnly: false,
+    })
   }
+
+  const setPriceRange = (index: number | null) => {
+    setFilters({
+      ...filters,
+      priceRange: index !== null ? priceRanges[index] : null,
+    })
+  }
+
+  const currentPriceRangeIndex = filters.priceRange
+    ? priceRanges.findIndex(
+        (range) =>
+          range.min === filters.priceRange!.min &&
+          range.max === filters.priceRange!.max
+      )
+    : null
 
   return (
     <>
@@ -69,8 +95,8 @@ export default function ShopFilters() {
                 <input
                   type="radio"
                   name="category"
-                  checked={selectedCategory === category}
-                  onChange={() => setSelectedCategory(category)}
+                  checked={filters.category === category}
+                  onChange={() => setFilters({ ...filters, category })}
                   className="text-brand-accent focus:ring-brand-accent"
                 />
                 <span className="group-hover:text-brand-accent transition-colors">
@@ -90,7 +116,7 @@ export default function ShopFilters() {
                 key={size}
                 onClick={() => toggleSize(size)}
                 className={`px-4 py-2 rounded-lg border-2 transition-all ${
-                  selectedSizes.includes(size)
+                  filters.sizes.includes(size)
                     ? 'border-brand-accent bg-brand-accent text-brand-dark'
                     : 'border-brand-light/20 hover:border-brand-accent'
                 }`}
@@ -113,7 +139,7 @@ export default function ShopFilters() {
                 <input
                   type="radio"
                   name="priceRange"
-                  checked={priceRange === index}
+                  checked={currentPriceRangeIndex === index}
                   onChange={() => setPriceRange(index)}
                   className="text-brand-accent focus:ring-brand-accent"
                 />
@@ -131,6 +157,10 @@ export default function ShopFilters() {
           <label className="flex items-center space-x-2 cursor-pointer">
             <input
               type="checkbox"
+              checked={filters.inStockOnly}
+              onChange={(e) =>
+                setFilters({ ...filters, inStockOnly: e.target.checked })
+              }
               className="text-brand-accent focus:ring-brand-accent"
             />
             <span>In Stock Only</span>

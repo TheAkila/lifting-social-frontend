@@ -3,10 +3,19 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { FaShoppingCart, FaHeart } from 'react-icons/fa'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import api from '@/lib/api'
 
-export default function ProductGrid() {
+interface ProductGridProps {
+  filters: {
+    category: string
+    sizes: string[]
+    priceRange: { min: number; max: number } | null
+    inStockOnly: boolean
+  }
+}
+
+export default function ProductGrid({ filters }: ProductGridProps) {
   const [sortBy, setSortBy] = useState('featured')
   const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -30,6 +39,68 @@ export default function ProductGrid() {
     }
   }, [])
 
+  // Filter and sort products
+  const filteredAndSortedProducts = useMemo(() => {
+    let filtered = [...products]
+
+    // Apply category filter
+    if (filters.category && filters.category !== 'All') {
+      filtered = filtered.filter(
+        (product) =>
+          product.category?.toLowerCase() === filters.category.toLowerCase()
+      )
+    }
+
+    // Apply size filter
+    if (filters.sizes.length > 0) {
+      filtered = filtered.filter((product) =>
+        product.sizes?.some((size: string) => filters.sizes.includes(size))
+      )
+    }
+
+    // Apply price range filter
+    if (filters.priceRange) {
+      filtered = filtered.filter((product) => {
+        const price = product.price || 0
+        return (
+          price >= filters.priceRange!.min && price <= filters.priceRange!.max
+        )
+      })
+    }
+
+    // Apply in stock filter
+    if (filters.inStockOnly) {
+      filtered = filtered.filter((product) => product.inStock !== false)
+    }
+
+    // Apply sorting
+    switch (sortBy) {
+      case 'price-low':
+        filtered.sort((a, b) => (a.price || 0) - (b.price || 0))
+        break
+      case 'price-high':
+        filtered.sort((a, b) => (b.price || 0) - (a.price || 0))
+        break
+      case 'newest':
+        filtered.sort(
+          (a, b) =>
+            new Date(b.createdAt || 0).getTime() -
+            new Date(a.createdAt || 0).getTime()
+        )
+        break
+      case 'featured':
+      default:
+        filtered.sort((a, b) => {
+          if (a.featured && !b.featured) return -1
+          if (!a.featured && b.featured) return 1
+          return 0
+        })
+        break
+    }
+
+    return filtered
+  }, [products, filters, sortBy])
+
   return (
     <div>
       {/* Sort Options */}
@@ -39,7 +110,8 @@ export default function ProductGrid() {
             'Loading...'
           ) : (
             <>
-              Showing <span className="text-white font-semibold">{products.length}</span> products
+              Showing <span className="text-white font-semibold">{filteredAndSortedProducts.length}</span> of{' '}
+              <span className="text-white font-semibold">{products.length}</span> products
             </>
           )}
         </p>
@@ -61,12 +133,14 @@ export default function ProductGrid() {
           <div className="col-span-full text-center py-12">
             <p className="text-brand-light/70">Loading products...</p>
           </div>
-        ) : products.length === 0 ? (
+        ) : filteredAndSortedProducts.length === 0 ? (
           <div className="col-span-full text-center py-12">
-            <p className="text-brand-light/70">No products found.</p>
+            <p className="text-brand-light/70">
+              No products found matching your filters. Try adjusting your selection.
+            </p>
           </div>
         ) : (
-          products.map((product, index) => (
+          filteredAndSortedProducts.map((product, index) => (
             <motion.div
               key={product._id || product.id}
               initial={{ opacity: 0, y: 20 }}
