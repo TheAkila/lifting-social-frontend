@@ -3,6 +3,7 @@ import { Inter, Montserrat } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import LiftBotChat from '@/components/Chatbot/LiftBotChat'
 import { Providers } from './providers'
 
 const inter = Inter({ 
@@ -43,6 +44,7 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+          <LiftBotChat />
         </Providers>
       </body>
     </html>
