@@ -1,17 +1,28 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import ShopHeader from '@/components/shop/ShopHeader'
 import ProductGrid from '@/components/shop/ProductGrid'
 import ShopFilters from '@/components/shop/ShopFilters'
 
 export default function ShopPage() {
+  const searchParams = useSearchParams()
+  const categoryParam = searchParams.get('category')
+
   const [filters, setFilters] = useState({
     category: 'All',
     sizes: [] as string[],
     priceRange: null as { min: number; max: number } | null,
     inStockOnly: false,
   })
+
+  // Update filters when URL parameters change
+  useEffect(() => {
+    if (categoryParam) {
+      setFilters((prev) => ({ ...prev, category: categoryParam }))
+    }
+  }, [categoryParam])
 
   return (
     <div className="min-h-screen pt-20">
