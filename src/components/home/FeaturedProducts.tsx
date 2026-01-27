@@ -36,7 +36,7 @@ export default function FeaturedProducts() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium mb-4"
+              className="inline-flex items-center gap-2 bg-black text-white px-3 py-1 rounded-full text-xs font-medium mb-4"
             >
               <Sparkles className="w-3 h-3" />
               <span>Featured Collection</span>

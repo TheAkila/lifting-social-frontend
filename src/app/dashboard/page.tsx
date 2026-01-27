@@ -7,42 +7,41 @@ import api from '@/lib/api'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { 
-  FaShoppingBag, 
-  FaHeart, 
-  FaBook, 
-  FaUser, 
-  FaCog,
-  FaBox,
-  FaCreditCard
-} from 'react-icons/fa'
+  Trophy,
+  Calendar,
+  MapPin,
+  ArrowRight,
+  Plus,
+  Clock,
+  Target,
+  CheckCircle2,
+  AlertCircle
+} from 'lucide-react'
 
-interface Order {
-  _id: string
-  orderNumber: string
-  total: number
-  orderStatus: string
-  createdAt: string
-  items: any[]
-}
-
-interface EnrolledProgram {
-  programId: {
-    _id: string
-    name: string
-    title: string
-    image?: string
-  }
-  progress: number
+interface EventRegistration {
+  id: string
   status: string
-  enrolledAt: string
+  weight_category?: string
+  entry_total?: number
+  snatch_opener?: number
+  cnj_opener?: number
+  registered_at: string
+  event: {
+    id: string
+    title: string
+    slug: string
+    start_date: string
+    location?: string
+    event_status?: string
+    preliminary_entry_deadline?: string
+    final_entry_deadline?: string
+  }
 }
 
 export default function UserDashboard() {
   const { user, isLoading: authLoading } = useAuth()
   const router = useRouter()
-  const [orders, setOrders] = useState<Order[]>([])
-  const [programs, setPrograms] = useState<EnrolledProgram[]>([])
-  const [wishlistCount, setWishlistCount] = useState(0)
+  const [registrations, setRegistrations] = useState<EventRegistration[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -57,28 +56,17 @@ export default function UserDashboard() {
     }
 
     if (user) {
-      loadDashboardData()
+      loadRegistrations()
     }
   }, [user, authLoading, router])
 
-  const loadDashboardData = async () => {
+  const loadRegistrations = async () => {
     try {
       setLoading(true)
-      
-      // Load recent orders
-      const ordersRes = await api.get('/orders')
-      setOrders(ordersRes.data.slice(0, 5)) // Show only 5 most recent
-      
-      // Load enrolled programs
-      const programsRes = await api.get('/programs/enrolled')
-      setPrograms(programsRes.data)
-      
-      // Load wishlist count
-      const profileRes = await api.get('/profile')
-      setWishlistCount(profileRes.data.wishlist?.length || 0)
-      
-    } catch (error) {
-      console.error('Error loading dashboard data:', error)
+      const response = await api.get('/registrations')
+      setRegistrations(response.data)
+    } catch (err) {
+      console.error('Error loading registrations:', err)
     } finally {
       setLoading(false)
     }
@@ -86,260 +74,167 @@ export default function UserDashboard() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-brand-dark flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-brand-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-brand-light/70">Loading your dashboard...</p>
+          <div className="w-12 h-12 border-2 border-black border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-gray-500">Loading your events...</p>
         </div>
       </div>
     )
   }
 
-  const stats = [
-    {
-      icon: FaShoppingBag,
-      label: 'Total Orders',
-      value: orders.length,
-      color: 'bg-blue-500',
-      gradient: 'from-blue-500/20 to-cyan-500/20',
-      iconBg: 'bg-blue-500',
-      link: '/dashboard/orders'
-    },
-    {
-      icon: FaHeart,
-      label: 'Wishlist Items',
-      value: wishlistCount,
-      color: 'bg-red-500',
-      gradient: 'from-red-500/20 to-pink-500/20',
-      iconBg: 'bg-red-500',
-      link: '/dashboard/wishlist'
-    },
-    {
-      icon: FaBook,
-      label: 'Programs Enrolled',
-      value: programs.length,
-      color: 'bg-green-500',
-      gradient: 'from-green-500/20 to-teal-500/20',
-      iconBg: 'bg-green-500',
-      link: '/dashboard/programs'
+  const getRegistrationStatusBadge = (status: string) => {
+    const badges: Record<string, { bg: string, text: string, label: string, icon: any }> = {
+      registered: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Registered', icon: CheckCircle2 },
+      preliminary_submitted: { bg: 'bg-yellow-100', text: 'text-yellow-700', label: 'Prelim Submitted', icon: Clock },
+      preliminary_approved: { bg: 'bg-green-100', text: 'text-green-700', label: 'Prelim Approved', icon: CheckCircle2 },
+      final_submitted: { bg: 'bg-yellow-100', text: 'text-yellow-700', label: 'Final Submitted', icon: Clock },
+      final_approved: { bg: 'bg-green-100', text: 'text-green-700', label: 'Final Approved', icon: CheckCircle2 },
+      payment_pending: { bg: 'bg-orange-100', text: 'text-orange-700', label: 'Payment Pending', icon: AlertCircle },
+      confirmed: { bg: 'bg-green-100', text: 'text-green-700', label: 'Confirmed', icon: CheckCircle2 },
+      withdrawn: { bg: 'bg-gray-100', text: 'text-gray-700', label: 'Withdrawn', icon: AlertCircle }
     }
-  ]
-
-  const quickActions = [
-    {
-      icon: FaShoppingBag,
-      label: 'Browse Shop',
-      href: '/shop',
-      color: 'from-brand-primary/20 to-brand-secondary/20',
-      iconColor: 'bg-brand-primary'
-    },
-    {
-      icon: FaBook,
-      label: 'View Programs',
-      href: '/coaching',
-      color: 'from-brand-accent/20 to-brand-primary/20',
-      iconColor: 'bg-brand-accent'
-    },
-    {
-      icon: FaUser,
-      label: 'Edit Profile',
-      href: '/dashboard/profile',
-      color: 'from-purple-500/20 to-blue-500/20',
-      iconColor: 'bg-purple-500'
-    },
-    {
-      icon: FaCog,
-      label: 'Settings',
-      href: '/dashboard/settings',
-      color: 'from-brand-secondary/20 to-brand-accent/20',
-      iconColor: 'bg-brand-secondary'
-    }
-  ]
-
-  const getStatusColor = (status: string) => {
-    const colors: any = {
-      pending: 'bg-yellow-500/20 text-yellow-400 border-yellow-400/30',
-      processing: 'bg-blue-500/20 text-blue-400 border-blue-400/30',
-      shipped: 'bg-purple-500/20 text-purple-400 border-purple-400/30',
-      delivered: 'bg-green-500/20 text-green-400 border-green-400/30',
-      cancelled: 'bg-red-500/20 text-red-400 border-red-400/30',
-      active: 'bg-green-500/20 text-green-400 border-green-400/30',
-      completed: 'bg-blue-500/20 text-blue-400 border-blue-400/30'
-    }
-    return colors[status] || 'bg-brand-light/10 text-brand-light/70 border-brand-light/20'
+    return badges[status] || { bg: 'bg-gray-100', text: 'text-gray-700', label: status, icon: AlertCircle }
   }
 
+  const activeRegistrations = registrations.filter(r => r.status !== 'withdrawn')
+  const confirmedCount = registrations.filter(r => r.status === 'confirmed').length
+  const pendingCount = registrations.filter(r => ['registered', 'preliminary_submitted', 'final_submitted', 'payment_pending'].includes(r.status)).length
+
   return (
-    <div className="min-h-screen bg-brand-dark pt-28 pb-12">
-      <div className="container-custom">
+    <div className="min-h-screen bg-white pt-32 pb-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-display font-bold mb-2">Welcome back, {user?.name}!</h1>
-          <p className="text-brand-light/70">Here's what's happening with your account</p>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-10"
+        >
+          <h1 className="text-4xl md:text-5xl font-bold text-black mb-2">
+            My Events
+          </h1>
+          <p className="text-gray-500 text-lg">Manage your weightlifting competition registrations</p>
+        </motion.div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {stats.map((stat, index) => (
-            <Link href={stat.link} key={index}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className={`card hover:scale-105 transition-transform cursor-pointer bg-gradient-to-br ${stat.gradient}`}
-              >
-                <div className="flex items-center">
-                  <div className={`${stat.iconBg} w-16 h-16 rounded-full flex items-center justify-center`}>
-                    <stat.icon className="w-8 h-8 text-white" />
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm text-brand-light/70">{stat.label}</p>
-                    <p className="text-3xl font-bold">{stat.value}</p>
-                  </div>
-                </div>
-              </motion.div>
-            </Link>
-          ))}
-        </div>
+        {/* Events List */}
+        {activeRegistrations.length === 0 ? (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="border-2 border-gray-200 rounded-lg p-16 text-center"
+          >
+            <Trophy className="w-20 h-20 text-gray-300 mx-auto mb-6" />
+            <h3 className="text-2xl font-bold text-black mb-2">No Event Registrations</h3>
+            <p className="text-gray-500 max-w-md mx-auto">
+              You haven't registered for any weightlifting competitions yet.
+            </p>
+          </motion.div>
+        ) : (
+          <div className="space-y-4">
+            {activeRegistrations.map((reg, index) => {
+              const statusBadge = getRegistrationStatusBadge(reg.status)
+              const StatusIcon = statusBadge.icon
+              const eventDate = new Date(reg.event.start_date)
+              const isUpcoming = eventDate > new Date()
+              const daysUntil = Math.ceil((eventDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
 
-        {/* Quick Actions */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {quickActions.map((action, index) => (
-              <Link href={action.href} key={index}>
+              return (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.3 + index * 0.1 }}
-                  className={`card hover:scale-105 transition-transform cursor-pointer bg-gradient-to-br ${action.color} text-center`}
-                >
-                  <div className={`${action.iconColor} w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3`}>
-                    <action.icon className="w-6 h-6 text-white" />
-                  </div>
-                  <p className="font-semibold">{action.label}</p>
-                </motion.div>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Recent Orders */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">Recent Orders</h2>
-            <Link href="/dashboard/orders" className="text-brand-accent hover:text-brand-accent/80 font-semibold transition-colors">
-              View All →
-            </Link>
-          </div>
-          {orders.length === 0 ? (
-            <div className="card text-center py-12">
-              <FaBox className="w-16 h-16 text-brand-light/30 mx-auto mb-4" />
-              <p className="text-brand-light/70 mb-4">No orders yet</p>
-              <Link href="/shop" className="btn-primary inline-block">
-                Start Shopping
-              </Link>
-            </div>
-          ) : (
-            <div className="card overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="min-w-full">
-                  <thead className="bg-brand-light/5">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-brand-light/70 uppercase tracking-wider">Order #</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-brand-light/70 uppercase tracking-wider">Date</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-brand-light/70 uppercase tracking-wider">Total</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-brand-light/70 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-brand-light/70 uppercase tracking-wider">Items</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-brand-light/10">
-                    {orders.map((order) => (
-                      <tr key={order._id} className="hover:bg-brand-light/5 transition-colors">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <Link href={`/dashboard/orders/${order._id}`} className="text-brand-accent hover:text-brand-accent/80 font-semibold">
-                            {order.orderNumber}
-                          </Link>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-brand-light/70">
-                          {new Date(order.createdAt).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold">
-                          LKR {order.total.toLocaleString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusColor(order.orderStatus)}`}>
-                            {order.orderStatus.toUpperCase()}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-brand-light/70">
-                          {order.items.length} item(s)
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Enrolled Programs */}
-        <div>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">Your Programs</h2>
-            <Link href="/dashboard/programs" className="text-brand-accent hover:text-brand-accent/80 font-semibold transition-colors">
-              View All →
-            </Link>
-          </div>
-          {programs.length === 0 ? (
-            <div className="card text-center py-12">
-              <FaBook className="w-16 h-16 text-brand-light/30 mx-auto mb-4" />
-              <p className="text-brand-light/70 mb-4">No programs enrolled yet</p>
-              <Link href="/coaching" className="btn-primary inline-block">
-                Browse Programs
-              </Link>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {programs.slice(0, 3).map((program, index) => (
-                <motion.div
-                  key={program.programId._id}
+                  key={reg.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="card hover:scale-105 transition-transform"
+                  transition={{ delay: 0.3 + index * 0.05 }}
+                  className="border-2 border-black rounded-lg p-6 hover:bg-gray-50 transition-colors group"
                 >
-                  <div className="flex items-start justify-between mb-3">
-                    <h3 className="font-bold text-lg">{program.programId.name}</h3>
-                    <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusColor(program.status)}`}>
-                      {program.status.toUpperCase()}
-                    </span>
-                  </div>
-                  <p className="text-sm text-brand-light/70 mb-4">{program.programId.title}</p>
-                  <div className="mb-4">
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-brand-light/70">Progress</span>
-                      <span className="font-semibold">{program.progress}%</span>
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                    {/* Event Info */}
+                    <div className="flex-1">
+                      <div className="flex items-start gap-4 mb-4">
+                        <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Trophy className="w-6 h-6 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-black mb-1 group-hover:underline">
+                            {reg.event.title}
+                          </h3>
+                          <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                            <div className="flex items-center gap-1.5">
+                              <Calendar className="w-4 h-4 text-gray-400" />
+                              <span>{eventDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                              {isUpcoming && daysUntil <= 30 && (
+                                <span className="ml-1 px-2 py-0.5 bg-red-100 text-red-700 text-xs font-semibold rounded-full">
+                                  {daysUntil} days
+                                </span>
+                              )}
+                            </div>
+                            {reg.event.location && (
+                              <div className="flex items-center gap-1.5">
+                                <MapPin className="w-4 h-4 text-gray-400" />
+                                <span>{reg.event.location}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Registration Details */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pl-16">
+                        <div>
+                          <p className="text-xs text-gray-500 mb-1">Status</p>
+                          <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${statusBadge.bg} ${statusBadge.text}`}>
+                            <StatusIcon className="w-3.5 h-3.5" />
+                            {statusBadge.label}
+                          </div>
+                        </div>
+                        {reg.weight_category && (
+                          <div>
+                            <p className="text-xs text-gray-500 mb-1">Category</p>
+                            <p className="text-sm font-semibold text-black">{reg.weight_category}</p>
+                          </div>
+                        )}
+                        {reg.entry_total && (
+                          <div>
+                            <p className="text-xs text-gray-500 mb-1">Entry Total</p>
+                            <p className="text-sm font-semibold text-black">{reg.entry_total}kg</p>
+                          </div>
+                        )}
+                        {reg.snatch_opener && reg.cnj_opener && (
+                          <div>
+                            <p className="text-xs text-gray-500 mb-1">Openers</p>
+                            <p className="text-sm font-semibold text-black">{reg.snatch_opener}kg / {reg.cnj_opener}kg</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="w-full bg-brand-light/10 rounded-full h-2 overflow-hidden">
-                      <div 
-                        className="bg-gradient-to-r from-brand-primary to-brand-accent h-2 rounded-full transition-all duration-500"
-                        style={{ width: `${program.progress}%` }}
-                      ></div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-3 lg:flex-col lg:items-end">
+                      <Link href={`/events/${reg.event.slug}`} className="flex-1 lg:flex-initial">
+                        <button className="w-full px-6 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
+                          View Event
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
+                      </Link>
+                      {reg.status === 'registered' && (
+                        <div className="text-xs text-gray-500 text-right">
+                          <p className="font-medium text-yellow-700">Action Required</p>
+                          <p>Submit preliminary entry</p>
+                        </div>
+                      )}
+                      {reg.status === 'preliminary_approved' && (
+                        <div className="text-xs text-gray-500 text-right">
+                          <p className="font-medium text-yellow-700">Action Required</p>
+                          <p>Submit final entry</p>
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <Link 
-                    href={`/dashboard/programs/${program.programId._id}`}
-                    className="block text-center py-2 px-4 bg-brand-primary hover:bg-brand-primary/90 text-white rounded-lg transition-colors font-semibold"
-                  >
-                    Continue
-                  </Link>
                 </motion.div>
-              ))}
-            </div>
-          )}
-        </div>
+              )
+            })}
+          </div>
+        )}
       </div>
     </div>
   )

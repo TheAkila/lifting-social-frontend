@@ -16,23 +16,23 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-brand-dark pt-28 pb-12">
-      <div className="container-custom">
+    <div className="min-h-screen bg-white pt-28 pb-12">
+      <div className="container mx-auto px-4">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-display font-bold mb-2">Shopping Cart</h1>
-          <p className="text-brand-light/70">
+          <h1 className="text-4xl font-display font-bold mb-2 text-black">Shopping Cart</h1>
+          <p className="text-gray-600">
             {totalItems === 0 ? 'Your cart is empty' : `${totalItems} item${totalItems === 1 ? '' : 's'} in your cart`}
           </p>
         </div>
 
         {items.length === 0 ? (
           /* Empty Cart */
-          <div className="card text-center py-16">
-            <FaShoppingBag className="w-20 h-20 text-brand-light/30 mx-auto mb-6" />
-            <h2 className="text-2xl font-bold mb-4">Your cart is empty</h2>
-            <p className="text-brand-light/70 mb-8">Add some products to get started!</p>
-            <Link href="/shop" className="btn-primary inline-block">
+          <div className="bg-white border-2 border-black rounded-lg p-8 text-center py-16">
+            <FaShoppingBag className="w-20 h-20 text-gray-300 mx-auto mb-6" />
+            <h2 className="text-2xl font-bold mb-4 text-black">Your cart is empty</h2>
+            <p className="text-gray-600 mb-8">Add some products to get started!</p>
+            <Link href="/shop" className="inline-block px-6 py-3 bg-black text-white rounded-lg font-semibold hover:bg-gray-900 transition-colors">
               Browse Shop
             </Link>
           </div>
@@ -46,54 +46,54 @@ export default function CartPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="card"
+                  className="bg-white border-2 border-black rounded-lg p-6"
                 >
                   <div className="flex gap-4">
                     {/* Product Image */}
                     <img
                       src={item.image || '/placeholder.png'}
                       alt={item.name}
-                      className="w-24 h-24 object-cover rounded-lg"
+                      className="w-24 h-24 object-cover rounded-lg border-2 border-gray-200"
                     />
 
                     {/* Product Details */}
                     <div className="flex-1">
-                      <h3 className="font-bold text-lg mb-1">{item.name}</h3>
-                      <p className="text-sm text-brand-light/70 mb-2">Size: {item.size}</p>
+                      <h3 className="font-bold text-lg mb-1 text-black">{item.name}</h3>
+                      <p className="text-sm text-gray-600 mb-2">Size: {item.size}</p>
                       {item.color && (
-                        <p className="text-sm text-brand-light/70 mb-2">Color: {item.color}</p>
+                        <p className="text-sm text-gray-600 mb-2">Color: {item.color}</p>
                       )}
-                      <p className="text-brand-accent font-bold">LKR {item.price.toLocaleString()}</p>
+                      <p className="text-black font-bold">LKR {item.price.toLocaleString()}</p>
                     </div>
 
                     {/* Quantity Controls */}
                     <div className="flex flex-col items-end justify-between">
                       <button
                         onClick={() => removeItem(item.id, item.size)}
-                        className="text-red-400 hover:text-red-300 transition-colors p-2"
+                        className="text-red-600 hover:text-red-700 transition-colors p-2"
                         title="Remove item"
                       >
                         <FaTrash />
                       </button>
 
-                      <div className="flex items-center gap-2 bg-brand-light/10 rounded-lg px-2 py-1">
+                      <div className="flex items-center gap-2 bg-gray-100 border border-gray-300 rounded-lg px-2 py-1">
                         <button
                           onClick={() => updateQuantity(item.id, item.size, item.quantity - 1)}
-                          className="text-brand-light hover:text-brand-accent transition-colors p-1"
+                          className="text-black hover:text-gray-700 transition-colors p-1"
                           disabled={item.quantity <= 1}
                         >
                           <FaMinus className="w-3 h-3" />
                         </button>
-                        <span className="font-bold w-8 text-center">{item.quantity}</span>
+                        <span className="font-bold w-8 text-center text-black">{item.quantity}</span>
                         <button
                           onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)}
-                          className="text-brand-light hover:text-brand-accent transition-colors p-1"
+                          className="text-black hover:text-gray-700 transition-colors p-1"
                         >
                           <FaPlus className="w-3 h-3" />
                         </button>
                       </div>
 
-                      <p className="font-bold text-lg">
+                      <p className="font-bold text-lg text-black">
                         LKR {(item.price * item.quantity).toLocaleString()}
                       </p>
                     </div>
@@ -104,7 +104,7 @@ export default function CartPage() {
               {/* Clear Cart Button */}
               <button
                 onClick={clearCart}
-                className="w-full py-3 px-6 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-lg font-semibold transition-colors border border-red-400/30"
+                className="w-full py-3 px-6 bg-white text-red-600 hover:bg-red-50 rounded-lg font-semibold transition-colors border-2 border-red-600"
               >
                 Clear Cart
               </button>
@@ -112,26 +112,26 @@ export default function CartPage() {
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
-              <div className="card sticky top-28">
-                <h2 className="text-2xl font-bold mb-6">Order Summary</h2>
+              <div className="bg-white border-2 border-black rounded-lg p-6 sticky top-28">
+                <h2 className="text-2xl font-bold mb-6 text-black">Order Summary</h2>
 
                 <div className="space-y-3 mb-6">
-                  <div className="flex justify-between text-brand-light/70">
+                  <div className="flex justify-between text-gray-600">
                     <span>Subtotal ({totalItems} items)</span>
                     <span>LKR {totalPrice.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-brand-light/70">
+                  <div className="flex justify-between text-gray-600">
                     <span>Tax (8%)</span>
                     <span>LKR {(totalPrice * 0.08).toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-brand-light/70">
+                  <div className="flex justify-between text-gray-600">
                     <span>Shipping</span>
                     <span>{totalPrice >= 5000 ? 'FREE' : 'LKR 500'}</span>
                   </div>
-                  <div className="border-t border-brand-light/10 pt-3">
-                    <div className="flex justify-between text-xl font-bold">
+                  <div className="border-t-2 border-gray-300 pt-3">
+                    <div className="flex justify-between text-xl font-bold text-black">
                       <span>Total</span>
-                      <span className="text-brand-accent">
+                      <span className="text-black">
                         LKR {(totalPrice + (totalPrice * 0.08) + (totalPrice >= 5000 ? 0 : 500)).toLocaleString()}
                       </span>
                     </div>
@@ -141,13 +141,13 @@ export default function CartPage() {
                 <div className="space-y-3">
                   <button
                     onClick={handleCheckout}
-                    className="btn-primary w-full"
+                    className="w-full py-3 px-6 bg-black text-white rounded-lg font-semibold hover:bg-gray-900 transition-colors"
                   >
                     Proceed to Checkout
                   </button>
                   <Link
                     href="/shop"
-                    className="block w-full text-center py-3 px-6 border-2 border-brand-accent text-brand-accent hover:bg-brand-accent/10 rounded-lg font-semibold transition-colors"
+                    className="block w-full text-center py-3 px-6 border-2 border-black text-black hover:bg-gray-50 rounded-lg font-semibold transition-colors"
                   >
                     Continue Shopping
                   </Link>
@@ -155,8 +155,8 @@ export default function CartPage() {
 
                 {/* Free Shipping Notice */}
                 {totalPrice < 5000 && (
-                  <div className="mt-6 p-4 bg-brand-accent/10 border border-brand-accent/30 rounded-lg">
-                    <p className="text-sm text-brand-accent">
+                  <div className="mt-6 p-4 bg-gray-100 border-2 border-black rounded-lg">
+                    <p className="text-sm text-black">
                       Add <strong>LKR {(5000 - totalPrice).toLocaleString()}</strong> more to get FREE shipping!
                     </p>
                   </div>

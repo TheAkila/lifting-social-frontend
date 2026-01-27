@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { FaPlus, FaEdit, FaTrash, FaArrowLeft, FaStar, FaCalendar, FaMapMarkerAlt, FaUsers, FaUpload, FaTimes, FaImage } from 'react-icons/fa'
 
 interface Event {
-  _id: string
+  id: string
   title: string
   slug: string
   description: string
@@ -141,7 +141,7 @@ export default function AdminEventsPage() {
       }
 
       if (editingEvent) {
-        await api.put(`/events/${editingEvent._id}`, payload)
+        await api.put(`/events/${editingEvent.id}`, payload)
       } else {
         await api.post('/events', payload)
       }
@@ -659,7 +659,7 @@ export default function AdminEventsPage() {
                         <FaEdit />
                       </button>
                       <button
-                        onClick={() => handleDelete(event._id)}
+                        onClick={() => handleDelete(event.id)}
                         className="btn-outline p-2 text-red-500 hover:bg-red-500/10"
                         title="Delete"
                       >

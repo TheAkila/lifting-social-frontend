@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
-import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa'
+import { Eye, EyeOff } from 'lucide-react'
+import Logo from '@/components/layout/Logo'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -16,6 +17,25 @@ export default function LoginPage() {
   
   const { login } = useAuth()
   const router = useRouter()
+
+  // Hide navbar, announcement bar, and footer
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    const navbar = document.querySelector('nav')
+    const announcement = document.querySelector('nav')?.previousElementSibling
+    const footer = document.querySelector('footer')
+    
+    if (navbar) navbar.style.display = 'none'
+    if (announcement) announcement.style.display = 'none'
+    if (footer) footer.style.display = 'none'
+
+    return () => {
+      document.body.style.overflow = 'auto'
+      if (navbar) navbar.style.display = ''
+      if (announcement) announcement.style.display = ''
+      if (footer) footer.style.display = ''
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -48,126 +68,120 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen pt-20 flex items-center justify-center hero-bg">
-      <div className="container-custom py-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="max-w-md mx-auto"
-        >
-          <div className="card">
-            {/* Header */}
-            <div className="text-center mb-8">
-              <h1 className="text-4xl font-display font-bold mb-2">
-                Welcome <span className="gradient-text">Back</span>
-              </h1>
-              <p className="text-brand-light/70">
-                Login to your Lifting Social account
-              </p>
+    <div className="fixed inset-0 bg-gray-100 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="w-full max-w-md"
+      >
+        <div className="bg-white rounded-lg shadow-sm p-8">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="flex justify-center mb-4">
+              <Logo />
             </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="mb-6 p-4 bg-red-500/20 border border-red-500 rounded-lg text-red-400 text-sm">
-                {error}
-              </div>
-            )}
-
-            {/* Login Form */}
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Email */}
-              <div>
-                <label className="block text-sm font-semibold mb-2">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <FaEnvelope className="absolute left-4 top-1/2 transform -translate-y-1/2 text-brand-light/40" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@example.com"
-                    required
-                    className="input-field pl-12"
-                  />
-                </div>
-              </div>
-
-              {/* Password */}
-              <div>
-                <label className="block text-sm font-semibold mb-2">
-                  Password
-                </label>
-                <div className="relative">
-                  <FaLock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-brand-light/40" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    required
-                    className="input-field pl-12 pr-12"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-brand-light/40 hover:text-brand-accent"
-                  >
-                    {showPassword ? <FaEyeSlash /> : <FaEye />}
-                  </button>
-                </div>
-              </div>
-
-              {/* Remember Me & Forgot Password */}
-              <div className="flex items-center justify-between text-sm">
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="text-brand-accent focus:ring-brand-accent"
-                  />
-                  <span>Remember me</span>
-                </label>
-                <Link
-                  href="/forgot-password"
-                  className="text-brand-accent hover:underline"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="btn-primary w-full"
-              >
-                {isLoading ? 'Logging in...' : 'Login'}
-              </button>
-            </form>
-
-            {/* Divider */}
-            <div className="relative my-8">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-brand-light/10" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-brand-secondary/50 text-brand-light/50">
-                  Don't have an account?
-                </span>
-              </div>
-            </div>
-
-            {/* Sign Up Link */}
-            <Link
-              href="/signup"
-              className="btn-outline w-full text-center block"
-            >
-              Create Account
-            </Link>
+            <p className="text-sm text-gray-600">
+              Login to your account
+            </p>
           </div>
-        </motion.div>
-      </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="mb-6 p-3 bg-red-50 border border-red-300 rounded-lg text-red-700 text-sm">
+              {error}
+            </div>
+          )}
+
+          {/* Login Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Email Address
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                required
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Remember Me & Forgot Password */}
+            <div className="flex items-center justify-between text-sm">
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500"
+                />
+                <span className="ml-2 text-gray-600">Remember me</span>
+              </label>
+              <Link
+                href="/forgot-password"
+                className="text-blue-600 hover:text-blue-700 font-medium"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-2.5 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {isLoading ? 'Logging in...' : 'Login'}
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200" />
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="px-3 bg-white text-gray-500">
+                Don't have an account?
+              </span>
+            </div>
+          </div>
+
+          {/* Sign Up Link */}
+          <Link
+            href="/signup"
+            className="block w-full py-2.5 text-center bg-white text-gray-700 border border-gray-300 rounded-md font-medium hover:bg-gray-50 transition-colors"
+          >
+            Create Account
+          </Link>
+        </div>
+      </motion.div>
     </div>
   )
 }

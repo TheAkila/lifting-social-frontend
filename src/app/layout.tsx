@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter, IBM_Plex_Sans, Outfit } from 'next/font/google'
 import './globals.css'
+import AnnouncementBar from '@/components/layout/AnnouncementBar'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
-import LiftBotChat from '@/components/Chatbot/LiftBotChat'
 import { Providers } from './providers'
 
 const inter = Inter({ 
@@ -46,12 +46,12 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${outfit.variable} ${ibmPlexSans.variable}`}>
       <body className={`${inter.className} antialiased bg-white text-slate-900`}>
         <Providers>
+          <AnnouncementBar />
           <Navbar />
           <main className="min-h-screen">
             {children}
           </main>
           <Footer />
-          <LiftBotChat />
         </Providers>
       </body>
     </html>

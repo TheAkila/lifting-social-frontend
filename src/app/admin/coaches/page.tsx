@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { FaPlus, FaEdit, FaTrash, FaArrowLeft, FaStar, FaMedal, FaEnvelope, FaPhone, FaUpload, FaTimes, FaImage } from 'react-icons/fa'
 
 interface Coach {
-  _id: string
+  id: string
   name: string
   title: string
   bio: string
@@ -114,7 +114,7 @@ export default function AdminCoachesPage() {
       }
 
       if (editingCoach) {
-        await api.put(`/coaches/${editingCoach._id}`, payload)
+        await api.put(`/coaches/${editingCoach.id}`, payload)
       } else {
         await api.post('/coaches', payload)
       }
@@ -485,7 +485,7 @@ export default function AdminCoachesPage() {
           ) : (
             <div className="grid grid-cols-1 gap-6">
               {coaches.map((coach) => (
-                <div key={coach._id} className="card">
+                <div key={coach.id} className="card">
                   <div className="flex flex-col md:flex-row gap-6">
                     {/* Coach Image */}
                     <div className="w-full md:w-48 h-48 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
@@ -523,7 +523,7 @@ export default function AdminCoachesPage() {
                             <FaEdit />
                           </button>
                           <button
-                            onClick={() => handleDelete(coach._id)}
+                            onClick={() => handleDelete(coach.id)}
                             className="btn-outline p-2 text-red-500 hover:bg-red-500/10"
                             title="Delete"
                           >

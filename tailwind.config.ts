@@ -84,6 +84,7 @@ const config: Config = {
         'pulse-soft': 'pulseSoft 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'float': 'float 5s ease-in-out infinite',
         'shimmer': 'shimmer 2s linear infinite',
+        'marquee-ltr': 'marquee-ltr 30s linear infinite',
       },
       keyframes: {
         fadeIn: {
@@ -117,6 +118,10 @@ const config: Config = {
         shimmer: {
           '0%': { transform: 'translateX(-100%)' },
           '100%': { transform: 'translateX(100%)' },
+        },
+        'marquee-ltr': {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
         },
       },
       backgroundImage: {

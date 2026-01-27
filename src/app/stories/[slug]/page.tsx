@@ -84,7 +84,8 @@ export default function StoryPage({ params }: { params: { slug: string } }) {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
           <StoryContent 
-            content={story.content} 
+            content={story.content}
+            excerpt={story.excerpt}
             isExternal={story.is_external}
             originalUrl={story.original_url}
             sourceName={story.source_name}
