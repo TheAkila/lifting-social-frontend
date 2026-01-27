@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { FaUsers, FaTrophy, FaHeart, FaFire } from 'react-icons/fa'
+import { Users, Trophy, Heart, Flame } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import api from '@/lib/api'
 
@@ -34,7 +34,6 @@ export default function StatsSection() {
       setStats(response.data)
     } catch (error) {
       console.error('Error fetching stats:', error)
-      // Fallback to default values if API fails
       setStats({
         athletes: 0,
         stories: 0,
@@ -49,91 +48,84 @@ export default function StatsSection() {
     }
   }
 
-  if (loading || !stats) {
-    return (
-      <section className="section-padding bg-brand-dark relative overflow-hidden">
-        <div className="container-custom text-center">
-          <p className="text-brand-light/70">Loading statistics...</p>
-        </div>
-      </section>
-    )
-  }
-
   const displayStats = [
     {
-      icon: FaUsers,
-      value: `${stats.users}+`,
+      icon: Users,
+      value: stats?.users || 0,
+      suffix: '+',
       label: 'Community Members',
-      color: 'text-brand-accent',
+      color: 'bg-rose-500',
     },
     {
-      icon: FaTrophy,
-      value: `${stats.medals.total}+`,
+      icon: Trophy,
+      value: stats?.medals?.total || 0,
+      suffix: '+',
       label: 'Championship Medals',
-      color: 'text-yellow-400',
+      color: 'bg-amber-500',
     },
     {
-      icon: FaHeart,
-      value: `${stats.stories}+`,
+      icon: Heart,
+      value: stats?.stories || 0,
+      suffix: '+',
       label: 'Athlete Stories',
-      color: 'text-brand-primary',
+      color: 'bg-violet-500',
     },
     {
-      icon: FaFire,
-      value: `${stats.athletes}+`,
+      icon: Flame,
+      value: stats?.athletes || 0,
+      suffix: '+',
       label: 'Featured Athletes',
-      color: 'text-orange-500',
+      color: 'bg-orange-500',
     },
   ]
-  return (
-    <section className="section-padding bg-brand-dark relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('/images/barbell-pattern.svg')] bg-repeat" />
-      </div>
 
-      <div className="container-custom relative z-10">
+  return (
+    <section className="py-20 bg-zinc-950">
+      <div className="container mx-auto px-4">
+        {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          transition={{ duration: 0.5 }}
+          className="text-center mb-14"
         >
-          <h2 className="section-title">The Movement in Numbers</h2>
-          <p className="section-subtitle">
+          <h2 className="font-display text-3xl lg:text-4xl font-bold text-white mb-4">
+            The Movement in Numbers
+          </h2>
+          <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
             Building the strongest weightlifting community in Sri Lanka
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           {displayStats.map((stat, index) => (
             <motion.div
               key={stat.label}
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="text-center"
+              transition={{ duration: 0.4, delay: index * 0.1 }}
             >
-              <motion.div
-                whileHover={{ scale: 1.1, rotate: 5 }}
-                className="inline-block mb-4"
-              >
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-brand-secondary to-brand-dark border-4 border-brand-light/10 flex items-center justify-center mx-auto">
-                  <stat.icon className={`text-4xl ${stat.color}`} />
+              <div className="bg-zinc-900 border border-zinc-800 rounded-[12px] p-6 text-center hover:border-zinc-700 transition-colors">
+                <div className={`w-12 h-12 ${stat.color} rounded-[10px] flex items-center justify-center mx-auto mb-4`}>
+                  <stat.icon className="w-6 h-6 text-white" />
                 </div>
-              </motion.div>
-              <motion.h3
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 + 0.2 }}
-                className="text-4xl md:text-5xl font-bold gradient-text mb-2"
-              >
-                {stat.value}
-              </motion.h3>
-              <p className="text-brand-light/70 font-medium">{stat.label}</p>
+                
+                <div className="font-display text-3xl lg:text-4xl font-bold text-white mb-1">
+                  {loading ? (
+                    <span className="text-zinc-600">—</span>
+                  ) : (
+                    <>
+                      {stat.value.toLocaleString()}
+                      <span className="text-brand-accent">{stat.suffix}</span>
+                    </>
+                  )}
+                </div>
+                
+                <p className="text-zinc-500 text-sm">{stat.label}</p>
+              </div>
             </motion.div>
           ))}
         </div>

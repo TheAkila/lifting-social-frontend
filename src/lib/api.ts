@@ -41,4 +41,30 @@ api.interceptors.response.use(
   }
 )
 
+// API Functions
+export const getStories = async () => {
+  const response = await api.get('/stories')
+  return response.data
+}
+
+export const getAthletes = async () => {
+  const response = await api.get('/athletes')
+  return response.data
+}
+
+export const getCoaches = async () => {
+  const response = await api.get('/coaches')
+  return response.data
+}
+
+export const getEvents = async () => {
+  const response = await api.get('/events')
+  return response.data
+}
+
+export const getProducts = async () => {
+  const response = await api.get('/products')
+  return response.data
+}
+
 export default api

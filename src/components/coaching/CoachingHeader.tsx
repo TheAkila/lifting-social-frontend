@@ -1,45 +1,14 @@
-'use client'
-
-import { motion } from 'framer-motion'
-import { FaChalkboardTeacher, FaMedal, FaUsers } from 'react-icons/fa'
-
 export default function CoachingHeader() {
   return (
-    <section className="hero-bg py-20 mt-20">
-      <div className="container-custom">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-3xl mx-auto"
-        >
-          <h1 className="text-5xl md:text-6xl font-display font-bold mb-4">
-            Expert <span className="gradient-text">Coaching</span>
-          </h1>
-          <p className="text-xl text-brand-light/80 mb-8">
-            Train with certified Olympic weightlifting coaches who have produced national champions
-          </p>
-          
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-6 max-w-2xl mx-auto">
-            <div className="text-center">
-              <FaChalkboardTeacher className="text-4xl text-brand-accent mx-auto mb-2" />
-              <div className="text-2xl font-bold text-white">15+</div>
-              <div className="text-sm text-brand-light/60">Certified Coaches</div>
-            </div>
-            <div className="text-center">
-              <FaMedal className="text-4xl text-yellow-400 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-white">50+</div>
-              <div className="text-sm text-brand-light/60">Champions Trained</div>
-            </div>
-            <div className="text-center">
-              <FaUsers className="text-4xl text-brand-primary mx-auto mb-2" />
-              <div className="text-2xl font-bold text-white">200+</div>
-              <div className="text-sm text-brand-light/60">Active Students</div>
-            </div>
-          </div>
-        </motion.div>
+    <div className="bg-zinc-950 py-16 sm:py-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
+          Expert Coaching
+        </h1>
+        <p className="text-lg text-zinc-400 max-w-3xl mx-auto">
+          Train with certified Olympic weightlifting coaches who have produced national champions
+        </p>
       </div>
-    </section>
+    </div>
   )
 }

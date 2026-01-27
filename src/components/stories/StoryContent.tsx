@@ -8,20 +8,48 @@ interface StoryContentProps {
 
 export default function StoryContent({ content }: StoryContentProps) {
   return (
-    <article className="prose prose-invert prose-lg max-w-none">
+    <article className="prose prose-lg max-w-none prose-zinc">
       <ReactMarkdown
         components={{
-          h1: ({ ...props }) => <h1 className="text-4xl font-display font-bold mb-6 text-white" {...props} />,
-          h2: ({ ...props }) => <h2 className="text-3xl font-display font-bold mt-12 mb-4 text-white" {...props} />,
-          h3: ({ ...props }) => <h3 className="text-2xl font-display font-bold mt-8 mb-3 text-white" {...props} />,
-          p: ({ ...props }) => <p className="text-brand-light/80 leading-relaxed mb-6" {...props} />,
-          ul: ({ ...props }) => <ul className="list-disc list-inside space-y-2 mb-6 text-brand-light/80" {...props} />,
-          ol: ({ ...props }) => <ol className="list-decimal list-inside space-y-2 mb-6 text-brand-light/80" {...props} />,
-          blockquote: ({ ...props }) => (
-            <blockquote className="border-l-4 border-brand-accent pl-6 py-4 my-8 italic text-brand-light/90 bg-brand-secondary/30 rounded-r-lg" {...props} />
+          h1: ({ ...props }) => (
+            <h1 className="font-display text-4xl font-bold mb-6 text-zinc-900" {...props} />
           ),
-          a: ({ ...props }) => <a className="text-brand-accent hover:underline" {...props} />,
-          strong: ({ ...props }) => <strong className="text-white font-bold" {...props} />,
+          h2: ({ ...props }) => (
+            <h2 className="font-display text-3xl font-bold mt-12 mb-4 text-zinc-900" {...props} />
+          ),
+          h3: ({ ...props }) => (
+            <h3 className="font-display text-2xl font-bold mt-8 mb-3 text-zinc-900" {...props} />
+          ),
+          p: ({ ...props }) => (
+            <p className="text-zinc-600 leading-relaxed mb-6 text-lg" {...props} />
+          ),
+          ul: ({ ...props }) => (
+            <ul className="list-disc list-outside pl-6 space-y-2 mb-6 text-zinc-600 text-lg" {...props} />
+          ),
+          ol: ({ ...props }) => (
+            <ol className="list-decimal list-outside pl-6 space-y-2 mb-6 text-zinc-600 text-lg" {...props} />
+          ),
+          li: ({ ...props }) => (
+            <li className="text-zinc-600 leading-relaxed" {...props} />
+          ),
+          blockquote: ({ ...props }) => (
+            <blockquote 
+              className="border-l-4 border-zinc-900 pl-6 py-2 my-8 italic text-zinc-700 bg-zinc-50 rounded-r-lg" 
+              {...props} 
+            />
+          ),
+          a: ({ ...props }) => (
+            <a className="text-brand-accent hover:underline font-medium" {...props} />
+          ),
+          strong: ({ ...props }) => (
+            <strong className="text-zinc-900 font-semibold" {...props} />
+          ),
+          img: ({ ...props }) => (
+            <img className="rounded-lg my-8 w-full" {...props} />
+          ),
+          hr: ({ ...props }) => (
+            <hr className="my-12 border-zinc-200" {...props} />
+          ),
         }}
       >
         {content}

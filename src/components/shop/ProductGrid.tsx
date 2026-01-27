@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { FaShoppingCart, FaHeart } from 'react-icons/fa'
+import { ShoppingCart, Heart, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
 import { useState, useEffect, useMemo } from 'react'
 import api from '@/lib/api'
 
@@ -25,7 +25,6 @@ export default function ProductGrid({ filters }: ProductGridProps) {
   useEffect(() => {
     let mounted = true
     setLoading(true)
-    // Add timestamp to prevent caching
     api
       .get(`/products?t=${Date.now()}`)
       .then((res) => {
@@ -46,7 +45,6 @@ export default function ProductGrid({ filters }: ProductGridProps) {
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = [...products]
 
-    // Apply category filter
     if (filters.category && filters.category !== 'All') {
       filtered = filtered.filter(
         (product) =>
@@ -54,14 +52,12 @@ export default function ProductGrid({ filters }: ProductGridProps) {
       )
     }
 
-    // Apply size filter
     if (filters.sizes.length > 0) {
       filtered = filtered.filter((product) =>
         product.sizes?.some((size: string) => filters.sizes.includes(size))
       )
     }
 
-    // Apply price range filter
     if (filters.priceRange) {
       filtered = filtered.filter((product) => {
         const price = product.price || 0
@@ -71,12 +67,10 @@ export default function ProductGrid({ filters }: ProductGridProps) {
       })
     }
 
-    // Apply in stock filter
     if (filters.inStockOnly) {
       filtered = filtered.filter((product) => product.inStock !== false)
     }
 
-    // Apply sorting
     switch (sortBy) {
       case 'price-low':
         filtered.sort((a, b) => (a.price || 0) - (b.price || 0))
@@ -110,7 +104,6 @@ export default function ProductGrid({ filters }: ProductGridProps) {
   const endIndex = startIndex + productsPerPage
   const currentProducts = filteredAndSortedProducts.slice(startIndex, endIndex)
 
-  // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1)
   }, [filters, sortBy])
@@ -137,10 +130,10 @@ export default function ProductGrid({ filters }: ProductGridProps) {
         <button
           key={i}
           onClick={() => goToPage(i)}
-          className={`px-4 py-2 rounded-lg transition-colors ${
+          className={`w-10 h-10 rounded-[8px] text-sm font-medium transition-all duration-200 ${
             currentPage === i
-              ? 'bg-brand-accent text-brand-dark font-bold'
-              : 'bg-brand-secondary hover:bg-brand-accent text-brand-light'
+              ? 'bg-zinc-900 text-white'
+              : 'bg-white text-zinc-600 hover:bg-zinc-100 border border-zinc-200'
           }`}
         >
           {i}
@@ -153,25 +146,26 @@ export default function ProductGrid({ filters }: ProductGridProps) {
 
   return (
     <div>
-      {/* Sort Options */}
-      <div className="flex items-center justify-between mb-8">
-        <p className="text-brand-light/70">
+      {/* Toolbar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-zinc-200">
+        <p className="text-sm text-zinc-500">
           {loading ? (
             'Loading...'
           ) : (
             <>
               Showing{' '}
-              <span className="text-white font-semibold">
-                {startIndex + 1}-{Math.min(endIndex, filteredAndSortedProducts.length)}
+              <span className="text-zinc-900 font-medium">
+                {filteredAndSortedProducts.length > 0 ? startIndex + 1 : 0}–{Math.min(endIndex, filteredAndSortedProducts.length)}
               </span>{' '}
-              of <span className="text-white font-semibold">{filteredAndSortedProducts.length}</span> products
+              of <span className="text-zinc-900 font-medium">{filteredAndSortedProducts.length}</span> products
             </>
           )}
         </p>
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="input-field max-w-xs"
+          className="bg-white border border-zinc-200 rounded-[8px] px-4 py-2.5 text-sm text-zinc-700 focus:outline-none focus:border-zinc-400 transition-colors cursor-pointer"
+          aria-label="Sort products"
         >
           <option value="featured">Featured</option>
           <option value="price-low">Price: Low to High</option>
@@ -183,12 +177,20 @@ export default function ProductGrid({ filters }: ProductGridProps) {
       {/* Product Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
-          <div className="col-span-full text-center py-12">
-            <p className="text-brand-light/70">Loading products...</p>
-          </div>
+          // Loading skeleton
+          Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-[12px] overflow-hidden border border-zinc-100 animate-pulse">
+              <div className="aspect-square bg-zinc-200" />
+              <div className="p-4 space-y-3">
+                <div className="h-3 bg-zinc-200 rounded w-1/4" />
+                <div className="h-5 bg-zinc-200 rounded w-3/4" />
+                <div className="h-5 bg-zinc-200 rounded w-1/3" />
+              </div>
+            </div>
+          ))
         ) : filteredAndSortedProducts.length === 0 ? (
-          <div className="col-span-full text-center py-12">
-            <p className="text-brand-light/70">
+          <div className="col-span-full text-center py-16">
+            <p className="text-zinc-500">
               No products found matching your filters. Try adjusting your selection.
             </p>
           </div>
@@ -198,68 +200,86 @@ export default function ProductGrid({ filters }: ProductGridProps) {
               key={product._id || product.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
             >
-              <div className="card-product group relative">
-                {/* Discount Badge */}
-                {product.comparePrice && (
-                  <div className="absolute top-4 left-4 z-10 bg-brand-primary text-white px-3 py-1 rounded-full text-sm font-bold">
-                    {Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)}% OFF
-                  </div>
-                )}
-
-                {/* Wishlist Button */}
-                <button className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center hover:bg-white transition-all">
-                  <FaHeart className="text-brand-primary" />
-                </button>
-
+              <div className="group bg-white rounded-[12px] overflow-hidden border border-zinc-100 shadow-soft hover:shadow-card-hover transition-all duration-350 hover:-translate-y-1">
+                {/* Product Image */}
                 <Link href={`/shop/product/${product._id || product.id}`}>
-                  {/* Product Image */}
-                  <div className="relative h-72 bg-gray-200 overflow-hidden">
+                  <div className="relative aspect-square bg-zinc-100 overflow-hidden">
                     {product.image ? (
-                      <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${product.image})` }} />
+                      <div 
+                        className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" 
+                        style={{ backgroundImage: `url(${product.image})` }} 
+                      />
                     ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-brand-secondary to-brand-primary flex items-center justify-center">
-                        <span className="text-white/50 font-bold text-lg">
+                      <div className="absolute inset-0 bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
+                        <span className="text-white font-display font-semibold text-lg text-center px-4">
                           {product.name}
                         </span>
                       </div>
                     )}
 
-                    {/* Quick Add Button */}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <button className="bg-white text-brand-dark px-6 py-3 rounded-lg font-semibold flex items-center space-x-2 transform scale-90 group-hover:scale-100 transition-transform">
-                        <FaShoppingCart />
-                        <span>Quick Add</span>
+                    {/* Badges */}
+                    <div className="absolute top-3 left-3 flex flex-col gap-2">
+                      {product.comparePrice && (
+                        <span className="bg-brand-accent text-white px-2.5 py-1 rounded-full text-xs font-medium">
+                          {Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)}% OFF
+                        </span>
+                      )}
+                      {product.featured && !product.comparePrice && (
+                        <span className="bg-zinc-900 text-white px-2.5 py-1 rounded-full text-xs font-medium">
+                          Featured
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Wishlist Button */}
+                    <button 
+                      className="absolute top-3 right-3 w-9 h-9 rounded-[8px] bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100"
+                      aria-label="Add to wishlist"
+                    >
+                      <Heart className="w-4 h-4 text-zinc-600" />
+                    </button>
+
+                    {/* Quick Add */}
+                    <div className="absolute inset-x-0 bottom-0 p-4 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                      <button 
+                        className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-2.5 rounded-[8px] text-sm font-medium flex items-center justify-center gap-2 shadow-lg transition-colors"
+                        aria-label="Add to cart"
+                      >
+                        <ShoppingCart className="w-4 h-4" />
+                        <span>Add to Cart</span>
                       </button>
                     </div>
 
                     {/* Out of Stock Overlay */}
-                    {!product.inStock && (
-                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                        <span className="text-white font-bold text-lg">OUT OF STOCK</span>
+                    {product.inStock === false && (
+                      <div className="absolute inset-0 bg-zinc-900/70 flex items-center justify-center">
+                        <span className="text-white text-sm font-medium px-3 py-1.5 bg-zinc-800 rounded-full">
+                          Out of Stock
+                        </span>
                       </div>
                     )}
                   </div>
+                </Link>
 
-                  {/* Product Info */}
-                  <div className="p-4">
-                    <p className="text-xs text-brand-accent font-semibold mb-1">
-                      {product.category}
-                    </p>
-                    <h3 className="font-semibold mb-2 line-clamp-2 group-hover:text-brand-primary transition-colors">
-                      {product.name}
-                    </h3>
-                    <div className="flex items-center space-x-2">
-                      <p className="text-brand-secondary font-bold text-lg">
-                        LKR {product.price?.toLocaleString()}
-                      </p>
-                      {product.comparePrice && (
-                        <p className="text-gray-400 line-through text-sm">
-                          LKR {product.comparePrice.toLocaleString()}
-                        </p>
-                      )}
-                    </div>
+                {/* Product Info */}
+                <Link href={`/shop/product/${product._id || product.id}`} className="block p-4">
+                  <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                    {product.category}
+                  </span>
+                  <h3 className="font-display font-semibold text-base text-zinc-900 mt-1 mb-2 line-clamp-2 group-hover:text-brand-accent transition-colors">
+                    {product.name}
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <span className="font-display font-bold text-lg text-zinc-900">
+                      LKR {product.price?.toLocaleString()}
+                    </span>
+                    {product.comparePrice && (
+                      <span className="text-zinc-400 text-sm line-through">
+                        LKR {product.comparePrice.toLocaleString()}
+                      </span>
+                    )}
                   </div>
                 </Link>
               </div>
@@ -270,34 +290,33 @@ export default function ProductGrid({ filters }: ProductGridProps) {
 
       {/* Pagination */}
       {!loading && filteredAndSortedProducts.length > 0 && totalPages > 1 && (
-        <div className="flex items-center justify-center mt-12 space-x-2">
-          {/* Previous Button */}
+        <div className="flex items-center justify-center mt-12 gap-2">
           <button
             onClick={() => goToPage(currentPage - 1)}
             disabled={currentPage === 1}
-            className={`px-4 py-2 rounded-lg transition-colors ${
+            className={`w-10 h-10 rounded-[8px] flex items-center justify-center transition-all duration-200 ${
               currentPage === 1
-                ? 'bg-brand-secondary/50 text-brand-light/50 cursor-not-allowed'
-                : 'bg-brand-secondary hover:bg-brand-accent text-brand-light'
+                ? 'bg-zinc-100 text-zinc-300 cursor-not-allowed'
+                : 'bg-white text-zinc-600 hover:bg-zinc-100 border border-zinc-200'
             }`}
+            aria-label="Previous page"
           >
-            Previous
+            <ChevronLeft className="w-4 h-4" />
           </button>
 
-          {/* Page Numbers */}
           {renderPageNumbers()}
 
-          {/* Next Button */}
           <button
             onClick={() => goToPage(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className={`px-4 py-2 rounded-lg transition-colors ${
+            className={`w-10 h-10 rounded-[8px] flex items-center justify-center transition-all duration-200 ${
               currentPage === totalPages
-                ? 'bg-brand-secondary/50 text-brand-light/50 cursor-not-allowed'
-                : 'bg-brand-secondary hover:bg-brand-accent text-brand-light'
+                ? 'bg-zinc-100 text-zinc-300 cursor-not-allowed'
+                : 'bg-white text-zinc-600 hover:bg-zinc-100 border border-zinc-200'
             }`}
+            aria-label="Next page"
           >
-            Next
+            <ChevronRight className="w-4 h-4" />
           </button>
         </div>
       )}

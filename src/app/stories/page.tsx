@@ -9,9 +9,9 @@ export default function StoriesPage() {
   const [selectedCategory, setSelectedCategory] = useState('all')
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 bg-white">
       <StoriesHeader />
-      <div className="container-custom section-padding">
+      <div className="container mx-auto px-4 py-12">
         <StoriesCategories 
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}

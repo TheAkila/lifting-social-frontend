@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { FaMedal, FaTrophy } from 'react-icons/fa'
+import { Trophy, ArrowRight, Users, Medal } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import api from '@/lib/api'
 
@@ -17,7 +17,6 @@ export default function AthleteHighlights() {
       .get('/athletes')
       .then((res) => {
         if (!mounted) return
-        // Get first 3 featured athletes, or just first 3
         const featured = res.data.filter((a: any) => a.featured).slice(0, 3)
         setAthletes(featured.length >= 3 ? featured : res.data.slice(0, 3))
         setLoading(false)
@@ -32,84 +31,125 @@ export default function AthleteHighlights() {
   }, [])
 
   return (
-    <section className="section-padding bg-brand-secondary/30">
-      <div className="container-custom">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
-          <h2 className="section-title">Featured Athletes</h2>
-          <p className="section-subtitle">
-            Celebrating Sri Lanka's finest Olympic weightlifters
-          </p>
-        </motion.div>
+    <section className="py-20 bg-white">
+      <div className="container mx-auto px-4">
+        {/* Section Header */}
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-12">
+          <div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-medium mb-4"
+            >
+              <Trophy className="w-3 h-3" />
+              <span>Our Champions</span>
+            </motion.div>
+            
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="font-display text-3xl lg:text-4xl font-bold text-zinc-900"
+            >
+              Meet Sri Lanka's Finest Athletes
+            </motion.h2>
+          </div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <Link
+              href="/athletes"
+              className="inline-flex items-center gap-2 text-zinc-600 hover:text-zinc-900 text-sm font-medium transition-colors group"
+            >
+              <span>View all athletes</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          </motion.div>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        {/* Athletes Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {loading ? (
-            <div className="col-span-full text-center py-12">
-              <p className="text-brand-light/70">Loading athletes...</p>
-            </div>
+            Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="bg-white rounded-[12px] overflow-hidden border border-zinc-100 animate-pulse">
+                <div className="aspect-[4/5] bg-zinc-200" />
+                <div className="p-5 space-y-3">
+                  <div className="h-4 bg-zinc-200 rounded w-1/3" />
+                  <div className="h-6 bg-zinc-200 rounded w-2/3" />
+                  <div className="h-4 bg-zinc-200 rounded w-full" />
+                </div>
+              </div>
+            ))
           ) : athletes.length === 0 ? (
-            <div className="col-span-full text-center py-12">
-              <p className="text-brand-light/70">No athletes available.</p>
+            <div className="col-span-full text-center py-16">
+              <Users className="w-10 h-10 text-zinc-300 mx-auto mb-4" />
+              <p className="text-zinc-500">No athletes available at the moment.</p>
             </div>
           ) : (
             athletes.map((athlete, index) => (
               <motion.div
                 key={athlete._id || athlete.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.15 }}
-                className="card group cursor-pointer"
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                className="group"
               >
-                <div className="relative h-80 mb-4 rounded-lg overflow-hidden">
-                  {athlete.image ? (
-                    <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${athlete.image})` }} />
-                  ) : (
-                    <div className="absolute inset-0 bg-gradient-to-b from-brand-primary to-brand-secondary flex items-center justify-center">
-                      <FaMedal className="text-brand-accent text-6xl" />
+                <Link href={`/athletes/${athlete.slug}`} className="block">
+                  <div className="bg-white rounded-[12px] overflow-hidden border border-zinc-100 shadow-soft hover:shadow-card-hover transition-all duration-350 hover:-translate-y-1">
+                    {/* Athlete Image */}
+                    <div className="relative aspect-[4/5] overflow-hidden">
+                      {athlete.image ? (
+                        <div 
+                          className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" 
+                          style={{ backgroundImage: `url(${athlete.image})` }} 
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+                          <Medal className="w-16 h-16 text-white/50" />
+                        </div>
+                      )}
+                      
+                      {/* Overlay Gradient */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/80 via-zinc-900/20 to-transparent" />
+                      
+                      {/* Badge */}
+                      <div className="absolute top-3 left-3 bg-amber-500 text-white px-2.5 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                        <Trophy className="w-3 h-3" />
+                        <span>Champion</span>
+                      </div>
+                      
+                      {/* Athlete Info Overlay */}
+                      <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+                        <span className="text-xs text-white/70 uppercase tracking-wider font-medium">
+                          {athlete.category}
+                        </span>
+                        <h3 className="font-display text-xl font-bold mt-1 group-hover:text-amber-300 transition-colors">
+                          {athlete.name}
+                        </h3>
+                      </div>
                     </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-transparent to-transparent" />
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="flex items-center space-x-2 text-brand-accent mb-2">
-                      <FaTrophy />
-                      <span className="text-sm font-semibold">{athlete.category}</span>
+                    
+                    {/* Action */}
+                    <div className="p-4 flex items-center justify-between">
+                      <p className="text-sm text-zinc-500 line-clamp-1">
+                        {athlete.achievements || "Olympic weightlifter"}
+                      </p>
+                      <ArrowRight className="w-4 h-4 text-zinc-300 group-hover:text-brand-accent group-hover:translate-x-0.5 transition-all" />
                     </div>
-                    <h3 className="text-2xl font-display font-bold text-white mb-1">
-                      {athlete.name}
-                    </h3>
-                    <p className="text-sm text-brand-light/80">
-                      {athlete.achievements}
-                    </p>
                   </div>
-                </div>
-                <Link
-                  href={`/athletes/${athlete.slug}`}
-                  className="btn-outline w-full text-center block"
-                >
-                  View Profile
                 </Link>
               </motion.div>
             ))
           )}
         </div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="text-center"
-        >
-          <Link href="/athletes" className="btn-secondary">
-            Meet All Athletes
-          </Link>
-        </motion.div>
       </div>
     </section>
   )

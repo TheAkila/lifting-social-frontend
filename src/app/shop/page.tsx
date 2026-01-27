@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import ShopHeader from '@/components/shop/ShopHeader'
 import ProductGrid from '@/components/shop/ProductGrid'
 import ShopFilters from '@/components/shop/ShopFilters'
 
-export default function ShopPage() {
+function ShopContent() {
   const searchParams = useSearchParams()
   const categoryParam = searchParams.get('category')
 
@@ -25,7 +25,7 @@ export default function ShopPage() {
   }, [categoryParam])
 
   return (
-    <div className="min-h-screen pt-20">
+    <>
       <ShopHeader />
       <div className="container-custom section-padding">
         <div className="flex flex-col lg:flex-row gap-8">
@@ -40,6 +40,27 @@ export default function ShopPage() {
           </main>
         </div>
       </div>
+    </>
+  )
+}
+
+export default function ShopPage() {
+  return (
+    <div className="min-h-screen pt-20">
+      <Suspense fallback={
+        <div className="container-custom section-padding">
+          <div className="animate-pulse">
+            <div className="h-32 bg-zinc-200 rounded-lg mb-8" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="bg-zinc-200 rounded-lg aspect-square" />
+              ))}
+            </div>
+          </div>
+        </div>
+      }>
+        <ShopContent />
+      </Suspense>
     </div>
   )
 }

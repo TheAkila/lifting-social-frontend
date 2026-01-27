@@ -47,8 +47,8 @@ export default function StoryPage({ params }: { params: { slug: string } }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen pt-20 flex items-center justify-center">
-        <p className="text-brand-light/70">Loading story...</p>
+      <div className="min-h-screen pt-20 flex items-center justify-center bg-white">
+        <div className="animate-pulse text-zinc-400">Loading story...</div>
       </div>
     )
   }
@@ -71,23 +71,24 @@ export default function StoryPage({ params }: { params: { slug: string } }) {
   }
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 bg-white">
       <StoryHeader story={storyWithAuthor} />
-      <div className="container-custom section-padding">
-        <div className="max-w-4xl mx-auto">
+      
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-3xl mx-auto">
           <StoryContent content={story.content} />
           
           {/* Author Bio */}
-          <div className="card mt-12">
-            <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-brand-primary to-brand-accent rounded-full flex items-center justify-center">
+          <div className="mt-16 pt-8 border-t border-zinc-200">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-zinc-900 rounded-full flex items-center justify-center">
                 <span className="text-white font-bold text-xl">
                   {authorInfo.name.charAt(0)}
                 </span>
               </div>
               <div>
-                <h3 className="font-display font-bold text-xl">{authorInfo.name}</h3>
-                <p className="text-brand-light/70">{authorInfo.bio}</p>
+                <h3 className="font-display font-semibold text-lg text-zinc-900">{authorInfo.name}</h3>
+                <p className="text-zinc-500 text-sm">{authorInfo.bio}</p>
               </div>
             </div>
           </div>
@@ -98,7 +99,7 @@ export default function StoryPage({ params }: { params: { slug: string } }) {
               {story.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-4 py-2 bg-brand-secondary/50 rounded-full text-sm hover:bg-brand-accent hover:text-brand-dark transition-colors cursor-pointer"
+                  className="px-4 py-2 bg-zinc-100 text-zinc-600 rounded-full text-sm hover:bg-zinc-200 transition-colors cursor-pointer"
                 >
                   #{tag}
                 </span>
@@ -107,7 +108,9 @@ export default function StoryPage({ params }: { params: { slug: string } }) {
           )}
         </div>
 
-        <RelatedStories currentStoryId={story._id} />
+        <div className="max-w-5xl mx-auto">
+          <RelatedStories currentStoryId={story._id} />
+        </div>
       </div>
     </div>
   )

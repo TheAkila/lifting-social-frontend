@@ -2,74 +2,71 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { FaDumbbell, FaBook, FaUsers } from 'react-icons/fa'
+import { ShoppingBag, BookOpen, Users, ArrowRight } from 'lucide-react'
 
 const ctaSections = [
   {
-    icon: FaDumbbell,
+    icon: ShoppingBag,
     title: 'Shop Apparel',
     description: 'Premium lifting gear designed for performance and style',
     href: '/shop',
-    color: 'from-brand-primary to-red-600',
+    gradient: 'from-zinc-900 to-zinc-800',
+    iconBg: 'bg-brand-accent',
   },
   {
-    icon: FaBook,
+    icon: BookOpen,
     title: 'Watch Stories',
     description: 'Inspiring journeys of Sri Lankan weightlifting champions',
     href: '/stories',
-    color: 'from-brand-accent to-orange-600',
+    gradient: 'from-violet-600 to-indigo-700',
+    iconBg: 'bg-white/20',
   },
   {
-    icon: FaUsers,
+    icon: Users,
     title: 'Join the Team',
     description: 'Become part of the Lifting Social community',
-    href: '/community/join',
-    color: 'from-brand-secondary to-blue-600',
+    href: '/signup',
+    gradient: 'from-amber-500 to-orange-600',
+    iconBg: 'bg-white/20',
   },
 ]
 
 export default function CTASections() {
   return (
-    <section className="section-padding bg-brand-dark">
-      <div className="container-custom">
+    <section className="py-20 bg-white">
+      <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {ctaSections.map((cta, index) => (
             <motion.div
               key={cta.title}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
             >
-              <Link href={cta.href}>
-                <div className="relative group h-80 rounded-xl overflow-hidden cursor-pointer">
-                  {/* Background Gradient */}
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${cta.color} transition-transform duration-500 group-hover:scale-110`}
-                  />
-
-                  {/* Pattern Overlay */}
-                  <div className="absolute inset-0 bg-[url('/images/pattern.svg')] opacity-10" />
+              <Link href={cta.href} className="block group">
+                <div className={`relative h-64 rounded-[12px] overflow-hidden bg-gradient-to-br ${cta.gradient} p-6 flex flex-col justify-between`}>
+                  {/* Icon */}
+                  <div className={`w-12 h-12 ${cta.iconBg} rounded-[10px] flex items-center justify-center`}>
+                    <cta.icon className="w-6 h-6 text-white" />
+                  </div>
 
                   {/* Content */}
-                  <div className="relative h-full flex flex-col items-center justify-center text-center p-8 z-10">
-                    <motion.div
-                      whileHover={{ scale: 1.2, rotate: 360 }}
-                      transition={{ duration: 0.5 }}
-                      className="mb-6"
-                    >
-                      <cta.icon className="text-6xl text-white drop-shadow-lg" />
-                    </motion.div>
-                    <h3 className="text-3xl font-display font-bold text-white mb-3 text-shadow">
+                  <div>
+                    <h3 className="text-2xl font-display font-bold text-white mb-2">
                       {cta.title}
                     </h3>
-                    <p className="text-white/90 mb-6 text-shadow">
+                    <p className="text-white/80 text-sm mb-4">
                       {cta.description}
                     </p>
-                    <div className="px-6 py-2 bg-white/20 backdrop-blur-sm rounded-lg text-white font-semibold transform group-hover:bg-white/30 transition-all">
-                      Learn More →
+                    <div className="inline-flex items-center gap-2 text-white text-sm font-medium group-hover:gap-3 transition-all">
+                      <span>Learn More</span>
+                      <ArrowRight className="w-4 h-4" />
                     </div>
                   </div>
+
+                  {/* Hover Effect */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
                 </div>
               </Link>
             </motion.div>

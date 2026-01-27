@@ -38,18 +38,20 @@ export interface Athlete {
   id: string
   name: string
   slug: string
-  category: string // Weight category (e.g., "73kg", "81kg")
+  category: string
+  gender: string
   bio: string
-  achievements: Achievement[]
-  medals: Medal[]
-  stats: AthleteStats
-  avatar: string
-  coverImage: string
+  snatch?: number
+  clean_and_jerk?: number
+  gold_medals?: number
+  silver_medals?: number
+  bronze_medals?: number
+  image?: string
+  instagram?: string
+  facebook?: string
   featured: boolean
-  socialMedia: SocialMedia
-  videos: Video[]
-  createdAt: string
-  updatedAt: string
+  created_at?: string
+  updated_at?: string
 }
 
 export interface Achievement {
@@ -111,15 +113,19 @@ export interface Coach {
   id: string
   name: string
   slug: string
+  title: string
   bio: string
   specializations: string[]
-  experience: string
-  certifications: Certification[]
-  avatar: string
-  contactEmail: string
-  contactPhone: string
+  experience: number
+  certifications: string[]
+  image?: string
+  email: string
+  phone: string
   availability: string
   featured: boolean
+  champions_count: number
+  created_at?: string
+  updated_at?: string
 }
 
 export interface Certification {
@@ -134,14 +140,19 @@ export interface Event {
   title: string
   slug: string
   description: string
-  date: string
-  endDate?: string
-  location: string
-  venue: string
-  type: EventType
-  coverImage: string
-  registrationUrl?: string
+  event_type: 'meet' | 'competition' | 'training' | 'seminar' | 'news' | 'announcement'
+  location?: string
+  venue?: string
+  start_date: string
+  end_date?: string
+  cover_image?: string
+  organizer?: string
+  max_participants?: number
+  current_participants?: number
+  entry_fee?: number
   featured: boolean
+  created_at?: string
+  updated_at?: string
 }
 
 export type EventType = 'competition' | 'workshop' | 'seminar' | 'social'

@@ -3,11 +3,12 @@
 import { motion } from 'framer-motion'
 
 const categories = [
-  { id: 'all', name: 'All Stories' },
-  { id: 'athlete-story', name: 'Athlete Stories' },
-  { id: 'training', name: 'Training Tips' },
+  { id: 'all', name: 'All' },
+  { id: 'athlete-story', name: 'Athletes' },
+  { id: 'training', name: 'Training' },
   { id: 'events', name: 'Events' },
   { id: 'news', name: 'News' },
+  { id: 'interviews', name: 'Interviews' },
 ]
 
 interface StoriesCategoriesProps {
@@ -20,22 +21,20 @@ export default function StoriesCategories({
   setSelectedCategory 
 }: StoriesCategoriesProps) {
   return (
-    <div className="mb-12">
-      <div className="flex flex-wrap gap-3 justify-center">
+    <div className="mb-10">
+      <div className="flex flex-wrap gap-2 justify-center">
         {categories.map((category) => (
-          <motion.button
+          <button
             key={category.id}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
             onClick={() => setSelectedCategory(category.id)}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+            className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 ${
               selectedCategory === category.id
-                ? 'bg-brand-accent text-brand-dark'
-                : 'bg-brand-secondary/50 text-brand-light hover:bg-brand-secondary'
+                ? 'bg-zinc-900 text-white'
+                : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
             }`}
           >
             {category.name}
-          </motion.button>
+          </button>
         ))}
       </div>
     </div>

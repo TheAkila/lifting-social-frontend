@@ -1,14 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import Image from 'next/image'
 import Link from 'next/link'
-import { FaMedal, FaEnvelope, FaPhone, FaCheckCircle } from 'react-icons/fa'
-import api from '@/lib/api'
+import { Trophy, Mail, Phone, Award } from 'lucide-react'
+import { getCoaches } from '@/lib/api'
 
 interface Coach {
-  _id: string
+  id: string
   name: string
+  slug: string
   title: string
   bio: string
   specializations: string[]
@@ -19,7 +20,7 @@ interface Coach {
   phone: string
   image?: string
   featured: boolean
-  championsCount: number
+  champions_count: number
 }
 
 export default function CoachesGrid() {
@@ -27,167 +28,132 @@ export default function CoachesGrid() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    async function fetchCoaches() {
+      try {
+        setLoading(true)
+        const data = await getCoaches()
+        setCoaches(data)
+      } catch (error) {
+        console.error('Error fetching coaches:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
     fetchCoaches()
   }, [])
 
-  const fetchCoaches = async () => {
-    try {
-      const response = await api.get('/coaches')
-      setCoaches(response.data)
-    } catch (error) {
-      console.error('Error fetching coaches:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   if (loading) {
     return (
-      <div className="text-center py-12">
-        <p className="text-brand-light/70">Loading coaches...</p>
+      <div className="text-center py-20">
+        <p className="text-zinc-400">Loading coaches...</p>
       </div>
     )
   }
 
   if (coaches.length === 0) {
     return (
-      <div className="card text-center py-12">
-        <p className="text-brand-light/70">No coaches available at the moment.</p>
+      <div className="text-center py-20">
+        <p className="text-zinc-400 text-lg">No coaches available at the moment</p>
       </div>
     )
   }
 
   return (
-    <div>
-      <div className="text-center mb-12">
-        <p className="text-brand-light/70 text-lg">
-          All our coaches are certified by the International Weightlifting Federation (IWF) and have proven track records in developing champions.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {coaches.map((coach, index) => (
-          <motion.div
-            key={coach._id}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="card relative"
-          >
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {coaches.map((coach) => (
+        <div
+          key={coach.id}
+          className="bg-white rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+        >
+          {/* Image */}
+          <div className="relative w-full overflow-hidden bg-zinc-100" style={{ paddingBottom: '133.33%' }}>
+            {coach.image ? (
+              <Image
+                src={coach.image}
+                alt={coach.name}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center bg-zinc-200">
+                <Trophy className="w-16 h-16 text-zinc-400" />
+              </div>
+            )}
             {coach.featured && (
-              <div className="absolute top-4 right-4 bg-yellow-500 text-brand-dark px-3 py-1 rounded-full text-xs font-bold">
-                ⭐ FEATURED
+              <div className="absolute top-4 right-4 bg-yellow-400 text-zinc-900 text-xs font-medium px-3 py-1 rounded-full">
+                FEATURED
+              </div>
+            )}
+          </div>
+
+          {/* Content */}
+          <div className="p-6">
+            <h3 className="text-xl font-semibold text-zinc-900 mb-1">
+              {coach.name}
+            </h3>
+            <p className="text-sm text-indigo-600 font-medium mb-3">{coach.title}</p>
+            
+            <p className="text-sm text-zinc-600 mb-4 line-clamp-3">{coach.bio}</p>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 gap-4 mb-4 pb-4 border-b border-zinc-200">
+              <div className="flex items-center gap-2 text-sm">
+                <Trophy className="w-4 h-4 text-yellow-500" />
+                <span className="text-zinc-600">
+                  <span className="font-semibold text-zinc-900">{coach.champions_count}</span> Champions
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <Award className="w-4 h-4 text-indigo-600" />
+                <span className="text-zinc-600">
+                  <span className="font-semibold text-zinc-900">{coach.experience}</span> Years
+                </span>
+              </div>
+            </div>
+
+            {/* Specializations */}
+            {coach.specializations && coach.specializations.length > 0 && (
+              <div className="mb-4">
+                <div className="flex flex-wrap gap-2">
+                  {coach.specializations.slice(0, 3).map((spec, idx) => (
+                    <span
+                      key={idx}
+                      className="px-2 py-1 bg-zinc-100 text-zinc-700 rounded text-xs"
+                    >
+                      {spec}
+                    </span>
+                  ))}
+                </div>
               </div>
             )}
 
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="flex-shrink-0">
-                {coach.image ? (
-                  <img
-                    src={coach.image}
-                    alt={coach.name}
-                    className="w-32 h-32 rounded-lg object-cover"
-                  />
-                ) : (
-                  <div className="w-32 h-32 rounded-lg bg-gradient-to-br from-brand-primary to-brand-accent flex items-center justify-center">
-                    <span className="text-white font-bold text-4xl">
-                      {coach.name.split(' ').map(n => n[0]).join('')}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex-1">
-                <h3 className="text-2xl font-display font-bold mb-1">{coach.name}</h3>
-                <p className="text-brand-accent font-semibold mb-2">{coach.title}</p>
-                <p className="text-brand-light/70 mb-4">{coach.bio}</p>
-
-                {coach.specializations.length > 0 && (
-                  <div className="mb-4">
-                    <h4 className="text-sm font-semibold mb-2">Specializations:</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {coach.specializations.map((spec, idx) => (
-                        <span
-                          key={idx}
-                          className="px-3 py-1 bg-brand-secondary/50 rounded-full text-xs"
-                        >
-                          {spec}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <div className="flex items-center space-x-2 text-brand-accent">
-                      <FaMedal />
-                      <span className="text-sm font-semibold">{coach.championsCount} Champions</span>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex items-center space-x-2 text-brand-light/70">
-                      <FaCheckCircle />
-                      <span className="text-sm">{coach.experience} years Experience</span>
-                    </div>
-                  </div>
-                </div>
-
-                {coach.certifications.length > 0 && (
-                  <div className="mb-4">
-                    <h4 className="text-sm font-semibold mb-2">Certifications:</h4>
-                    <div className="space-y-1">
-                      {coach.certifications.map((cert, idx) => (
-                        <div key={idx} className="text-xs text-brand-light/60">
-                          • {cert}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex flex-wrap gap-3 mt-4">
-                  <a
-                    href={`mailto:${coach.email}`}
-                    className="flex items-center space-x-2 px-4 py-2 bg-brand-accent text-brand-dark rounded-lg hover:bg-brand-accent/90 transition-colors text-sm font-semibold"
-                  >
-                    <FaEnvelope />
-                    <span>Email</span>
-                  </a>
-                  <a
-                    href={`tel:${coach.phone}`}
-                    className="flex items-center space-x-2 px-4 py-2 bg-brand-secondary rounded-lg hover:bg-brand-secondary/80 transition-colors text-sm font-semibold"
-                  >
-                    <FaPhone />
-                    <span>Call</span>
-                  </a>
-                </div>
-
-                <div className="mt-4 text-xs text-brand-light/50">
-                  Available: {coach.availability}
-                </div>
-              </div>
+            {/* Contact Buttons */}
+            <div className="flex gap-2">
+              <a
+                href={`mailto:${coach.email}`}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded text-sm font-medium hover:bg-indigo-700 transition-colors"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Mail className="w-4 h-4" />
+                Email
+              </a>
+              <a
+                href={`tel:${coach.phone}`}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-zinc-100 text-zinc-900 rounded text-sm font-medium hover:bg-zinc-200 transition-colors"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Phone className="w-4 h-4" />
+                Call
+              </a>
             </div>
-          </motion.div>
-        ))}
-      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.4 }}
-        className="card mt-12 text-center"
-      >
-        <h3 className="text-2xl font-display font-bold mb-4">
-          Ready to Start Your Journey?
-        </h3>
-        <p className="text-brand-light/70 mb-6">
-          Contact us to schedule a consultation with one of our expert coaches
-        </p>
-        <Link href="/contact" className="btn-primary inline-block">
-          Get Started Today
-        </Link>
-      </motion.div>
+            {/* Availability */}
+            <div className="mt-4 text-xs text-zinc-500 text-center">
+              {coach.availability}
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   )
 }

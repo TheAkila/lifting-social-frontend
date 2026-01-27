@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, Montserrat } from 'next/font/google'
+import { Inter, IBM_Plex_Sans, Outfit } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
@@ -12,9 +12,16 @@ const inter = Inter({
   display: 'swap',
 })
 
-const montserrat = Montserrat({ 
+const outfit = Outfit({ 
   subsets: ['latin'],
-  variable: '--font-montserrat',
+  variable: '--font-outfit',
+  display: 'swap',
+})
+
+const ibmPlexSans = IBM_Plex_Sans({ 
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-ibm-plex',
   display: 'swap',
 })
 
@@ -36,8 +43,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${montserrat.variable}`}>
-      <body className={`${inter.className} antialiased bg-brand-dark text-brand-light`}>
+    <html lang="en" className={`${inter.variable} ${outfit.variable} ${ibmPlexSans.variable}`}>
+      <body className={`${inter.className} antialiased bg-white text-slate-900`}>
         <Providers>
           <Navbar />
           <main className="min-h-screen">

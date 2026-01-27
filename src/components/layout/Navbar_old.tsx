@@ -13,6 +13,7 @@ const mainNavLinks = [
   { name: 'Home', href: '/' },
   { name: 'Shop', href: '/shop' },
   { name: 'Stories', href: '/stories' },
+  { name: 'Athletes', href: '/athletes' },
   { name: 'Events', href: '/events' },
   { name: 'Coaching', href: '/coaching' },
 ]
@@ -131,8 +132,6 @@ export default function Navbar() {
                   <button
                     onClick={handleLogout}
                     className="p-2 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 rounded-[10px] transition-all duration-200"
-                    title="Logout"
-                    aria-label="Logout"
                   >
                     <LogOut className="w-4 h-4" />
                   </button>
@@ -198,8 +197,6 @@ export default function Navbar() {
                   <button
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="p-2 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 rounded-[10px] transition-all duration-200"
-                    title="Close menu"
-                    aria-label="Close menu"
                   >
                     <X className="w-5 h-5" />
                   </button>
