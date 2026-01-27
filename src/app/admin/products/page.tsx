@@ -234,16 +234,16 @@ export default function AdminProducts() {
   if (!user) return null
 
   return (
-    <div className="min-h-screen bg-brand-dark pt-28 pb-12">
-      <div className="container-custom">
+    <div className="min-h-screen bg-gray-50 pt-28 pb-12">
+      <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
-            <Link href="/admin" className="text-brand-accent hover:text-brand-primary">
+            <Link href="/admin" className="text-gray-600 hover:text-gray-900 transition-colors">
               <FaArrowLeft className="text-2xl" />
             </Link>
             <div>
-              <h1 className="text-4xl font-display font-bold">Products</h1>
-              <p className="text-brand-light/70">Manage your shop items</p>
+              <h1 className="text-4xl font-bold text-gray-900">Products</h1>
+              <p className="text-gray-600">Manage your shop items</p>
             </div>
           </div>
           <button
@@ -377,7 +377,7 @@ export default function AdminProducts() {
                         <div key={index} className="relative group">
                           <div 
                             onClick={() => setMainImage(index)}
-                            className="aspect-square rounded-lg overflow-hidden bg-brand-light/5 border border-brand-light/10 cursor-pointer hover:border-brand-primary transition-colors"
+                            className="aspect-square rounded-lg overflow-hidden bg-gray-100 border border-gray-200 cursor-pointer hover:border-gray-400 transition-colors"
                           >
                             {img ? (
                               <img
@@ -567,7 +567,7 @@ export default function AdminProducts() {
                   {formData.features.map((feature, index) => (
                     <li
                       key={index}
-                      className="flex items-center justify-between bg-brand-light/5 px-4 py-2 rounded-lg"
+                      className="flex items-center justify-between bg-gray-100 px-4 py-2 rounded-lg"
                     >
                       <span className="text-sm">{feature}</span>
                       <button
@@ -660,7 +660,7 @@ export default function AdminProducts() {
                 </thead>
                 <tbody>
                   {products.map((product) => (
-                    <tr key={product._id} className="border-b border-brand-light/10 hover:bg-brand-light/5">
+                    <tr key={product._id} className="border-b border-gray-200 hover:bg-gray-50">
                       <td className="py-3 px-4 font-semibold">{product.name}</td>
                       <td className="py-3 px-4">LKR {product.price?.toLocaleString()}</td>
                       <td className="py-3 px-4">{product.category}</td>

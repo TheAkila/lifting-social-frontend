@@ -14,7 +14,6 @@ const mainNavLinks = [
   { name: 'Shop', href: '/shop' },
   { name: 'Stories', href: '/stories' },
   { name: 'Events', href: '/events' },
-  { name: 'Coaching', href: '/coaching' },
 ]
 
 const secondaryNavLinks = [
@@ -59,15 +58,15 @@ export default function Navbar() {
             : 'bg-white border-b border-zinc-100'
         }`}
       >
-        <div className="container mx-auto px-4">
+        <div className="w-full">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link href="/" className="flex items-center group">
+            {/* Logo - Left Corner */}
+            <Link href="/" className="flex items-center group pl-4">
               <Logo />
             </Link>
 
-            {/* Main Navigation - Desktop */}
-            <div className="hidden lg:flex items-center space-x-1">
+            {/* Main Navigation - Desktop - Centered */}
+            <div className="hidden lg:flex items-center space-x-1 absolute left-1/2 transform -translate-x-1/2">
               {mainNavLinks.map((link) => (
                 <Link
                   key={link.name}

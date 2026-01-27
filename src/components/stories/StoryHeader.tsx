@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Clock, Eye, Calendar, Share2, ArrowLeft } from 'lucide-react'
+import { Clock, Eye, Calendar, Share2, ArrowLeft, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
 
 interface StoryHeaderProps {
@@ -17,6 +17,10 @@ interface StoryHeaderProps {
     publishedAt: string
     readTime: string
     views: number
+    is_external?: boolean
+    original_url?: string
+    source_name?: string
+    source_url?: string
   }
 }
 
@@ -88,6 +92,20 @@ export default function StoryHeader({ story }: StoryHeaderProps) {
               <span className="text-white font-medium">
                 By {story.author.name}
               </span>
+              
+              {/* External Source Badge */}
+              {story.is_external && story.source_name && (
+                <a
+                  href={story.source_url || story.original_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-zinc-400 hover:text-white transition-colors"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>from {story.source_name}</span>
+                </a>
+              )}
+              
               <div className="flex items-center gap-1.5">
                 <Calendar className="w-4 h-4" />
                 <span>{formatDate(story.publishedAt)}</span>
@@ -108,6 +126,19 @@ export default function StoryHeader({ story }: StoryHeaderProps) {
                 <Share2 className="w-4 h-4" />
                 <span>Share</span>
               </button>
+              
+              {/* Read Original Link for External Posts */}
+              {story.is_external && story.original_url && (
+                <a
+                  href={story.original_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 bg-white hover:bg-zinc-100 text-zinc-900 px-4 py-2 rounded-[10px] font-semibold transition-colors"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span>Read Original</span>
+                </a>
+              )}
             </div>
           </motion.div>
         </div>

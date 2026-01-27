@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { FaBox, FaNewspaper, FaUsers, FaChartBar, FaCalendar, FaUserTie } from 'react-icons/fa'
+import { FaBox, FaNewspaper, FaUsers, FaChartBar, FaCalendar, FaUserTie, FaRss } from 'react-icons/fa'
 import api from '@/lib/api'
 
 export default function AdminDashboard() {
@@ -12,7 +12,7 @@ export default function AdminDashboard() {
   const router = useRouter()
   const [stats, setStats] = useState({
     products: 0,
-    stories: 0,
+    rssFeeds: 0,
     athletes: 0,
     events: 0,
   })
@@ -32,15 +32,15 @@ export default function AdminDashboard() {
 
   const loadStats = async () => {
     try {
-      const [productsRes, storiesRes, athletesRes, eventsRes] = await Promise.all([
+      const [productsRes, rssFeedsRes, athletesRes, eventsRes] = await Promise.all([
         api.get('/products'),
-        api.get('/stories'),
+        api.get('/rss-feeds'),
         api.get('/athletes'),
         api.get('/events'),
       ])
       setStats({
         products: productsRes.data.length,
-        stories: storiesRes.data.length,
+        rssFeeds: rssFeedsRes.data.length,
         athletes: athletesRes.data.length,
         events: eventsRes.data.length,
       })
@@ -53,48 +53,48 @@ export default function AdminDashboard() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-brand-dark flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-brand-light/70">Redirecting to login...</p>
+          <p className="text-gray-600">Redirecting to login...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-brand-dark pt-28 pb-12">
-      <div className="container-custom">
+    <div className="min-h-screen bg-gray-50 pt-28 pb-12">
+      <div className="container mx-auto px-4 max-w-7xl">
         <div className="mb-8">
-          <h1 className="text-4xl font-display font-bold mb-2">Admin Dashboard</h1>
-          <p className="text-brand-light/70">Welcome, {user?.name || 'Admin'}! Manage your content and data</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+          <p className="text-gray-600">Welcome, {user?.name || 'Admin'}! Manage your content and data</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {/* Products Card */}
           <Link href="/admin/products">
-            <div className="card hover:scale-105 transition-transform cursor-pointer bg-gradient-to-br from-brand-primary/20 to-brand-secondary/20">
+            <div className="bg-white rounded-[12px] p-6 hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200 shadow-sm">
               <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 rounded-full bg-brand-primary flex items-center justify-center">
-                  <FaBox className="text-3xl text-white" />
+                <div className="w-14 h-14 rounded-[10px] bg-blue-500/10 flex items-center justify-center">
+                  <FaBox className="text-xl text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold">Products</h3>
-                  <p className="text-brand-light/70">Manage shop items</p>
+                  <h3 className="text-lg font-semibold text-gray-900">Products</h3>
+                  <p className="text-gray-600 text-sm">Manage shop items</p>
                 </div>
               </div>
             </div>
           </Link>
 
-          {/* Stories Card */}
-          <Link href="/admin/stories">
-            <div className="card hover:scale-105 transition-transform cursor-pointer bg-gradient-to-br from-brand-accent/20 to-brand-primary/20">
+          {/* RSS Feeds Card - Primary Blog Management */}
+          <Link href="/admin/rss-feeds">
+            <div className="bg-white rounded-[12px] p-6 hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200 shadow-sm">
               <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 rounded-full bg-brand-accent flex items-center justify-center">
-                  <FaNewspaper className="text-3xl text-brand-dark" />
+                <div className="w-14 h-14 rounded-[10px] bg-orange-500/10 flex items-center justify-center">
+                  <FaRss className="text-xl text-orange-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold">Stories</h3>
-                  <p className="text-brand-light/70">Manage blog posts</p>
+                  <h3 className="text-lg font-semibold text-gray-900">Blog Feeds</h3>
+                  <p className="text-gray-600 text-sm">RSS aggregation</p>
                 </div>
               </div>
             </div>
@@ -102,14 +102,14 @@ export default function AdminDashboard() {
 
           {/* Athletes Card */}
           <Link href="/admin/athletes">
-            <div className="card hover:scale-105 transition-transform cursor-pointer bg-gradient-to-br from-brand-secondary/20 to-brand-accent/20">
+            <div className="bg-white rounded-[12px] p-6 hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200 shadow-sm">
               <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 rounded-full bg-brand-secondary flex items-center justify-center">
-                  <FaUsers className="text-3xl text-white" />
+                <div className="w-14 h-14 rounded-[10px] bg-purple-500/10 flex items-center justify-center">
+                  <FaUsers className="text-xl text-purple-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold">Athletes</h3>
-                  <p className="text-brand-light/70">Manage profiles</p>
+                  <h3 className="text-lg font-semibold text-gray-900">Athletes</h3>
+                  <p className="text-gray-600 text-sm">Manage profiles</p>
                 </div>
               </div>
             </div>
@@ -117,14 +117,14 @@ export default function AdminDashboard() {
 
           {/* Coaches Card */}
           <Link href="/admin/coaches">
-            <div className="card hover:scale-105 transition-transform cursor-pointer bg-gradient-to-br from-green-500/20 to-teal-500/20">
+            <div className="bg-white rounded-[12px] p-6 hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200 shadow-sm">
               <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center">
-                  <FaUserTie className="text-3xl text-white" />
+                <div className="w-14 h-14 rounded-[10px] bg-green-500/10 flex items-center justify-center">
+                  <FaUserTie className="text-xl text-green-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold">Coaches</h3>
-                  <p className="text-brand-light/70">Manage coaches</p>
+                  <h3 className="text-lg font-semibold text-gray-900">Coaches</h3>
+                  <p className="text-gray-600 text-sm">Manage coaches</p>
                 </div>
               </div>
             </div>
@@ -132,55 +132,57 @@ export default function AdminDashboard() {
 
           {/* Events Card */}
           <Link href="/admin/events">
-            <div className="card hover:scale-105 transition-transform cursor-pointer bg-gradient-to-br from-purple-500/20 to-blue-500/20">
+            <div className="bg-white rounded-[12px] p-6 hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200 shadow-sm">
               <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 rounded-full bg-purple-500 flex items-center justify-center">
-                  <FaCalendar className="text-3xl text-white" />
+                <div className="w-14 h-14 rounded-[10px] bg-indigo-500/10 flex items-center justify-center">
+                  <FaCalendar className="text-xl text-indigo-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold">Events</h3>
-                  <p className="text-brand-light/70">Manage events</p>
+                  <h3 className="text-lg font-semibold text-gray-900">Events</h3>
+                  <p className="text-gray-600 text-sm">Manage events</p>
                 </div>
               </div>
             </div>
           </Link>
 
-          {/* Analytics Card */}
-          <div className="card bg-gradient-to-br from-pink-500/20 to-red-500/20">
-            <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 rounded-full bg-pink-500 flex items-center justify-center">
-                <FaChartBar className="text-3xl text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold">Analytics</h3>
-                <p className="text-brand-light/70">Coming soon</p>
+          {/* RSS Feeds Card */}
+          <Link href="/admin/stories">
+            <div className="bg-white rounded-[12px] p-6 hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200 shadow-sm">
+              <div className="flex items-center space-x-4">
+                <div className="w-14 h-14 rounded-[10px] bg-pink-500/10 flex items-center justify-center">
+                  <FaNewspaper className="text-xl text-pink-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Stories</h3>
+                  <p className="text-gray-600 text-sm">Manage content</p>
+                </div>
               </div>
             </div>
-          </div>
+          </Link>
         </div>
 
         {/* Quick Stats */}
-        <div className="card">
-          <h2 className="text-2xl font-bold mb-6">Quick Stats</h2>
+        <div className="bg-white rounded-[12px] p-6 border border-gray-200 shadow-sm">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Stats</h2>
           {loading ? (
-            <p className="text-center py-8 text-brand-light/70">Loading stats...</p>
+            <p className="text-center py-4 text-gray-600">Loading stats...</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="text-center p-6 bg-brand-secondary/20 rounded-lg">
-                <div className="text-4xl font-bold text-brand-primary mb-2">{stats.products}</div>
-                <div className="text-brand-light/70">Total Products</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center p-4 bg-blue-50 rounded-[10px]">
+                <div className="text-2xl font-bold text-blue-600 mb-1">{stats.products}</div>
+                <div className="text-gray-600 text-xs">Total Products</div>
               </div>
-              <div className="text-center p-6 bg-brand-secondary/20 rounded-lg">
-                <div className="text-4xl font-bold text-brand-accent mb-2">{stats.stories}</div>
-                <div className="text-brand-light/70">Published Stories</div>
+              <div className="text-center p-4 bg-orange-50 rounded-[10px]">
+                <div className="text-2xl font-bold text-orange-600 mb-1">{stats.rssFeeds}</div>
+                <div className="text-gray-600 text-xs">RSS Feeds</div>
               </div>
-              <div className="text-center p-6 bg-brand-secondary/20 rounded-lg">
-                <div className="text-4xl font-bold text-brand-secondary mb-2">{stats.athletes}</div>
-                <div className="text-brand-light/70">Active Athletes</div>
+              <div className="text-center p-4 bg-purple-50 rounded-[10px]">
+                <div className="text-2xl font-bold text-purple-600 mb-1">{stats.athletes}</div>
+                <div className="text-gray-600 text-xs">Active Athletes</div>
               </div>
-              <div className="text-center p-6 bg-brand-secondary/20 rounded-lg">
-                <div className="text-4xl font-bold text-purple-400 mb-2">{stats.events}</div>
-                <div className="text-brand-light/70">Total Events</div>
+              <div className="text-center p-4 bg-indigo-50 rounded-[10px]">
+                <div className="text-2xl font-bold text-indigo-600 mb-1">{stats.events}</div>
+                <div className="text-gray-600 text-xs">Total Events</div>
               </div>
             </div>
           )}

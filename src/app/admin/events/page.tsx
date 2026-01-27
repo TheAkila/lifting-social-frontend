@@ -229,24 +229,24 @@ export default function AdminEventsPage() {
 
   if (!user || user.role !== 'admin') {
     return (
-      <div className="min-h-screen bg-brand-dark flex items-center justify-center">
-        <p className="text-brand-light/70">Loading...</p>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-600">Loading...</p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-brand-dark pt-28 pb-12">
-      <div className="container-custom">
+    <div className="min-h-screen bg-gray-50 pt-28 pb-12">
+      <div className="container mx-auto px-4 max-w-7xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
-            <Link href="/admin" className="text-brand-accent hover:text-brand-primary">
+            <Link href="/admin" className="text-gray-600 hover:text-gray-900">
               <FaArrowLeft className="text-2xl" />
             </Link>
             <div>
-              <h1 className="text-4xl font-display font-bold">Manage Events</h1>
-              <p className="text-brand-light/70">Create and manage meets, competitions, and announcements</p>
+              <h1 className="text-4xl font-display font-bold text-gray-900">Manage Events</h1>
+              <p className="text-gray-600">Create and manage meets, competitions, and announcements</p>
             </div>
           </div>
           <button
@@ -489,7 +489,7 @@ export default function AdminEventsPage() {
                 {/* Image Preview */}
                 {formData.coverImage && (
                   <div className="relative group">
-                    <div className="aspect-video rounded-lg overflow-hidden bg-brand-light/5 border border-brand-light/10">
+                    <div className="aspect-video rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
                       <img
                         src={formData.coverImage}
                         alt="Cover preview"
@@ -508,7 +508,7 @@ export default function AdminEventsPage() {
 
                 {/* Or use URL */}
                 <div>
-                  <label className="block text-sm text-brand-light/70 mb-2">Or paste image URL</label>
+                  <label className="block text-sm text-gray-600 mb-2">Or paste image URL</label>
                   <input
                     type="text"
                     name="coverImage"
@@ -611,11 +611,11 @@ export default function AdminEventsPage() {
           
           {loading ? (
             <div className="text-center py-12">
-              <p className="text-brand-light/70">Loading events...</p>
+              <p className="text-gray-600">Loading events...</p>
             </div>
           ) : events.length === 0 ? (
             <div className="card text-center py-12">
-              <p className="text-brand-light/70 mb-4">No events found</p>
+              <p className="text-gray-600 mb-4">No events found</p>
               <button
                 onClick={() => {
                   setShowForm(true)
@@ -635,7 +635,7 @@ export default function AdminEventsPage() {
                       <div className="flex items-center gap-3 mb-2">
                         <h3 className="text-2xl font-bold">{event.title}</h3>
                         {event.isFeatured && (
-                          <FaStar className="text-brand-accent" title="Featured" />
+                          <FaStar className="text-yellow-500" title="Featured" />
                         )}
                         {!event.isPublished && (
                           <span className="px-2 py-1 bg-red-500/20 text-red-400 text-xs rounded">
@@ -644,10 +644,10 @@ export default function AdminEventsPage() {
                         )}
                       </div>
                       <div className="flex flex-wrap gap-2 mb-3">
-                        <span className="px-3 py-1 bg-brand-primary/20 text-brand-primary rounded-full text-xs font-semibold">
+                        <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
                           {event.eventType}
                         </span>
-                        <span className="text-sm text-brand-light/60">by {event.organizer}</span>
+                        <span className="text-sm text-gray-600">by {event.organizer}</span>
                       </div>
                     </div>
                     <div className="flex gap-2">
@@ -668,23 +668,23 @@ export default function AdminEventsPage() {
                     </div>
                   </div>
 
-                  <p className="text-brand-light/80 mb-4">{event.description}</p>
+                  <p className="text-gray-700 mb-4">{event.description}</p>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                     <div className="flex items-center gap-2">
-                      <FaCalendar className="text-brand-accent" />
+                      <FaCalendar className="text-blue-600" />
                       <span>
                         {new Date(event.startDate).toLocaleDateString()}
                         {event.endDate && ` - ${new Date(event.endDate).toLocaleDateString()}`}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <FaMapMarkerAlt className="text-brand-accent" />
+                      <FaMapMarkerAlt className="text-blue-600" />
                       <span>{event.location}</span>
                     </div>
                     {event.maxParticipants && (
                       <div className="flex items-center gap-2">
-                        <FaUsers className="text-brand-accent" />
+                        <FaUsers className="text-blue-600" />
                         <span>
                           {event.currentParticipants || 0} / {event.maxParticipants} participants
                         </span>
@@ -694,7 +694,7 @@ export default function AdminEventsPage() {
 
                   {event.registrationDeadline && (
                     <div className="mt-3 text-sm">
-                      <span className="text-brand-light/60">Registration Deadline: </span>
+                      <span className="text-gray-600">Registration Deadline: </span>
                       <span className="font-semibold">
                         {new Date(event.registrationDeadline).toLocaleDateString()}
                       </span>

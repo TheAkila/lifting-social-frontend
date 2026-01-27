@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, Play } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Play, ExternalLink, Clock } from 'lucide-react'
 import { useState, useEffect, useMemo } from 'react'
 import api from '@/lib/api'
 
@@ -41,7 +41,7 @@ export default function StoriesGrid({ selectedCategory }: StoriesGridProps) {
       return stories
     }
     return stories.filter(
-      (story) => story.category?.toLowerCase().replace(/\s+/g, '-') === selectedCategory
+      (story) => story.category?.toLowerCase() === selectedCategory.toLowerCase()
     )
   }, [stories, selectedCategory])
 
@@ -143,9 +143,17 @@ export default function StoriesGrid({ selectedCategory }: StoriesGridProps) {
   if (filteredStories.length === 0) {
     return (
       <div className="text-center py-20">
-        <p className="text-zinc-500 text-lg">
-          No stories found in this category.
-        </p>
+        <div className="max-w-md mx-auto">
+          <div className="w-16 h-16 rounded-full bg-zinc-100 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-zinc-400" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6.503 20.752c0 1.794-1.456 3.248-3.251 3.248-1.796 0-3.252-1.454-3.252-3.248 0-1.794 1.456-3.248 3.252-3.248 1.795.001 3.251 1.454 3.251 3.248zm-6.503-12.572v4.811c6.05.062 10.96 4.966 11.022 11.009h4.817c-.062-8.71-7.118-15.758-15.839-15.82zm0-3.368c10.58.046 19.152 8.594 19.183 19.188h4.817c-.03-13.231-10.755-23.954-24-24v4.812z"/>
+            </svg>
+          </div>
+          <p className="text-zinc-900 text-lg font-semibold mb-2">
+            {selectedCategory === 'all' ? 'No articles yet' : 'No articles in this category'}
+          </p>
+         
+        </div>
       </div>
     )
   }
@@ -193,17 +201,40 @@ export default function StoriesGrid({ selectedCategory }: StoriesGridProps) {
 
               {/* Content */}
               <div className="space-y-2">
-                <h3 className="font-display text-lg font-semibold text-zinc-900 leading-snug line-clamp-2 group-hover:text-brand-accent transition-colors">
+                {/* External source badge */}
+                {story.is_external && story.source_name && (
+                  <div className="flex items-center gap-1.5 text-xs text-zinc-500">
+                    <ExternalLink className="w-3 h-3" />
+                    <span>from {story.source_name}</span>
+                  </div>
+                )}
+                
+                <h3 className="font-display text-lg font-semibold text-zinc-900 leading-snug line-clamp-2 group-hover:text-zinc-600 transition-colors">
                   {story.title}
                 </h3>
                 
-                <div className="flex items-center justify-between">
-                  <time className="text-sm text-zinc-500">
-                    {formatDate(story.createdAt || story.publishDate)}
-                  </time>
+                {/* Excerpt for external posts */}
+                {story.is_external && story.excerpt && (
+                  <p className="text-sm text-zinc-600 line-clamp-2">
+                    {story.excerpt}
+                  </p>
+                )}
+                
+                <div className="flex items-center justify-between pt-1">
+                  <div className="flex items-center gap-3 text-xs text-zinc-500">
+                    <time>
+                      {formatDate(story.published_at || story.createdAt || story.publishDate)}
+                    </time>
+                    {story.readTime && (
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {story.readTime}
+                      </span>
+                    )}
+                  </div>
                   
-                  <span className="text-sm font-medium text-zinc-900 uppercase tracking-wider group-hover:text-brand-accent transition-colors">
-                    Read More
+                  <span className="text-xs font-semibold text-zinc-900 uppercase tracking-wider group-hover:text-zinc-600 transition-colors">
+                    {story.is_external ? 'Read More →' : 'Read More'}
                   </span>
                 </div>
               </div>

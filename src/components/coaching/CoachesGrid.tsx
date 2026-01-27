@@ -45,7 +45,7 @@ export default function CoachesGrid() {
   if (loading) {
     return (
       <div className="text-center py-20">
-        <p className="text-zinc-400">Loading coaches...</p>
+        <p className="text-gray-500">Loading coaches...</p>
       </div>
     )
   }
@@ -53,7 +53,7 @@ export default function CoachesGrid() {
   if (coaches.length === 0) {
     return (
       <div className="text-center py-20">
-        <p className="text-zinc-400 text-lg">No coaches available at the moment</p>
+        <p className="text-gray-500 text-lg">No coaches available at the moment</p>
       </div>
     )
   }
@@ -63,10 +63,10 @@ export default function CoachesGrid() {
       {coaches.map((coach) => (
         <div
           key={coach.id}
-          className="bg-white rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+          className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200"
         >
           {/* Image */}
-          <div className="relative w-full overflow-hidden bg-zinc-100" style={{ paddingBottom: '133.33%' }}>
+          <div className="relative w-full overflow-hidden bg-gray-100" style={{ paddingBottom: '133.33%' }}>
             {coach.image ? (
               <Image
                 src={coach.image}
@@ -75,12 +75,12 @@ export default function CoachesGrid() {
                 className="object-cover"
               />
             ) : (
-              <div className="absolute inset-0 flex items-center justify-center bg-zinc-200">
-                <Trophy className="w-16 h-16 text-zinc-400" />
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
+                <Trophy className="w-16 h-16 text-gray-400" />
               </div>
             )}
             {coach.featured && (
-              <div className="absolute top-4 right-4 bg-yellow-400 text-zinc-900 text-xs font-medium px-3 py-1 rounded-full">
+              <div className="absolute top-4 right-4 bg-blue-600 text-white text-xs font-medium px-3 py-1 rounded-full">
                 FEATURED
               </div>
             )}
@@ -88,25 +88,25 @@ export default function CoachesGrid() {
 
           {/* Content */}
           <div className="p-6">
-            <h3 className="text-xl font-semibold text-zinc-900 mb-1">
+            <h3 className="text-xl font-semibold text-gray-900 mb-1">
               {coach.name}
             </h3>
-            <p className="text-sm text-indigo-600 font-medium mb-3">{coach.title}</p>
+            <p className="text-sm text-blue-600 font-medium mb-3">{coach.title}</p>
             
-            <p className="text-sm text-zinc-600 mb-4 line-clamp-3">{coach.bio}</p>
+            <p className="text-sm text-gray-600 mb-4 line-clamp-3">{coach.bio}</p>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 gap-4 mb-4 pb-4 border-b border-zinc-200">
+            <div className="grid grid-cols-2 gap-4 mb-4 pb-4 border-b border-gray-200">
               <div className="flex items-center gap-2 text-sm">
                 <Trophy className="w-4 h-4 text-yellow-500" />
-                <span className="text-zinc-600">
-                  <span className="font-semibold text-zinc-900">{coach.champions_count}</span> Champions
+                <span className="text-gray-600">
+                  <span className="font-semibold text-gray-900">{coach.champions_count}</span> Champions
                 </span>
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <Award className="w-4 h-4 text-indigo-600" />
-                <span className="text-zinc-600">
-                  <span className="font-semibold text-zinc-900">{coach.experience}</span> Years
+                <Award className="w-4 h-4 text-blue-600" />
+                <span className="text-gray-600">
+                  <span className="font-semibold text-gray-900">{coach.experience}</span> Years
                 </span>
               </div>
             </div>
@@ -118,7 +118,7 @@ export default function CoachesGrid() {
                   {coach.specializations.slice(0, 3).map((spec, idx) => (
                     <span
                       key={idx}
-                      className="px-2 py-1 bg-zinc-100 text-zinc-700 rounded text-xs"
+                      className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs"
                     >
                       {spec}
                     </span>
@@ -131,7 +131,7 @@ export default function CoachesGrid() {
             <div className="flex gap-2">
               <a
                 href={`mailto:${coach.email}`}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded text-sm font-medium hover:bg-indigo-700 transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
                 onClick={(e) => e.stopPropagation()}
               >
                 <Mail className="w-4 h-4" />
@@ -139,7 +139,7 @@ export default function CoachesGrid() {
               </a>
               <a
                 href={`tel:${coach.phone}`}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-zinc-100 text-zinc-900 rounded text-sm font-medium hover:bg-zinc-200 transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 text-gray-900 rounded-md text-sm font-medium hover:bg-gray-200 transition-colors"
                 onClick={(e) => e.stopPropagation()}
               >
                 <Phone className="w-4 h-4" />
@@ -148,7 +148,7 @@ export default function CoachesGrid() {
             </div>
 
             {/* Availability */}
-            <div className="mt-4 text-xs text-zinc-500 text-center">
+            <div className="mt-4 text-xs text-gray-500 text-center">
               {coach.availability}
             </div>
           </div>

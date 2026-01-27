@@ -24,6 +24,11 @@ interface Story {
   views: number
   featured: boolean
   videoId?: string
+  is_external?: boolean
+  original_url?: string
+  source_name?: string
+  source_url?: string
+  external_author?: string
 }
 
 export default function StoryPage({ params }: { params: { slug: string } }) {
@@ -59,9 +64,11 @@ export default function StoryPage({ params }: { params: { slug: string } }) {
 
   const authorInfo = {
     id: '1',
-    name: story.author || 'Lifting Social Team',
+    name: story.external_author || story.author || 'Lifting Social Team',
     avatar: '/images/authors/team.jpg',
-    bio: 'Documenting the incredible stories of Sri Lankan weightlifting.',
+    bio: story.is_external && story.source_name 
+      ? `Article from ${story.source_name}` 
+      : 'Documenting the incredible stories of Sri Lankan weightlifting.',
   }
 
   const storyWithAuthor = {
@@ -76,10 +83,16 @@ export default function StoryPage({ params }: { params: { slug: string } }) {
       
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
-          <StoryContent content={story.content} />
+          <StoryContent 
+            content={story.content} 
+            isExternal={story.is_external}
+            originalUrl={story.original_url}
+            sourceName={story.source_name}
+          />
           
-          {/* Author Bio */}
-          <div className="mt-16 pt-8 border-t border-zinc-200">
+          {/* Author Bio - Only show for non-external posts or at the end */}
+          {!story.is_external && (
+            <div className="mt-16 pt-8 border-t border-zinc-200">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 bg-zinc-900 rounded-full flex items-center justify-center">
                 <span className="text-white font-bold text-xl">
@@ -92,6 +105,7 @@ export default function StoryPage({ params }: { params: { slug: string } }) {
               </div>
             </div>
           </div>
+          )}
 
           {/* Tags */}
           {story.tags && story.tags.length > 0 && (

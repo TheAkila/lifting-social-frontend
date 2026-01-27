@@ -3,12 +3,12 @@
 import { motion } from 'framer-motion'
 
 const categories = [
-  { id: 'all', name: 'All' },
-  { id: 'athlete-story', name: 'Athletes' },
+  { id: 'all', name: 'All Articles' },
+  { id: 'weightlifting', name: 'Weightlifting' },
   { id: 'training', name: 'Training' },
-  { id: 'events', name: 'Events' },
+  { id: 'strength', name: 'Strength' },
+  { id: 'nutrition', name: 'Nutrition' },
   { id: 'news', name: 'News' },
-  { id: 'interviews', name: 'Interviews' },
 ]
 
 interface StoriesCategoriesProps {

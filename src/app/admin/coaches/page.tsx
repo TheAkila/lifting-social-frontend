@@ -186,24 +186,24 @@ export default function AdminCoachesPage() {
 
   if (!user || user.role !== 'admin') {
     return (
-      <div className="min-h-screen bg-brand-dark flex items-center justify-center">
-        <p className="text-brand-light/70">Loading...</p>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-600">Loading...</p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-brand-dark pt-28 pb-12">
-      <div className="container-custom">
+    <div className="min-h-screen bg-gray-50 pt-28 pb-12">
+      <div className="container mx-auto px-4 max-w-7xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
-            <Link href="/admin" className="text-brand-accent hover:text-brand-primary">
+            <Link href="/admin" className="text-gray-600 hover:text-gray-900">
               <FaArrowLeft className="text-2xl" />
             </Link>
             <div>
-              <h1 className="text-4xl font-display font-bold">Manage Coaches</h1>
-              <p className="text-brand-light/70">Add, edit, or remove coaching staff</p>
+              <h1 className="text-4xl font-display font-bold text-gray-900">Manage Coaches</h1>
+              <p className="text-gray-600">Add, edit, or remove coaching staff</p>
             </div>
           </div>
           <button
@@ -351,7 +351,7 @@ export default function AdminCoachesPage() {
                   {/* Image Preview */}
                   {formData.image && (
                     <div className="relative group">
-                      <div className="aspect-square rounded-lg overflow-hidden bg-brand-light/5 border border-brand-light/10 max-w-xs mx-auto">
+                      <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 border border-gray-200 max-w-xs mx-auto">
                         <img
                           src={formData.image}
                           alt="Profile preview"
@@ -370,7 +370,7 @@ export default function AdminCoachesPage() {
 
                   {/* Or use URL */}
                   <div>
-                    <label className="block text-sm text-brand-light/70 mb-2">Or paste image URL</label>
+                    <label className="block text-sm text-gray-600 mb-2">Or paste image URL</label>
                     <input
                       type="text"
                       name="image"
@@ -467,11 +467,11 @@ export default function AdminCoachesPage() {
           
           {loading ? (
             <div className="text-center py-12">
-              <p className="text-brand-light/70">Loading coaches...</p>
+              <p className="text-gray-600">Loading coaches...</p>
             </div>
           ) : coaches.length === 0 ? (
             <div className="card text-center py-12">
-              <p className="text-brand-light/70 mb-4">No coaches found</p>
+              <p className="text-gray-600 mb-4">No coaches found</p>
               <button
                 onClick={() => {
                   setShowForm(true)
@@ -488,7 +488,7 @@ export default function AdminCoachesPage() {
                 <div key={coach._id} className="card">
                   <div className="flex flex-col md:flex-row gap-6">
                     {/* Coach Image */}
-                    <div className="w-full md:w-48 h-48 bg-brand-secondary/20 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="w-full md:w-48 h-48 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                       {coach.image ? (
                         <img
                           src={coach.image}
@@ -496,7 +496,7 @@ export default function AdminCoachesPage() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-brand-light/30 text-6xl font-bold">
+                        <div className="w-full h-full flex items-center justify-center text-gray-300 text-6xl font-bold">
                           {coach.name.split(' ').map(n => n[0]).join('')}
                         </div>
                       )}
@@ -509,10 +509,10 @@ export default function AdminCoachesPage() {
                           <div className="flex items-center gap-2 mb-1">
                             <h3 className="text-2xl font-bold">{coach.name}</h3>
                             {coach.featured && (
-                              <FaStar className="text-brand-accent" title="Featured Coach" />
+                              <FaStar className="text-yellow-500" title="Featured Coach" />
                             )}
                           </div>
-                          <p className="text-brand-accent">{coach.title}</p>
+                          <p className="text-blue-600">{coach.title}</p>
                         </div>
                         <div className="flex gap-2">
                           <button
@@ -532,35 +532,35 @@ export default function AdminCoachesPage() {
                         </div>
                       </div>
 
-                      <p className="text-brand-light/80">{coach.bio}</p>
+                      <p className="text-gray-700">{coach.bio}</p>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                         <div className="flex items-center gap-2">
-                          <FaMedal className="text-brand-accent flex-shrink-0" />
+                          <FaMedal className="text-blue-600 flex-shrink-0" />
                           <span>{coach.championsCount} Champions Trained</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <FaEnvelope className="text-brand-accent flex-shrink-0" />
+                          <FaEnvelope className="text-blue-600 flex-shrink-0" />
                           <span className="truncate">{coach.email}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <FaPhone className="text-brand-accent flex-shrink-0" />
+                          <FaPhone className="text-blue-600 flex-shrink-0" />
                           <span>{coach.phone}</span>
                         </div>
                         <div>
-                          <span className="text-brand-light/60">Experience: </span>
+                          <span className="text-gray-600">Experience: </span>
                           <span className="font-semibold">{coach.experience} years</span>
                         </div>
                       </div>
 
                       {coach.specializations.length > 0 && (
                         <div>
-                          <span className="text-brand-light/60 text-sm">Specializations: </span>
+                          <span className="text-gray-600 text-sm">Specializations: </span>
                           <div className="flex flex-wrap gap-2 mt-1">
                             {coach.specializations.map((spec, idx) => (
                               <span
                                 key={idx}
-                                className="px-3 py-1 bg-brand-primary/20 text-brand-primary rounded-full text-xs"
+                                className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs"
                               >
                                 {spec}
                               </span>
@@ -571,12 +571,12 @@ export default function AdminCoachesPage() {
 
                       {coach.certifications.length > 0 && (
                         <div>
-                          <span className="text-brand-light/60 text-sm">Certifications: </span>
+                          <span className="text-gray-600 text-sm">Certifications: </span>
                           <div className="flex flex-wrap gap-2 mt-1">
                             {coach.certifications.map((cert, idx) => (
                               <span
                                 key={idx}
-                                className="px-3 py-1 bg-brand-accent/20 text-brand-accent rounded-full text-xs"
+                                className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs"
                               >
                                 {cert}
                               </span>
@@ -585,7 +585,7 @@ export default function AdminCoachesPage() {
                         </div>
                       )}
 
-                      <div className="text-sm text-brand-light/60">
+                      <div className="text-sm text-gray-600">
                         <span className="font-semibold">Availability: </span>
                         {coach.availability}
                       </div>

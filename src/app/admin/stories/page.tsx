@@ -153,16 +153,16 @@ export default function AdminStories() {
   if (!user) return null
 
   return (
-    <div className="min-h-screen bg-brand-dark pt-28 pb-12">
-      <div className="container-custom">
+    <div className="min-h-screen bg-gray-50 pt-28 pb-12">
+      <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
-            <Link href="/admin" className="text-brand-accent hover:text-brand-primary">
+            <Link href="/admin" className="text-gray-600 hover:text-gray-900">
               <FaArrowLeft className="text-2xl" />
             </Link>
             <div>
-              <h1 className="text-4xl font-display font-bold">Stories</h1>
-              <p className="text-brand-light/70">Manage blog posts and articles</p>
+              <h1 className="text-4xl font-display font-bold text-gray-900">Stories</h1>
+              <p className="text-gray-600">Manage blog posts and articles</p>
             </div>
           </div>
           <button
@@ -354,7 +354,7 @@ export default function AdminStories() {
                 {/* Image Preview */}
                 {formData.coverImage && (
                   <div className="relative group">
-                    <div className="aspect-video rounded-lg overflow-hidden bg-brand-light/5 border border-brand-light/10">
+                    <div className="aspect-video rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
                       <img
                         src={formData.coverImage}
                         alt="Cover preview"
@@ -446,7 +446,7 @@ export default function AdminStories() {
               {stories.map((story) => (
                 <div
                   key={story._id}
-                  className="p-4 border border-brand-light/20 rounded-lg hover:bg-brand-light/5 flex items-center justify-between"
+                  className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center justify-between"
                 >
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-1">

@@ -34,20 +34,20 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 bg-white">
       {/* Hero */}
-      <section className="hero-bg py-20 mt-20">
-        <div className="container-custom">
+      <section className="bg-zinc-950 py-16">
+        <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center max-w-3xl mx-auto"
+            transition={{ duration: 0.5 }}
+            className="text-center max-w-2xl mx-auto"
           >
-            <h1 className="text-5xl md:text-6xl font-display font-bold mb-4">
-              Get in <span className="gradient-text">Touch</span>
+            <h1 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
+              Get in Touch
             </h1>
-            <p className="text-xl text-brand-light/80">
+            <p className="text-lg text-zinc-400">
               Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
             </p>
           </motion.div>
@@ -55,7 +55,7 @@ export default function ContactPage() {
       </section>
 
       {/* Contact Section */}
-      <section className="section-padding bg-brand-dark">
+      <section className="section-padding bg-white">
         <div className="container-custom">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Contact Info */}

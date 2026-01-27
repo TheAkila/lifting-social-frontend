@@ -6,20 +6,20 @@ import { FaDumbbell, FaHeart, FaTrophy, FaUsers } from 'react-icons/fa'
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 bg-white">
       {/* Hero */}
-      <section className="hero-bg py-20 mt-20">
-        <div className="container-custom">
+      <section className="bg-zinc-950 py-16">
+        <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center max-w-3xl mx-auto"
+            transition={{ duration: 0.5 }}
+            className="text-center max-w-2xl mx-auto"
           >
-            <h1 className="text-5xl md:text-6xl font-display font-bold mb-4">
-              About <span className="gradient-text">Lifting Social</span>
+            <h1 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
+              About Lifting Social
             </h1>
-            <p className="text-xl text-brand-light/80">
+            <p className="text-lg text-zinc-400">
               More than a brand—we're a movement celebrating Sri Lankan weightlifting culture
             </p>
           </motion.div>
@@ -27,7 +27,7 @@ export default function AboutPage() {
       </section>
 
       {/* Mission */}
-      <section className="section-padding bg-brand-dark">
+      <section className="section-padding bg-white">
         <div className="container-custom max-w-4xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -35,8 +35,8 @@ export default function AboutPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="section-title">Our Mission</h2>
-            <p className="text-lg text-brand-light/80 text-center mb-8">
+            <h2 className="text-3xl font-bold text-zinc-900 text-center mb-6">Our Mission</h2>
+            <p className="text-lg text-zinc-600 text-center mb-8">
               To elevate Sri Lankan Olympic weightlifting by creating a platform that connects athletes, 
               celebrates achievements, provides quality gear, and inspires the next generation of champions.
             </p>

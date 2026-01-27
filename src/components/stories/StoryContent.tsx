@@ -1,14 +1,44 @@
 'use client'
 
 import ReactMarkdown from 'react-markdown'
+import { ExternalLink } from 'lucide-react'
 
 interface StoryContentProps {
   content: string
+  isExternal?: boolean
+  originalUrl?: string
+  sourceName?: string
 }
 
-export default function StoryContent({ content }: StoryContentProps) {
+export default function StoryContent({ content, isExternal, originalUrl, sourceName }: StoryContentProps) {
   return (
-    <article className="prose prose-lg max-w-none prose-zinc">
+    <div>
+      {/* External Post Banner */}
+      {isExternal && originalUrl && (
+        <div className="bg-zinc-50 border border-zinc-200 rounded-[12px] p-6 mb-8">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-sm text-zinc-600 mb-2">
+                This article is aggregated from <strong className="text-zinc-900">{sourceName}</strong>
+              </p>
+              <p className="text-xs text-zinc-500">
+                Click below to read the full article on the original website
+              </p>
+            </div>
+            <a
+              href={originalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-shrink-0 bg-zinc-900 hover:bg-zinc-800 text-white px-4 py-2 rounded-[10px] text-sm font-semibold flex items-center gap-2 transition-colors"
+            >
+              <ExternalLink className="w-4 h-4" />
+              Read Original
+            </a>
+          </div>
+        </div>
+      )}
+      
+      <article className="prose prose-lg max-w-none prose-zinc">
       <ReactMarkdown
         components={{
           h1: ({ ...props }) => (
@@ -55,5 +85,6 @@ export default function StoryContent({ content }: StoryContentProps) {
         {content}
       </ReactMarkdown>
     </article>
+    </div>
   )
 }
