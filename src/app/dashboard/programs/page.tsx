@@ -99,25 +99,25 @@ export default function ProgramsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-brand-dark pt-28 pb-12">
-      <div className="container-custom">
+    <div className="min-h-screen bg-white pt-20 sm:pt-28 pb-8 sm:pb-12">
+      <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8">
-          <Link href="/dashboard" className="text-orange-600 hover:text-orange-700 mb-4 inline-block">
+        <div className="mb-6 sm:mb-8">
+          <Link href="/dashboard" className="text-blue-600 hover:text-blue-700 mb-4 inline-block text-sm sm:text-base">
             ← Back to Dashboard
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">My Programs</h1>
-          <p className="mt-2 text-gray-600">Track your coaching programs and progress</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Programs</h1>
+          <p className="mt-2 text-sm sm:text-base text-gray-600">Track your coaching programs and progress</p>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow p-4 mb-6">
+        <div className="bg-white rounded-lg shadow p-3 sm:p-4 mb-6">
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => setFilter('all')}
-              className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+              className={`px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-semibold transition-colors ${
                 filter === 'all'
-                  ? 'bg-orange-600 text-white'
+                  ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -125,7 +125,7 @@ export default function ProgramsPage() {
             </button>
             <button
               onClick={() => setFilter('active')}
-              className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+              className={`px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-semibold transition-colors ${
                 filter === 'active'
                   ? 'bg-green-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -135,7 +135,7 @@ export default function ProgramsPage() {
             </button>
             <button
               onClick={() => setFilter('completed')}
-              className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+              className={`px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-semibold transition-colors ${
                 filter === 'completed'
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'

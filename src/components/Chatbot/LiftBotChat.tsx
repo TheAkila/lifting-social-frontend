@@ -120,7 +120,7 @@ export default function OlympicWeightliftingChat() {
 {!isOpen && (
   <motion.button
     onClick={() => setIsOpen(true)}
-    className="fixed bottom-6 right-6 z-50 w-20 h-20 rounded-full shadow-lg hover:scale-110 transition-transform duration-300 flex items-center justify-center bg-transparent"
+    className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-16 h-16 sm:w-20 sm:h-20 rounded-full shadow-lg hover:scale-110 transition-transform duration-300 flex items-center justify-center bg-transparent"
     aria-label="Open chat"
     whileHover={{ scale: 1.15 }}
     whileTap={{ scale: 0.9 }}
@@ -131,7 +131,7 @@ export default function OlympicWeightliftingChat() {
     <motion.img
       src="/robot.png"
       alt="LiftBot"
-      className="w-20 h-20 object-contain select-none pointer-events-none"
+      className="w-16 h-16 sm:w-20 sm:h-20 object-contain select-none pointer-events-none"
       animate={{
         y: [0, -6, 0],
         rotate: [0, 3, -3, 0],
@@ -148,7 +148,7 @@ export default function OlympicWeightliftingChat() {
 
     
 
-{/* Chat Window */} {isOpen && ( <div className="fixed bottom-6 right-6 z-50 w-[350px] h-[480px] bg-white rounded-lg shadow-2xl flex flex-col overflow-hidden border border-gray-200"> {/* Header */} <div className="bg-blue-600 px-3 py-2.5 flex items-center justify-between"> <div className="flex items-center gap-2"> <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center p-1"> <img src="/robot.png" alt="LiftBot" className="w-full h-full object-contain" /> </div> <div> <h3 className="font-semibold text-white text-sm">LiftBot</h3> <p className="text-xs text-blue-100">AI Assistant</p> </div> </div> <div className="flex items-center gap-0.5"> <button onClick={clearChat} className="p-1.5 hover:bg-white/20 rounded transition text-white" title="Clear chat" > <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /> </svg> </button> <button onClick={() => setIsOpen(false)} className="p-1.5 hover:bg-white/20 rounded transition text-white" > <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /> </svg> </button> </div> </div>
+{/* Chat Window */} {isOpen && ( <div className="fixed bottom-0 right-0 sm:bottom-6 sm:right-6 z-50 w-full sm:w-[350px] h-[100dvh] sm:h-[480px] bg-white sm:rounded-lg shadow-2xl flex flex-col overflow-hidden border-0 sm:border border-gray-200"> {/* Header */} <div className="bg-blue-600 px-3 py-2.5 flex items-center justify-between"> <div className="flex items-center gap-2"> <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center p-1"> <img src="/robot.png" alt="LiftBot" className="w-full h-full object-contain" /> </div> <div> <h3 className="font-semibold text-white text-sm">LiftBot</h3> <p className="text-xs text-blue-100">AI Assistant</p> </div> </div> <div className="flex items-center gap-0.5"> <button onClick={clearChat} className="p-1.5 hover:bg-white/20 rounded transition text-white" title="Clear chat" > <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /> </svg> </button> <button onClick={() => setIsOpen(false)} className="p-1.5 hover:bg-white/20 rounded transition text-white" > <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /> </svg> </button> </div> </div>
 
 
 

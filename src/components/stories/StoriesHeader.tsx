@@ -18,22 +18,48 @@ export default function StoriesHeader() {
 
   return (
     <section className="bg-zinc-950 text-white">
-      <div className="container mx-auto px-4 py-20">
+      <div className="container mx-auto px-4 py-6">
         <div className="max-w-4xl mx-auto">
           {/* Main Title */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-12"
+            className="text-center"
           >
-            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight">
+            <h1 className="font-display text-3xl md:text-4xl font-bold mb-2 tracking-tight">
               Weightlifting Blog
             </h1>
             
-            <p className="text-zinc-400 text-sm leading-relaxed">
-    We automatically curate the latest articles from <strong className="text-zinc-300">Weightlifting House</strong>, <strong className="text-zinc-300">All Things Gym</strong>, <strong className="text-zinc-300">BarBend</strong>, <strong className="text-zinc-300">IWF</strong>, and <strong className="text-zinc-300">Juggernaut Training Systems</strong>. All content is attributed to original sources.
-  </p>
+            <p className="text-zinc-400 text-sm leading-relaxed mb-4">
+              Curated articles from top weightlifting sources worldwide
+            </p>
+
+            {/* Sources Section */}
+            <div className="mt-6 pt-4 border-t border-zinc-800">
+              <p className="text-zinc-500 text-xs mb-3">Featured Sources:</p>
+              <div className="flex flex-wrap justify-center gap-3">
+                <div className="text-xs">
+                  <span className="text-zinc-300 font-medium">Weightlifting House</span>
+                </div>
+                <div className="text-zinc-600">•</div>
+                <div className="text-xs">
+                  <span className="text-zinc-300 font-medium">All Things Gym</span>
+                </div>
+                <div className="text-zinc-600">•</div>
+                <div className="text-xs">
+                  <span className="text-zinc-300 font-medium">BarBend</span>
+                </div>
+                <div className="text-zinc-600">•</div>
+                <div className="text-xs">
+                  <span className="text-zinc-300 font-medium">IWF</span>
+                </div>
+                <div className="text-zinc-600">•</div>
+                <div className="text-xs">
+                  <span className="text-zinc-300 font-medium">Juggernaut Training Systems</span>
+                </div>
+              </div>
+            </div>
           </motion.div>
 
          

@@ -102,18 +102,18 @@ export default function UserDashboard() {
   const pendingCount = registrations.filter(r => ['registered', 'preliminary_submitted', 'final_submitted', 'payment_pending'].includes(r.status)).length
 
   return (
-    <div className="min-h-screen bg-white pt-32 pb-16">
+    <div className="min-h-screen bg-white pt-24 sm:pt-32 pb-12 sm:pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-10"
+          className="mb-6 sm:mb-10"
         >
-          <h1 className="text-4xl md:text-5xl font-bold text-black mb-2">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-black mb-2">
             My Events
           </h1>
-          <p className="text-gray-500 text-lg">Manage your weightlifting competition registrations</p>
+          <p className="text-gray-500 text-base sm:text-lg">Manage your weightlifting competition registrations</p>
         </motion.div>
 
         {/* Events List */}

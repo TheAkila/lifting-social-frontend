@@ -74,14 +74,14 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="fixed inset-0 bg-gray-100 flex items-center justify-center p-4 overflow-y-auto">
-      <div className="w-full max-w-md my-8">
+    <div className="fixed inset-0 bg-gray-100 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+      <div className="w-full max-w-md my-auto py-4 sm:py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="bg-white rounded-lg shadow-sm p-5 sm:p-6">
             {/* Header */}
             <div className="text-center mb-6">
               <div className="flex justify-center mb-4">
@@ -94,7 +94,7 @@ export default function SignupPage() {
 
             {/* Error Message */}
             {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-300 rounded-lg text-red-700 text-sm">
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-300 rounded-lg text-blue-700 text-sm">
                 {error}
               </div>
             )}

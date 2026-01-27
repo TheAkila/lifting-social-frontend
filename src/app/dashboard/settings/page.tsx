@@ -180,15 +180,15 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-brand-dark pt-28 pb-12">
-      <div className="container-custom">
+    <div className="min-h-screen bg-white pt-20 sm:pt-28 pb-8 sm:pb-12">
+      <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8">
-          <Link href="/dashboard" className="text-orange-600 hover:text-orange-700 mb-4 inline-block">
+        <div className="mb-6 sm:mb-8">
+          <Link href="/dashboard" className="text-blue-600 hover:text-blue-700 mb-4 inline-block text-sm sm:text-base">
             ← Back to Dashboard
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-          <p className="mt-2 text-gray-600">Manage your addresses, password, and notifications</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Settings</h1>
+          <p className="mt-2 text-sm sm:text-base text-gray-600">Manage your addresses, password, and notifications</p>
         </div>
 
         {/* Message */}
@@ -208,46 +208,46 @@ export default function SettingsPage() {
             <div className="flex overflow-x-auto">
               <button
                 onClick={() => { setActiveTab('shipping'); setMessage(null) }}
-                className={`flex-1 px-6 py-4 text-sm font-semibold transition-colors ${
+                className={`flex-1 px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap ${
                   activeTab === 'shipping'
-                    ? 'bg-orange-600 text-white'
+                    ? 'bg-blue-600 text-white'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                <FaMapMarkerAlt className="inline mr-2" />
-                Shipping Address
+                <FaMapMarkerAlt className="inline mr-1 sm:mr-2" />
+                Shipping
               </button>
               <button
                 onClick={() => { setActiveTab('billing'); setMessage(null) }}
-                className={`flex-1 px-6 py-4 text-sm font-semibold transition-colors ${
+                className={`flex-1 px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap ${
                   activeTab === 'billing'
-                    ? 'bg-orange-600 text-white'
+                    ? 'bg-blue-600 text-white'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                <FaMapMarkerAlt className="inline mr-2" />
-                Billing Address
+                <FaMapMarkerAlt className="inline mr-1 sm:mr-2" />
+                Billing
               </button>
               <button
                 onClick={() => { setActiveTab('password'); setMessage(null) }}
-                className={`flex-1 px-6 py-4 text-sm font-semibold transition-colors ${
+                className={`flex-1 px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap ${
                   activeTab === 'password'
-                    ? 'bg-orange-600 text-white'
+                    ? 'bg-blue-600 text-white'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                <FaLock className="inline mr-2" />
+                <FaLock className="inline mr-1 sm:mr-2" />
                 Password
               </button>
               <button
                 onClick={() => { setActiveTab('notifications'); setMessage(null) }}
-                className={`flex-1 px-6 py-4 text-sm font-semibold transition-colors ${
+                className={`flex-1 px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap ${
                   activeTab === 'notifications'
-                    ? 'bg-orange-600 text-white'
+                    ? 'bg-blue-600 text-white'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                <FaBell className="inline mr-2" />
+                <FaBell className="inline mr-1 sm:mr-2" />
                 Notifications
               </button>
             </div>

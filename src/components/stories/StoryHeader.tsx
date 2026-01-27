@@ -49,7 +49,7 @@ export default function StoryHeader({ story }: StoryHeaderProps) {
 
   return (
     <section className="bg-zinc-950 text-white">
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-8 sm:py-12 md:py-16">
         <div className="max-w-4xl mx-auto">
           {/* Back Link */}
           <motion.div
@@ -78,12 +78,12 @@ export default function StoryHeader({ story }: StoryHeaderProps) {
             </span>
 
             {/* Title */}
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+            <h1 className="font-display text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
               {story.title}
             </h1>
 
             {/* Excerpt */}
-            <p className="text-xl text-zinc-400 mb-8 leading-relaxed">
+            <p className="text-base sm:text-xl text-zinc-400 mb-6 sm:mb-8 leading-relaxed">
               {story.excerpt}
             </p>
 

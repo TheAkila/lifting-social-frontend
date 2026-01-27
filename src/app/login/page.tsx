@@ -68,17 +68,17 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="fixed inset-0 bg-gray-100 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-gray-100 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="w-full max-w-md"
+        className="w-full max-w-md my-auto"
       >
-        <div className="bg-white rounded-lg shadow-sm p-8">
+        <div className="bg-white rounded-lg shadow-sm p-6 sm:p-8">
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="flex justify-center mb-4">
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="flex justify-center mb-3 sm:mb-4">
               <Logo />
             </div>
             <p className="text-sm text-gray-600">
@@ -88,7 +88,7 @@ export default function LoginPage() {
 
           {/* Error Message */}
           {error && (
-            <div className="mb-6 p-3 bg-red-50 border border-red-300 rounded-lg text-red-700 text-sm">
+            <div className="mb-6 p-3 bg-blue-50 border border-blue-300 rounded-lg text-blue-700 text-sm">
               {error}
             </div>
           )}

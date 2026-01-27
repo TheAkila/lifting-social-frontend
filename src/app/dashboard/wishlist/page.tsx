@@ -87,34 +87,34 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="min-h-screen bg-brand-dark pt-28 pb-12">
-      <div className="container-custom">
+    <div className="min-h-screen bg-white pt-20 sm:pt-28 pb-8 sm:pb-12">
+      <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8">
-          <Link href="/dashboard" className="text-orange-600 hover:text-orange-700 mb-4 inline-block">
+        <div className="mb-6 sm:mb-8">
+          <Link href="/dashboard" className="text-blue-600 hover:text-blue-700 mb-4 inline-block text-sm sm:text-base">
             ← Back to Dashboard
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">My Wishlist</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Wishlist</h1>
+          <p className="mt-2 text-sm sm:text-base text-gray-600">
             {wishlist.length} {wishlist.length === 1 ? 'item' : 'items'} saved for later
           </p>
         </div>
 
         {/* Wishlist Grid */}
         {wishlist.length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-12 text-center">
-            <FaHeart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Your wishlist is empty</h3>
-            <p className="text-gray-600 mb-6">Save items you love to buy them later</p>
+          <div className="bg-white rounded-lg shadow p-8 sm:p-12 text-center">
+            <FaHeart className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">Your wishlist is empty</h3>
+            <p className="text-sm sm:text-base text-gray-600 mb-6">Save items you love to buy them later</p>
             <Link
               href="/shop"
-              className="inline-block px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 font-semibold"
+              className="inline-block px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 font-semibold"
             >
               Browse Shop
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {wishlist.map((product, index) => (
               <motion.div
                 key={product._id}

@@ -107,7 +107,7 @@ export default function EventsGrid({ events }: EventsGridProps) {
   return (
     <div>
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-zinc-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-8 pb-4 sm:pb-6 border-b border-zinc-200">
         <p className="text-sm text-zinc-500">
           Showing{' '}
           <span className="text-zinc-900 font-medium">
@@ -118,7 +118,7 @@ export default function EventsGrid({ events }: EventsGridProps) {
       </div>
 
       {/* Events Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {currentEvents.map((event, index) => (
           <motion.div
             key={event.id}
@@ -202,7 +202,7 @@ export default function EventsGrid({ events }: EventsGridProps) {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-12">
+        <div className="flex items-center justify-center gap-1 sm:gap-2 mt-8 sm:mt-12">
           <button
             onClick={() => goToPage(currentPage - 1)}
             disabled={currentPage === 1}

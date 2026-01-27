@@ -301,7 +301,7 @@ export default function EventDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen pt-32 bg-white flex items-center justify-center">
+      <div className="min-h-screen pt-20 bg-white flex items-center justify-center">
         <div className="animate-pulse text-gray-500">Loading event...</div>
       </div>
     )
@@ -309,9 +309,9 @@ export default function EventDetailPage() {
 
   if (!event) {
     return (
-      <div className="min-h-screen pt-32 bg-white flex items-center justify-center">
+      <div className="min-h-screen pt-20 bg-white flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-black mb-4">Event Not Found</h1>
+          <h1 className="text-3xl font-bold text-black mb-3">Event Not Found</h1>
           <Link href="/events" className="inline-block px-6 py-3 bg-black text-white rounded-lg">Back to Events</Link>
         </div>
       </div>
@@ -323,35 +323,35 @@ export default function EventDetailPage() {
   const currentGender = registration?.gender || regForm.gender
 
   return (
-    <div className="min-h-screen pt-32 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <Link href="/events" className="inline-flex items-center gap-2 text-black hover:text-gray-600 mb-8 font-medium">
+    <div className="min-h-screen pt-20 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <Link href="/events" className="inline-flex items-center gap-2 text-black hover:text-gray-600 mb-3 font-medium">
           <ArrowLeft className="w-4 h-4" /> Back to Events
         </Link>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2">
             {event.cover_image && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative w-full rounded-lg overflow-hidden mb-8 bg-gray-100 border-2 border-black" style={{ paddingBottom: '56.25%' }}>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative w-full rounded-lg overflow-hidden mb-3 bg-gray-100 border-2 border-black" style={{ paddingBottom: '56.25%' }}>
                 <Image src={event.cover_image} alt={event.title} fill className="object-cover" />
               </motion.div>
             )}
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-              <div className="flex flex-wrap gap-2 mb-4">
-                <span className="px-3 py-1 rounded-full text-sm font-medium bg-black text-white">{event.event_type}</span>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-3">
+              <div className="flex flex-wrap gap-2 mb-3">
+                <span className="px-3 py-1 rounded-full text-xs font-medium bg-black text-white">{event.event_type}</span>
                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${phase === 'closed' ? 'bg-gray-200 text-gray-700' : 'bg-green-100 text-green-700'}`}>
                   {getPhaseLabel(phase)}
                 </span>
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold text-black mb-4">{event.title}</h1>
-              <p className="text-xl text-gray-600 leading-relaxed">{event.description}</p>
+              <h1 className="text-2xl md:text-3xl font-bold text-black mb-3">{event.title}</h1>
+              <p className="text-sm text-gray-600 leading-relaxed">{event.description}</p>
             </motion.div>
 
             {registration && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-gray-50 border-2 border-black rounded-lg p-6 mb-8">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-black">Your Registration</h3>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-gray-50 border-2 border-black rounded-lg p-4 mb-3">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-base font-bold text-black">Your Registration</h3>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusBadge?.color}`}>{statusBadge?.label}</span>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
@@ -364,15 +364,15 @@ export default function EventDetailPage() {
                   {canSubmitPreliminary() && <button onClick={() => setShowPreliminaryModal(true)} className="px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-800">Submit Preliminary Entry</button>}
                   {canSubmitFinal() && <button onClick={() => setShowFinalModal(true)} className="px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-800">Submit Final Entry</button>}
                   {registration.status !== 'withdrawn' && registration.status !== 'confirmed' && (
-                    <button onClick={handleWithdraw} className="px-4 py-2 bg-white text-red-600 border-2 border-red-600 rounded-lg font-medium hover:bg-red-50">Withdraw</button>
+                    <button onClick={handleWithdraw} className="px-4 py-2 bg-white text-blue-600 border-2 border-blue-600 rounded-lg font-medium hover:bg-blue-50">Withdraw</button>
                   )}
                 </div>
               </motion.div>
             )}
 
             {(event.registration_start_date || event.preliminary_entry_start || event.final_entry_start) && (
-              <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-6 mb-8">
-                <h3 className="text-lg font-bold text-black mb-4">Important Dates</h3>
+              <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4 mb-3">
+                <h3 className="text-base font-bold text-black mb-3">Important Dates</h3>
                 <div className="space-y-4">
                   {event.registration_start_date && (
                     <div className="flex items-center gap-4">
@@ -403,7 +403,7 @@ export default function EventDetailPage() {
 
           <div className="lg:col-span-1">
             <div className="sticky top-36">
-              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="bg-white border-2 border-black rounded-lg p-6 mb-6">
+              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="bg-white border-2 border-black rounded-lg p-4 mb-6">
                 <h3 className="text-xl font-bold text-black mb-6">Event Details</h3>
                 <div className="space-y-5">
                   <div className="flex items-start gap-3">
@@ -456,8 +456,8 @@ export default function EventDetailPage() {
       {/* Registration Modal */}
       {showRegisterModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-lg p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
-            <h2 className="text-2xl font-bold text-black mb-6">Register for Event</h2>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-lg p-4 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <h2 className="text-lg font-bold text-black mb-6">Register for Event</h2>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Gender *</label>
@@ -505,8 +505,8 @@ export default function EventDetailPage() {
       {/* Preliminary Entry Modal */}
       {showPreliminaryModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-lg p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
-            <h2 className="text-2xl font-bold text-black mb-6">Preliminary Entry</h2>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-lg p-4 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <h2 className="text-lg font-bold text-black mb-6">Preliminary Entry</h2>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Weight Category *</label>
@@ -550,8 +550,8 @@ export default function EventDetailPage() {
       {/* Final Entry Modal */}
       {showFinalModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-lg p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
-            <h2 className="text-2xl font-bold text-black mb-6">Final Entry</h2>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-lg p-4 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <h2 className="text-lg font-bold text-black mb-6">Final Entry</h2>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Confirmed Weight Category</label>

@@ -16,11 +16,11 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white pt-28 pb-12">
+    <div className="min-h-screen bg-white pt-20 sm:pt-28 pb-8 sm:pb-12">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-display font-bold mb-2 text-black">Shopping Cart</h1>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold mb-2 text-black">Shopping Cart</h1>
           <p className="text-gray-600">
             {totalItems === 0 ? 'Your cart is empty' : `${totalItems} item${totalItems === 1 ? '' : 's'} in your cart`}
           </p>
@@ -28,32 +28,32 @@ export default function CartPage() {
 
         {items.length === 0 ? (
           /* Empty Cart */
-          <div className="bg-white border-2 border-black rounded-lg p-8 text-center py-16">
-            <FaShoppingBag className="w-20 h-20 text-gray-300 mx-auto mb-6" />
-            <h2 className="text-2xl font-bold mb-4 text-black">Your cart is empty</h2>
-            <p className="text-gray-600 mb-8">Add some products to get started!</p>
+          <div className="bg-white border-2 border-black rounded-lg p-6 sm:p-8 text-center py-12 sm:py-16">
+            <FaShoppingBag className="w-16 h-16 sm:w-20 sm:h-20 text-gray-300 mx-auto mb-4 sm:mb-6" />
+            <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-black">Your cart is empty</h2>
+            <p className="text-gray-600 mb-6 sm:mb-8">Add some products to get started!</p>
             <Link href="/shop" className="inline-block px-6 py-3 bg-black text-white rounded-lg font-semibold hover:bg-gray-900 transition-colors">
               Browse Shop
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             {/* Cart Items */}
-            <div className="lg:col-span-2 space-y-4">
+            <div className="lg:col-span-2 space-y-3 sm:space-y-4">
               {items.map((item, index) => (
                 <motion.div
                   key={`${item.id}-${item.size}`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="bg-white border-2 border-black rounded-lg p-6"
+                  className="bg-white border-2 border-black rounded-lg p-4 sm:p-6"
                 >
-                  <div className="flex gap-4">
+                  <div className="flex flex-col sm:flex-row gap-4">
                     {/* Product Image */}
                     <img
                       src={item.image || '/placeholder.png'}
                       alt={item.name}
-                      className="w-24 h-24 object-cover rounded-lg border-2 border-gray-200"
+                      className="w-full sm:w-24 h-32 sm:h-24 object-cover rounded-lg border-2 border-gray-200"
                     />
 
                     {/* Product Details */}
@@ -67,10 +67,10 @@ export default function CartPage() {
                     </div>
 
                     {/* Quantity Controls */}
-                    <div className="flex flex-col items-end justify-between">
+                    <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-between gap-2">
                       <button
                         onClick={() => removeItem(item.id, item.size)}
-                        className="text-red-600 hover:text-red-700 transition-colors p-2"
+                        className="text-blue-600 hover:text-blue-700 transition-colors p-2 order-last sm:order-first"
                         title="Remove item"
                       >
                         <FaTrash />
@@ -112,8 +112,8 @@ export default function CartPage() {
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
-              <div className="bg-white border-2 border-black rounded-lg p-6 sticky top-28">
-                <h2 className="text-2xl font-bold mb-6 text-black">Order Summary</h2>
+              <div className="bg-white border-2 border-black rounded-lg p-4 sm:p-6 sticky top-20 sm:top-28">
+                <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-black">Order Summary</h2>
 
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-gray-600">

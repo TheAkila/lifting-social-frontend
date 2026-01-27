@@ -23,16 +23,16 @@ export default function Footer() {
   return (
     <footer className="bg-zinc-950 text-white relative">
       {/* Top Gradient Line */}
-      <div className="h-px bg-gradient-to-r from-transparent via-brand-accent/50 to-transparent" />
+      <div className="h-px bg-gradient-to-r from-transparent via-blue-600/50 to-transparent" />
       
       <div className="container mx-auto px-4">
         {/* Main Footer Content */}
-        <div className="py-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12">
+        <div className="py-10 sm:py-16">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-12 gap-8 sm:gap-12">
             {/* Brand Section */}
-            <div className="lg:col-span-4">
+            <div className="lg:col-span-4 col-span-full">
               <Logo className="mb-6" />
-              <p className="text-zinc-400 text-base leading-relaxed mb-8 max-w-sm">
+              <p className="text-zinc-400 text-sm sm:text-base leading-relaxed mb-6 sm:mb-8 max-w-sm">
                 Fusing Olympic weightlifting culture, Sri Lankan athletic pride,
                 and modern fitness fashion into one inspiring community.
               </p>
@@ -89,7 +89,7 @@ export default function Footer() {
                     placeholder="Enter your email"
                     className="flex-1 bg-zinc-800 border border-zinc-700 rounded-l-[8px] px-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors"
                   />
-                  <button className="bg-brand-accent hover:bg-rose-600 px-5 py-2.5 rounded-r-[8px] text-sm font-medium transition-colors duration-250">
+                  <button className="bg-blue-600 hover:bg-blue-700 px-5 py-2.5 rounded-r-[8px] text-sm font-medium transition-colors duration-250">
                     Subscribe
                   </button>
                 </div>
@@ -175,7 +175,7 @@ export default function Footer() {
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">
                   <div className="w-8 h-8 bg-zinc-800 rounded-[8px] flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-4 h-4 text-brand-accent" />
+                    <MapPin className="w-4 h-4 text-blue-600" />
                   </div>
                   <div>
                     <p className="text-sm text-zinc-400">Colombo, Sri Lanka</p>
@@ -183,7 +183,7 @@ export default function Footer() {
                 </div>
                 <div className="flex items-start space-x-3">
                   <div className="w-8 h-8 bg-zinc-800 rounded-[8px] flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-4 h-4 text-brand-accent" />
+                    <Mail className="w-4 h-4 text-blue-600" />
                   </div>
                   <div>
                     <p className="text-sm text-zinc-400">hello@liftingsocial.lk</p>
@@ -191,7 +191,7 @@ export default function Footer() {
                 </div>
                 <div className="flex items-start space-x-3">
                   <div className="w-8 h-8 bg-zinc-800 rounded-[8px] flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-4 h-4 text-brand-accent" />
+                    <Phone className="w-4 h-4 text-blue-600" />
                   </div>
                   <div>
                     <p className="text-sm text-zinc-400">+94 77 123 4567</p>
@@ -206,9 +206,8 @@ export default function Footer() {
         <div className="border-t border-zinc-800 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-zinc-500 text-sm text-center md:text-left">
-              © {new Date().getFullYear()} Lifting Social. All rights reserved. Built with{' '}
-              <Heart className="w-3.5 h-3.5 inline text-brand-accent mx-1" fill="currentColor" />
-              in Sri Lanka.
+              © {new Date().getFullYear()} Lifting Social. All rights reserved. 
+              
             </p>
             
             <div className="flex items-center space-x-4">
@@ -218,7 +217,7 @@ export default function Footer() {
               
               <button
                 onClick={scrollToTop}
-                className="w-9 h-9 bg-zinc-800 hover:bg-brand-accent rounded-[8px] flex items-center justify-center transition-all duration-250 group"
+                className="w-9 h-9 bg-zinc-800 hover:bg-blue-600 rounded-[8px] flex items-center justify-center transition-all duration-250 group"
                 title="Scroll to top"
                 aria-label="Scroll to top"
               >

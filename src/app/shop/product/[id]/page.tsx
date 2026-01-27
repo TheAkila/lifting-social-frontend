@@ -98,10 +98,10 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-brand-dark pt-28 pb-12">
-        <div className="container-custom">
-          <div className="flex items-center justify-center h-96">
-            <p className="text-brand-light/70">Loading product...</p>
+      <div className="min-h-screen bg-white pt-20 sm:pt-28 pb-8 sm:pb-12">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center justify-center h-64 sm:h-96">
+            <p className="text-gray-500">Loading product...</p>
           </div>
         </div>
       </div>
@@ -110,11 +110,11 @@ export default function ProductDetailPage() {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-brand-dark pt-28 pb-12">
-        <div className="container-custom">
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-brand-light mb-4">Product not found</h2>
-            <Link href="/shop" className="btn-primary">
+      <div className="min-h-screen bg-white pt-20 sm:pt-28 pb-8 sm:pb-12">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center py-8 sm:py-12">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Product not found</h2>
+            <Link href="/shop" className="inline-block px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-900 font-semibold">
               Back to Shop
             </Link>
           </div>
@@ -132,27 +132,27 @@ export default function ProductDetailPage() {
     : 0
 
   return (
-    <div className="min-h-screen bg-brand-dark pt-28 pb-12">
-      <div className="container-custom">
+    <div className="min-h-screen bg-white pt-20 sm:pt-28 pb-8 sm:pb-12">
+      <div className="max-w-7xl mx-auto px-4">
         {/* Back Button */}
         <Link 
           href="/shop"
-          className="inline-flex items-center space-x-2 text-brand-light/70 hover:text-brand-accent transition-colors mb-8"
+          className="inline-flex items-center space-x-2 text-gray-600 hover:text-black transition-colors mb-6 sm:mb-8"
         >
           <FaChevronLeft />
           <span>Back to Shop</span>
         </Link>
 
         {/* Product Detail Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-12">
           {/* Product Images */}
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {/* Main Image */}
             <motion.div 
               key={selectedImage}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="relative h-[500px] bg-gray-200 rounded-xl overflow-hidden"
+              className="relative h-[300px] sm:h-[400px] md:h-[500px] bg-gray-200 rounded-xl overflow-hidden"
             >
               {images[selectedImage] ? (
                 <div 
@@ -160,7 +160,7 @@ export default function ProductDetailPage() {
                   style={{ backgroundImage: `url(${images[selectedImage]})` }}
                 />
               ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-brand-secondary to-brand-primary flex items-center justify-center">
+                <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-gray-700 flex items-center justify-center">
                   <span className="text-white/50 font-bold text-2xl">
                     {product.name}
                   </span>
@@ -169,7 +169,7 @@ export default function ProductDetailPage() {
               
               {/* Discount Badge */}
               {discount > 0 && (
-                <div className="absolute top-4 left-4 bg-brand-primary text-white px-4 py-2 rounded-full font-bold">
+                <div className="absolute top-4 left-4 bg-blue-600 text-white px-4 py-2 rounded-full font-bold">
                   {discount}% OFF
                 </div>
               )}
@@ -191,7 +191,7 @@ export default function ProductDetailPage() {
                     onClick={() => setSelectedImage(index)}
                     className={`relative h-24 rounded-lg overflow-hidden transition-all ${
                       selectedImage === index 
-                        ? 'ring-2 ring-brand-accent' 
+                        ? 'ring-2 ring-blue-600' 
                         : 'opacity-60 hover:opacity-100'
                     }`}
                   >
@@ -212,12 +212,12 @@ export default function ProductDetailPage() {
           {/* Product Info */}
           <div className="space-y-6">
             {/* Category */}
-            <p className="text-brand-accent font-semibold uppercase text-sm tracking-wider">
+            <p className="text-blue-600 font-semibold uppercase text-sm tracking-wider">
               {product.category}
             </p>
 
             {/* Product Name */}
-            <h1 className="text-4xl font-display font-bold text-brand-light">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-gray-900">
               {product.name}
             </h1>
 
@@ -228,30 +228,30 @@ export default function ProductDetailPage() {
                   <FaStar key={i} className="text-yellow-400" />
                 ))}
               </div>
-              <span className="text-brand-light/70">(48 reviews)</span>
+              <span className="text-gray-600">(48 reviews)</span>
             </div>
 
             {/* Price */}
-            <div className="flex items-baseline space-x-3">
-              <span className="text-4xl font-bold text-brand-accent">
+            <div className="flex items-baseline flex-wrap gap-2 sm:space-x-3">
+              <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-600">
                 LKR {product.price.toLocaleString()}
               </span>
               {product.comparePrice && (
-                <span className="text-xl text-brand-light/50 line-through">
+                <span className="text-lg sm:text-xl text-gray-500 line-through">
                   LKR {product.comparePrice.toLocaleString()}
                 </span>
               )}
             </div>
 
             {/* Short Description */}
-            <p className="text-brand-light/70 leading-relaxed">
+            <p className="text-gray-700 leading-relaxed">
               {product.description}
             </p>
 
             {/* Size Selection */}
             {product.sizes && product.sizes.length > 0 && (
               <div>
-                <label className="block text-brand-light font-semibold mb-3">
+                <label className="block text-gray-900 font-semibold mb-3">
                   Size
                 </label>
                 <div className="flex flex-wrap gap-3">
@@ -261,8 +261,8 @@ export default function ProductDetailPage() {
                       onClick={() => setSelectedSize(size)}
                       className={`px-6 py-3 rounded-lg font-semibold transition-all ${
                         selectedSize === size
-                          ? 'bg-brand-accent text-white'
-                          : 'bg-brand-light/10 text-brand-light hover:bg-brand-light/20'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                       }`}
                     >
                       {size}
@@ -275,7 +275,7 @@ export default function ProductDetailPage() {
             {/* Color Selection */}
             {product.colors && product.colors.length > 0 && (
               <div>
-                <label className="block text-brand-light font-semibold mb-3">
+                <label className="block text-gray-900 font-semibold mb-3">
                   Color
                 </label>
                 <div className="flex flex-wrap gap-3">
@@ -285,8 +285,8 @@ export default function ProductDetailPage() {
                       onClick={() => setSelectedColor(color)}
                       className={`px-6 py-3 rounded-lg font-semibold transition-all ${
                         selectedColor === color
-                          ? 'bg-brand-accent text-white'
-                          : 'bg-brand-light/10 text-brand-light hover:bg-brand-light/20'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                       }`}
                     >
                       {color}
@@ -298,29 +298,29 @@ export default function ProductDetailPage() {
 
             {/* Quantity */}
             <div>
-              <label className="block text-brand-light font-semibold mb-3">
+              <label className="block text-gray-900 font-semibold mb-3">
                 Quantity
               </label>
               <div className="flex items-center space-x-4">
-                <div className="flex items-center bg-brand-light/10 rounded-lg">
+                <div className="flex items-center bg-gray-100 rounded-lg">
                   <button
                     onClick={() => handleQuantityChange(-1)}
-                    className="p-3 hover:bg-brand-light/20 transition-colors rounded-l-lg"
+                    className="p-3 hover:bg-gray-200 transition-colors rounded-l-lg"
                   >
-                    <FaMinus className="text-brand-light" />
+                    <FaMinus className="text-gray-900" />
                   </button>
-                  <span className="px-6 text-brand-light font-bold text-lg">
+                  <span className="px-6 text-gray-900 font-bold text-lg">
                     {quantity}
                   </span>
                   <button
                     onClick={() => handleQuantityChange(1)}
-                    className="p-3 hover:bg-brand-light/20 transition-colors rounded-r-lg"
+                    className="p-3 hover:bg-gray-200 transition-colors rounded-r-lg"
                   >
-                    <FaPlus className="text-brand-light" />
+                    <FaPlus className="text-gray-900" />
                   </button>
                 </div>
                 {product.inStock && (
-                  <span className="flex items-center space-x-2 text-green-400">
+                  <span className="flex items-center space-x-2 text-green-600">
                     <FaCheckCircle />
                     <span>In Stock</span>
                   </span>
@@ -333,24 +333,24 @@ export default function ProductDetailPage() {
               <button
                 onClick={handleAddToCart}
                 disabled={!product.inStock}
-                className="btn-primary flex-1 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 flex items-center justify-center space-x-2 bg-black text-white py-3 rounded-lg hover:bg-gray-900 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <FaShoppingCart />
                 <span>Add to Cart</span>
               </button>
-              <button className="btn-outline w-14 h-14 flex items-center justify-center">
+              <button className="w-14 h-14 flex items-center justify-center border-2 border-gray-200 text-gray-700 hover:border-gray-400 rounded-lg transition-colors">
                 <FaHeart className="text-xl" />
               </button>
             </div>
 
             {/* Shipping Info */}
-            <div className="border-t border-brand-light/10 pt-6 space-y-3">
-              <div className="flex items-center space-x-3 text-brand-light/70">
-                <FaShippingFast className="text-2xl text-brand-accent" />
+            <div className="border-t border-gray-200 pt-6 space-y-3">
+              <div className="flex items-center space-x-3 text-gray-700">
+                <FaShippingFast className="text-2xl text-blue-600" />
                 <span>Free shipping on orders over LKR 5,000</span>
               </div>
-              <div className="flex items-center space-x-3 text-brand-light/70">
-                <FaCheckCircle className="text-2xl text-green-400" />
+              <div className="flex items-center space-x-3 text-gray-700">
+                <FaCheckCircle className="text-2xl text-green-600" />
                 <span>Easy 30-day returns</span>
               </div>
             </div>
@@ -358,62 +358,62 @@ export default function ProductDetailPage() {
         </div>
 
         {/* Product Details Tabs */}
-        <div className="card mb-12">
+        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden mb-8 sm:mb-12">
           {/* Tab Headers */}
-          <div className="flex space-x-8 border-b border-brand-light/10 mb-6">
+          <div className="flex space-x-4 sm:space-x-8 border-b border-gray-200 mb-4 sm:mb-6 overflow-x-auto px-4 sm:px-6">
             <button
               onClick={() => setActiveTab('description')}
-              className={`pb-4 font-semibold transition-colors relative ${
+              className={`pb-4 font-semibold transition-colors relative whitespace-nowrap ${
                 activeTab === 'description'
-                  ? 'text-brand-accent'
-                  : 'text-brand-light/70 hover:text-brand-light'
+                  ? 'text-blue-600'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               Description
               {activeTab === 'description' && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-accent" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
               )}
             </button>
             <button
               onClick={() => setActiveTab('details')}
-              className={`pb-4 font-semibold transition-colors relative ${
+              className={`pb-4 font-semibold transition-colors relative whitespace-nowrap ${
                 activeTab === 'details'
-                  ? 'text-brand-accent'
-                  : 'text-brand-light/70 hover:text-brand-light'
+                  ? 'text-blue-600'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               Details
               {activeTab === 'details' && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-accent" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
               )}
             </button>
             <button
               onClick={() => setActiveTab('reviews')}
-              className={`pb-4 font-semibold transition-colors relative ${
+              className={`pb-4 font-semibold transition-colors relative whitespace-nowrap ${
                 activeTab === 'reviews'
-                  ? 'text-brand-accent'
-                  : 'text-brand-light/70 hover:text-brand-light'
+                  ? 'text-blue-600'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               Reviews
               {activeTab === 'reviews' && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-accent" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
               )}
             </button>
           </div>
 
           {/* Tab Content */}
-          <div className="text-brand-light/70">
+          <div className="text-gray-700 p-4 sm:p-6">
             {activeTab === 'description' && (
               <div className="space-y-4">
                 <p className="leading-relaxed">{product.description}</p>
                 {product.features && product.features.length > 0 && (
                   <div>
-                    <h3 className="text-brand-light font-semibold mb-3">Key Features:</h3>
+                    <h3 className="text-gray-900 font-semibold mb-3">Key Features:</h3>
                     <ul className="space-y-2">
                       {product.features.map((feature, index) => (
                         <li key={index} className="flex items-start space-x-2">
-                          <FaCheckCircle className="text-brand-accent mt-1 flex-shrink-0" />
+                          <FaCheckCircle className="text-blue-600 mt-1 flex-shrink-0" />
                           <span>{feature}</span>
                         </li>
                       ))}
@@ -427,23 +427,23 @@ export default function ProductDetailPage() {
               <div className="space-y-4">
                 {product.material && (
                   <div>
-                    <strong className="text-brand-light">Material:</strong> {product.material}
+                    <strong className="text-gray-900">Material:</strong> {product.material}
                   </div>
                 )}
                 {product.care && (
                   <div>
-                    <strong className="text-brand-light">Care Instructions:</strong> {product.care}
+                    <strong className="text-gray-900">Care Instructions:</strong> {product.care}
                   </div>
                 )}
                 <div>
-                  <strong className="text-brand-light">Category:</strong> {product.category}
+                  <strong className="text-gray-900">Category:</strong> {product.category}
                 </div>
                 <div>
-                  <strong className="text-brand-light">Availability:</strong>{' '}
+                  <strong className="text-gray-900">Availability:</strong>{' '}
                   {product.inStock ? (
-                    <span className="text-green-400">In Stock</span>
+                    <span className="text-green-600">In Stock</span>
                   ) : (
-                    <span className="text-red-400">Out of Stock</span>
+                    <span className="text-gray-600">Out of Stock</span>
                   )}
                 </div>
               </div>
@@ -459,12 +459,12 @@ export default function ProductDetailPage() {
 
         {/* Related Products */}
         <div>
-          <h2 className="text-3xl font-display font-bold text-brand-light mb-8">
+          <h2 className="text-2xl sm:text-3xl font-display font-bold text-gray-900 mb-6 sm:mb-8">
             You May Also Like
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {/* Placeholder for related products - you can implement this later */}
-            <div className="text-center text-brand-light/50 col-span-full py-8">
+            <div className="text-center text-gray-500 col-span-full py-8">
               Related products coming soon
             </div>
           </div>

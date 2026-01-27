@@ -58,10 +58,10 @@ export default function Navbar() {
             : 'bg-white border-b border-zinc-100'
         }`}
       >
-        <div className="w-full">
-          <div className="flex items-center justify-between h-16">
+        <div className="w-full px-4 sm:px-6">
+          <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo - Left Corner */}
-            <Link href="/" className="flex items-center group pl-4">
+            <Link href="/" className="flex items-center group">
               <Logo />
             </Link>
 

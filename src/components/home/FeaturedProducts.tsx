@@ -26,10 +26,10 @@ export default function FeaturedProducts() {
   }, [])
 
   return (
-    <section className="py-20 bg-zinc-50">
+    <section className="py-12 sm:py-16 md:py-20 bg-zinc-50">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-12">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 sm:gap-6 mb-8 sm:mb-12">
           <div>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -47,7 +47,7 @@ export default function FeaturedProducts() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="font-display text-3xl lg:text-4xl font-bold text-zinc-900"
+              className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-zinc-900"
             >
               Premium Gear for Champions
             </motion.h2>
@@ -70,7 +70,7 @@ export default function FeaturedProducts() {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {products.map((product, index) => (
             <motion.div
               key={product._id || product.id}

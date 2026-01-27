@@ -1,7 +1,6 @@
 import Hero from '@/components/home/Hero'
 import FeaturedProducts from '@/components/home/FeaturedProducts'
 import LatestStories from '@/components/home/LatestStories'
-import StatsSection from '@/components/home/StatsSection'
 import CTASections from '@/components/home/CTASections'
 
 export default function HomePage() {
@@ -9,7 +8,6 @@ export default function HomePage() {
     <div className="min-h-screen bg-white">
       <Hero />
       <FeaturedProducts />
-      <StatsSection />
       <LatestStories />
       <CTASections />
     </div>

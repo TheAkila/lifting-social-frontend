@@ -147,7 +147,7 @@ export default function ProductGrid({ filters }: ProductGridProps) {
   return (
     <div>
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-zinc-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-8 pb-4 sm:pb-6 border-b border-zinc-200">
         <p className="text-sm text-zinc-500">
           {loading ? (
             'Loading...'
@@ -164,7 +164,7 @@ export default function ProductGrid({ filters }: ProductGridProps) {
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="bg-white border border-zinc-200 rounded-[8px] px-4 py-2.5 text-sm text-zinc-700 focus:outline-none focus:border-zinc-400 transition-colors cursor-pointer"
+          className="bg-white border border-zinc-200 rounded-[8px] px-3 sm:px-4 py-2 sm:py-2.5 text-sm text-zinc-700 focus:outline-none focus:border-zinc-400 transition-colors cursor-pointer w-full sm:w-auto"
           aria-label="Sort products"
         >
           <option value="featured">Featured</option>
@@ -175,7 +175,7 @@ export default function ProductGrid({ filters }: ProductGridProps) {
       </div>
 
       {/* Product Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
         {loading ? (
           // Loading skeleton
           Array.from({ length: 6 }).map((_, i) => (

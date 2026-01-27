@@ -40,20 +40,20 @@ export default function LatestStories() {
   }
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-12 sm:py-16 md:py-20 bg-white">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-12">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 sm:gap-6 mb-8 sm:mb-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="font-display text-3xl lg:text-4xl font-bold text-zinc-900">
+            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-zinc-900">
               Weightlifting News
             </h2>
-            <p className="text-zinc-500 mt-2">
+            <p className="text-zinc-500 mt-2 text-sm sm:text-base">
               Stories, interviews, and updates from the weightlifting world
             </p>
           </motion.div>
@@ -75,7 +75,7 @@ export default function LatestStories() {
         </div>
 
         {/* Stories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {loading ? (
             Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="animate-pulse">

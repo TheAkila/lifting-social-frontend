@@ -118,15 +118,15 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-brand-dark pt-28 pb-12">
-      <div className="container-custom">
+    <div className="min-h-screen bg-white pt-20 sm:pt-28 pb-8 sm:pb-12">
+      <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8">
-          <Link href="/dashboard" className="text-orange-600 hover:text-orange-700 mb-4 inline-block">
+        <div className="mb-6 sm:mb-8">
+          <Link href="/dashboard" className="text-blue-600 hover:text-blue-700 mb-4 inline-block text-sm sm:text-base">
             ← Back to Dashboard
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Edit Profile</h1>
-          <p className="mt-2 text-gray-600">Update your personal information</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Edit Profile</h1>
+          <p className="mt-2 text-sm sm:text-base text-gray-600">Update your personal information</p>
         </div>
 
         {/* Message */}

@@ -6,12 +6,12 @@ import CoachesGrid from '@/components/coaching/CoachesGrid'
 
 export default function CoachingPage() {
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
+    <div className="min-h-screen bg-gray-50 pt-16 sm:pt-20">
       <Suspense fallback={
         <div className="container-custom section-padding">
           <div className="animate-pulse">
             <div className="h-32 bg-gray-200 rounded-lg mb-8" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="bg-gray-200 rounded-lg aspect-[3/4]" />
               ))}
@@ -20,7 +20,7 @@ export default function CoachingPage() {
         </div>
       }>
         <CoachingHeader />
-        <div className="container mx-auto px-4 py-12">
+        <div className="container mx-auto px-4 py-8 sm:py-12">
           <CoachesGrid />
         </div>
       </Suspense>

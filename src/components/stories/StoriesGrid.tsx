@@ -128,7 +128,7 @@ export default function StoriesGrid({ selectedCategory }: StoriesGridProps) {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="animate-pulse">
             <div className="aspect-[4/3] bg-zinc-200 rounded-[12px] mb-4" />
@@ -161,7 +161,7 @@ export default function StoriesGrid({ selectedCategory }: StoriesGridProps) {
   return (
     <div>
       {/* Stories Grid - Weightlifting House Style */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {currentStories.map((story, index) => (
           <motion.article
             key={story._id || story.id}
