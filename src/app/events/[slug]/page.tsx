@@ -12,12 +12,14 @@ import { Calendar, MapPin, Users, ArrowLeft } from 'lucide-react'
 interface Event {
   id: string
   title: string
+  name?: string  // From competitions table
   slug: string
   description: string
   event_type: string
   location?: string
   venue?: string
   start_date: string
+  date?: string  // From competitions table
   end_date?: string
   cover_image?: string
   organizer?: string
@@ -25,15 +27,25 @@ interface Event {
   current_participants?: number
   entry_fee?: number
   event_status?: string
-  registration_start_date?: string
-  registration_end_date?: string
+  status?: string  // From competitions table
+  // New unified schema fields
+  registration_open?: boolean
+  registration_start?: string
+  registration_end?: string
+  registration_start_date?: string  // Legacy compatibility
+  registration_end_date?: string  // Legacy compatibility
+  preliminary_entry_open?: boolean
   preliminary_entry_start?: string
-  preliminary_entry_deadline?: string
+  preliminary_entry_end?: string
+  preliminary_entry_deadline?: string  // Legacy compatibility
+  final_entry_open?: boolean
   final_entry_start?: string
-  final_entry_deadline?: string
+  final_entry_end?: string
+  final_entry_deadline?: string  // Legacy compatibility
   weight_categories?: string[]
   require_qualifying_total?: boolean
   require_medical_clearance?: boolean
+  is_registration_open?: boolean  // Mapped field
 }
 
 interface Registration {
@@ -168,19 +180,38 @@ export default function EventDetailPage() {
     if (!event) return 'unknown'
     const now = new Date()
     
-    if (event.final_entry_start && new Date(event.final_entry_start) <= now && 
-        (!event.final_entry_deadline || new Date(event.final_entry_deadline) > now)) {
+    // Use boolean flags from unified schema (primary method)
+    if (event.final_entry_open) {
       return 'final_entries'
     }
-    if (event.preliminary_entry_start && new Date(event.preliminary_entry_start) <= now && 
-        (!event.preliminary_entry_deadline || new Date(event.preliminary_entry_deadline) > now)) {
+    if (event.preliminary_entry_open) {
       return 'preliminary_entries'
     }
-    if (event.registration_start_date && new Date(event.registration_start_date) <= now && 
-        (!event.registration_end_date || new Date(event.registration_end_date) > now)) {
+    if (event.registration_open || event.is_registration_open) {
       return 'registration'
     }
-    if (event.registration_start_date && new Date(event.registration_start_date) > now) {
+    
+    // Fallback to date-based checks for backwards compatibility
+    const regStart = event.registration_start || event.registration_start_date
+    const regEnd = event.registration_end || event.registration_end_date
+    const prelimStart = event.preliminary_entry_start
+    const prelimEnd = event.preliminary_entry_end || event.preliminary_entry_deadline
+    const finalStart = event.final_entry_start
+    const finalEnd = event.final_entry_end || event.final_entry_deadline
+    
+    if (finalStart && new Date(finalStart) <= now && 
+        (!finalEnd || new Date(finalEnd) > now)) {
+      return 'final_entries'
+    }
+    if (prelimStart && new Date(prelimStart) <= now && 
+        (!prelimEnd || new Date(prelimEnd) > now)) {
+      return 'preliminary_entries'
+    }
+    if (regStart && new Date(regStart) <= now && 
+        (!regEnd || new Date(regEnd) > now)) {
+      return 'registration'
+    }
+    if (regStart && new Date(regStart) > now) {
       return 'upcoming'
     }
     return 'closed'
@@ -200,13 +231,24 @@ export default function EventDetailPage() {
   const getStatusBadge = (status: string) => {
     const badges: Record<string, { color: string, label: string }> = {
       'registered': { color: 'bg-blue-100 text-blue-700', label: 'Registered' },
+      // Preliminary entry statuses
+      'preliminary_pending': { color: 'bg-yellow-100 text-yellow-700', label: 'Preliminary Pending' },
       'preliminary_submitted': { color: 'bg-yellow-100 text-yellow-700', label: 'Preliminary Submitted' },
       'preliminary_approved': { color: 'bg-green-100 text-green-700', label: 'Preliminary Approved' },
+      'preliminary_rejected': { color: 'bg-red-100 text-red-700', label: 'Preliminary Rejected' },
+      // Final entry statuses
+      'final_pending': { color: 'bg-yellow-100 text-yellow-700', label: 'Final Entry Pending' },
       'final_submitted': { color: 'bg-yellow-100 text-yellow-700', label: 'Final Entry Submitted' },
       'final_approved': { color: 'bg-green-100 text-green-700', label: 'Final Entry Approved' },
+      'final_rejected': { color: 'bg-red-100 text-red-700', label: 'Final Entry Rejected' },
+      // Other statuses
       'payment_pending': { color: 'bg-orange-100 text-orange-700', label: 'Payment Pending' },
       'confirmed': { color: 'bg-green-100 text-green-700', label: 'Confirmed' },
-      'withdrawn': { color: 'bg-gray-100 text-gray-700', label: 'Withdrawn' }
+      'checked_in': { color: 'bg-purple-100 text-purple-700', label: 'Checked In' },
+      'competing': { color: 'bg-indigo-100 text-indigo-700', label: 'Competing' },
+      'completed': { color: 'bg-green-100 text-green-700', label: 'Completed' },
+      'withdrawn': { color: 'bg-gray-100 text-gray-700', label: 'Withdrawn' },
+      'disqualified': { color: 'bg-red-100 text-red-700', label: 'Disqualified' }
     }
     return badges[status] || { color: 'bg-gray-100 text-gray-700', label: status }
   }

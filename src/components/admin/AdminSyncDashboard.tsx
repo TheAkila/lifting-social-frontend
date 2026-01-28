@@ -28,7 +28,8 @@ interface EventSyncStatus {
 }
 
 export default function AdminSyncDashboard() {
-  const { token } = useAuth();
+  const auth = useAuth();
+  const token = (auth as any)?.token || '';
   const [events, setEvents] = useState<any[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
   const [syncStatus, setSyncStatus] = useState<EventSyncStatus | null>(null);
@@ -186,10 +187,11 @@ export default function AdminSyncDashboard() {
 
       {/* Event Selector */}
       <div className="bg-white p-6 rounded-xl shadow-sm">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="event-selector" className="block text-sm font-medium text-gray-700 mb-2">
           Select Event
         </label>
         <select
+          id="event-selector"
           value={selectedEvent || ''}
           onChange={(e) => setSelectedEvent(e.target.value)}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
