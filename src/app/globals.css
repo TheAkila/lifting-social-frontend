@@ -123,7 +123,7 @@
   }
 
   .badge-error {
-    @apply bg-red-100 text-red-700;
+    @apply bg-blue-100 text-blue-700;
   }
 
   /* ============================================

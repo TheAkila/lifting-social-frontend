@@ -134,7 +134,7 @@ export default function ProfilePage() {
           <div className={`mb-6 p-4 rounded-lg ${
             message.type === 'success' 
               ? 'bg-green-100 text-green-800 border border-green-300' 
-              : 'bg-red-100 text-red-800 border border-red-300'
+              : 'bg-blue-100 text-blue-800 border border-blue-300'
           }`}>
             {message.text}
           </div>

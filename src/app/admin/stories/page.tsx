@@ -260,7 +260,7 @@ export default function AdminStories() {
                     <option value="bg-brand-accent">Accent (Orange)</option>
                     <option value="bg-purple-600">Purple</option>
                     <option value="bg-green-600">Green</option>
-                    <option value="bg-red-600">Red</option>
+                    <option value="bg-blue-600">Blue</option>
                   </select>
                 </div>
                 <div>
@@ -306,7 +306,7 @@ export default function AdminStories() {
                           <button
                             type="button"
                             onClick={() => setFormData({ ...formData, tags: formData.tags.filter((_, i) => i !== idx) })}
-                            className="text-red-500 hover:text-red-400"
+                            className="text-blue-500 hover:text-blue-400"
                           >
                             <FaTimes />
                           </button>
@@ -364,7 +364,7 @@ export default function AdminStories() {
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, coverImage: '' })}
-                      className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-2 right-2 bg-blue-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <FaTimes />
                     </button>
@@ -470,7 +470,7 @@ export default function AdminStories() {
                     </button>
                     <button
                       onClick={() => handleDelete(story._id)}
-                      className="text-red-400 hover:text-red-300 p-2"
+                      className="text-blue-400 hover:text-blue-300 p-2"
                     >
                       <FaTrash />
                     </button>

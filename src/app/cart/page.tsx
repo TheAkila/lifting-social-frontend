@@ -104,7 +104,7 @@ export default function CartPage() {
               {/* Clear Cart Button */}
               <button
                 onClick={clearCart}
-                className="w-full py-3 px-6 bg-white text-red-600 hover:bg-red-50 rounded-lg font-semibold transition-colors border-2 border-red-600"
+                className="w-full py-3 px-6 bg-white text-blue-600 hover:bg-blue-50 rounded-lg font-semibold transition-colors border-2 border-blue-600"
               >
                 Clear Cart
               </button>

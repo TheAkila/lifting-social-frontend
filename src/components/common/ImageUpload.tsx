@@ -187,7 +187,7 @@ export default function ImageUpload({
       )}
 
       {error && (
-        <p className="mt-2 text-sm text-red-600">{error}</p>
+        <p className="mt-2 text-sm text-blue-600">{error}</p>
       )}
     </div>
   )

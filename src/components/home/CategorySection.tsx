@@ -18,7 +18,7 @@ const categories = [
     icon: BookOpen,
     href: '/stories',
     description: 'Inspiring athlete journeys & updates',
-    color: 'from-red-500 to-red-700',
+    color: 'from-blue-500 to-blue-700',
     accent: 'white'
   },
   {
@@ -65,7 +65,7 @@ export default function CategorySection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center space-x-2 bg-red-50 text-red-600 px-4 py-2 rounded-full text-sm font-inter font-medium mb-6"
+            className="inline-flex items-center space-x-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full text-sm font-inter font-medium mb-6"
           >
             <Sparkles className="w-4 h-4" />
             <span>Explore Our World</span>
@@ -78,7 +78,7 @@ export default function CategorySection() {
             className="font-outfit text-4xl lg:text-5xl font-black text-black mb-6"
           >
             Everything You Need for
-            <span className="text-red-500 block">Your Journey</span>
+            <span className="text-blue-500 block">Your Journey</span>
           </motion.h2>
           
           <motion.p

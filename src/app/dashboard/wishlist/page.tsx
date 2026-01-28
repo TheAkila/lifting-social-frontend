@@ -132,17 +132,17 @@ export default function WishlistPage() {
                   />
                   {!product.inStock && (
                     <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                      <span className="bg-red-600 text-white px-4 py-2 rounded-lg font-bold">
+                      <span className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold">
                         Out of Stock
                       </span>
                     </div>
                   )}
                   <button
                     onClick={() => handleRemoveFromWishlist(product._id)}
-                    className="absolute top-2 right-2 p-2 bg-white rounded-full shadow hover:bg-red-50 transition-colors"
+                    className="absolute top-2 right-2 p-2 bg-white rounded-full shadow hover:bg-blue-50 transition-colors"
                     title="Remove from wishlist"
                   >
-                    <FaHeart className="text-red-600" />
+                    <FaHeart className="text-blue-600" />
                   </button>
                 </div>
 
@@ -184,7 +184,7 @@ export default function WishlistPage() {
                     )}
                     <button
                       onClick={() => handleRemoveFromWishlist(product._id)}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 font-semibold transition-colors"
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 font-semibold transition-colors"
                     >
                       <FaTrash />
                       Remove

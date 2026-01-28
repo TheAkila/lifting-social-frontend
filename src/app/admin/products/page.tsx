@@ -399,7 +399,7 @@ export default function AdminProducts() {
                           <button
                             type="button"
                             onClick={() => removeImage(index)}
-                            className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="absolute top-2 right-2 bg-blue-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                           >
                             <FaTimes />
                           </button>
@@ -479,7 +479,7 @@ export default function AdminProducts() {
                       <button
                         type="button"
                         onClick={() => removeSize(size)}
-                        className="hover:text-red-400"
+                        className="hover:text-blue-400"
                       >
                         <FaTimes className="text-xs" />
                       </button>
@@ -514,7 +514,7 @@ export default function AdminProducts() {
                       <button
                         type="button"
                         onClick={() => removeColor(color)}
-                        className="hover:text-red-400"
+                        className="hover:text-blue-400"
                       >
                         <FaTimes className="text-xs" />
                       </button>
@@ -573,7 +573,7 @@ export default function AdminProducts() {
                       <button
                         type="button"
                         onClick={() => removeFeature(index)}
-                        className="text-red-400 hover:text-red-300"
+                        className="text-blue-400 hover:text-blue-300"
                       >
                         <FaTimes />
                       </button>
@@ -665,7 +665,7 @@ export default function AdminProducts() {
                       <td className="py-3 px-4">LKR {product.price?.toLocaleString()}</td>
                       <td className="py-3 px-4">{product.category}</td>
                       <td className="py-3 px-4">
-                        <span className={product.inStock ? 'text-green-400' : 'text-red-400'}>
+                        <span className={product.inStock ? 'text-green-400' : 'text-blue-400'}>
                           {product.inStock ? `${product.inventory} in stock` : 'Out of stock'}
                         </span>
                       </td>
@@ -682,7 +682,7 @@ export default function AdminProducts() {
                           </button>
                           <button
                             onClick={() => handleDelete(product._id)}
-                            className="text-red-400 hover:text-red-300 p-2"
+                            className="text-blue-400 hover:text-blue-300 p-2"
                           >
                             <FaTrash />
                           </button>

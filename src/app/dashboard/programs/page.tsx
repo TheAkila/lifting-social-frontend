@@ -68,7 +68,7 @@ export default function ProgramsPage() {
     const colors: any = {
       active: 'bg-green-100 text-green-800 border-green-300',
       completed: 'bg-blue-100 text-blue-800 border-blue-300',
-      cancelled: 'bg-red-100 text-red-800 border-red-300'
+      cancelled: 'bg-blue-100 text-blue-800 border-blue-300'
     }
     return colors[status] || 'bg-gray-100 text-gray-800 border-gray-300'
   }
@@ -237,7 +237,7 @@ export default function ProgramsPage() {
                           </Link>
                           <button
                             onClick={() => handleCancelProgram(program.programId._id)}
-                            className="w-full px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 font-semibold transition-colors"
+                            className="w-full px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 font-semibold transition-colors"
                           >
                             Cancel Enrollment
                           </button>

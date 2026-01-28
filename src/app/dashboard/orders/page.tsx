@@ -85,9 +85,9 @@ export default function OrdersPage() {
       processing: 'bg-blue-100 text-blue-800 border-blue-300',
       shipped: 'bg-purple-100 text-purple-800 border-purple-300',
       delivered: 'bg-green-100 text-green-800 border-green-300',
-      cancelled: 'bg-red-100 text-red-800 border-red-300',
+      cancelled: 'bg-blue-100 text-blue-800 border-blue-300',
       completed: 'bg-green-100 text-green-800 border-green-300',
-      failed: 'bg-red-100 text-red-800 border-red-300',
+      failed: 'bg-blue-100 text-blue-800 border-blue-300',
       refunded: 'bg-gray-100 text-gray-800 border-gray-300'
     }
     return colors[status] || 'bg-gray-100 text-gray-800 border-gray-300'
@@ -297,7 +297,7 @@ export default function OrdersPage() {
                     {['pending', 'processing'].includes(order.orderStatus) && (
                       <button
                         onClick={() => handleCancelOrder(order._id)}
-                        className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition-colors"
                       >
                         <FaTimes />
                         Cancel Order

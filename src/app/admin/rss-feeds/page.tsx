@@ -371,7 +371,7 @@ export default function AdminRSSFeeds() {
                     </button>
                     <button
                       onClick={() => handleDelete(feed.id)}
-                      className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-[10px] transition-colors"
+                      className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-[10px] transition-colors"
                       title="Delete feed"
                     >
                       <FaTrash />

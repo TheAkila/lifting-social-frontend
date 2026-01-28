@@ -163,7 +163,7 @@ export default function UserDashboard() {
                               <Calendar className="w-4 h-4 text-gray-400" />
                               <span>{eventDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                               {isUpcoming && daysUntil <= 30 && (
-                                <span className="ml-1 px-2 py-0.5 bg-red-100 text-red-700 text-xs font-semibold rounded-full">
+                                <span className="ml-1 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
                                   {daysUntil} days
                                 </span>
                               )}

@@ -13,7 +13,7 @@ const config: Config = {
         brand: {
           primary: '#0f0f0f', // Near black - main brand color
           secondary: '#fafafa', // Off-white
-          accent: '#e11d48', // Rose/Red accent for CTAs
+          accent: '#2563eb', // Blue accent for CTAs
           dark: '#09090b', // Deep black background
           light: '#f4f4f5', // Light zinc background
         },
