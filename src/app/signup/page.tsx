@@ -24,9 +24,9 @@ export default function SignupPage() {
   // Hide navbar, announcement bar, and footer
   useEffect(() => {
     document.body.style.overflow = 'hidden'
-    const navbar = document.querySelector('nav')
-    const announcement = document.querySelector('nav')?.previousElementSibling
-    const footer = document.querySelector('footer')
+    const navbar = document.querySelector('nav') as HTMLElement | null
+    const announcement = document.querySelector('nav')?.previousElementSibling as HTMLElement | null
+    const footer = document.querySelector('footer') as HTMLElement | null
     
     if (navbar) navbar.style.display = 'none'
     if (announcement) announcement.style.display = 'none'

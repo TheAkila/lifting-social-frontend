@@ -8,6 +8,8 @@ import Image from 'next/image'
 import api from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'
 import { Calendar, MapPin, Users, ArrowLeft } from 'lucide-react'
+import FinalEntryForm from '@/components/FinalEntryForm'
+import PreliminaryEntryForm from '@/components/PreliminaryEntryForm'
 
 interface Event {
   id: string
@@ -343,18 +345,18 @@ export default function EventDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen pt-20 bg-white flex items-center justify-center">
-        <div className="animate-pulse text-gray-500">Loading event...</div>
+      <div className="min-h-screen pt-20 bg-zinc-50 flex items-center justify-center">
+        <div className="animate-pulse text-zinc-500">Loading event...</div>
       </div>
     )
   }
 
   if (!event) {
     return (
-      <div className="min-h-screen pt-20 bg-white flex items-center justify-center">
+      <div className="min-h-screen pt-20 bg-zinc-50 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-black mb-3">Event Not Found</h1>
-          <Link href="/events" className="inline-block px-6 py-3 bg-black text-white rounded-lg">Back to Events</Link>
+          <h1 className="text-3xl font-display font-bold text-zinc-900 mb-3">Event Not Found</h1>
+          <Link href="/events" className="inline-block px-6 py-3 btn-primary">Back to Events</Link>
         </div>
       </div>
     )
@@ -365,78 +367,78 @@ export default function EventDetailPage() {
   const currentGender = registration?.gender || regForm.gender
 
   return (
-    <div className="min-h-screen pt-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <Link href="/events" className="inline-flex items-center gap-2 text-black hover:text-gray-600 mb-3 font-medium">
+    <div className="min-h-screen pt-20 bg-zinc-50">
+      <div className="container-custom py-8">
+        <Link href="/events" className="inline-flex items-center gap-2 text-zinc-600 hover:text-zinc-900 mb-8 font-medium transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to Events
         </Link>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             {event.cover_image && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative w-full rounded-lg overflow-hidden mb-3 bg-gray-100 border-2 border-black" style={{ paddingBottom: '56.25%' }}>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative w-full rounded-card overflow-hidden mb-6 bg-zinc-200" style={{ paddingBottom: '56.25%' }}>
                 <Image src={event.cover_image} alt={event.title} fill className="object-cover" />
               </motion.div>
             )}
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-3">
-              <div className="flex flex-wrap gap-2 mb-3">
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-black text-white">{event.event_type}</span>
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${phase === 'closed' ? 'bg-gray-200 text-gray-700' : 'bg-green-100 text-green-700'}`}>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+              <div className="flex flex-wrap gap-3 mb-4">
+                <span className="px-3 py-1.5 rounded-badge text-xs font-medium bg-zinc-900 text-white">{event.event_type}</span>
+                <span className={`px-3 py-1.5 rounded-badge text-xs font-medium ${phase === 'closed' ? 'bg-zinc-200 text-zinc-700' : 'bg-emerald-100 text-emerald-700'}`}>
                   {getPhaseLabel(phase)}
                 </span>
               </div>
-              <h1 className="text-2xl md:text-3xl font-bold text-black mb-3">{event.title}</h1>
-              <p className="text-sm text-gray-600 leading-relaxed">{event.description}</p>
+              <h1 className="text-4xl md:text-5xl font-display font-bold text-zinc-900 mb-4">{event.title}</h1>
+              <p className="text-base text-zinc-600 leading-relaxed">{event.description}</p>
             </motion.div>
 
             {registration && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-gray-50 border-2 border-black rounded-lg p-4 mb-3">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-base font-bold text-black">Your Registration</h3>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusBadge?.color}`}>{statusBadge?.label}</span>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white border border-zinc-200 rounded-card p-6 mb-8 shadow-sm">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-display font-semibold text-zinc-900">Your Registration</h3>
+                  <span className={`px-3 py-1.5 rounded-badge text-xs font-medium ${statusBadge?.color}`}>{statusBadge?.label}</span>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                  {registration.weight_category && <div><div className="text-gray-500">Category</div><div className="font-semibold text-black">{registration.weight_category}</div></div>}
-                  {registration.entry_total && <div><div className="text-gray-500">Entry Total</div><div className="font-semibold text-black">{registration.entry_total}kg</div></div>}
-                  {registration.snatch_opener && <div><div className="text-gray-500">Snatch Opener</div><div className="font-semibold text-black">{registration.snatch_opener}kg</div></div>}
-                  {registration.cnj_opener && <div><div className="text-gray-500">C&J Opener</div><div className="font-semibold text-black">{registration.cnj_opener}kg</div></div>}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm mb-6">
+                  {registration.weight_category && <div><div className="text-zinc-500 text-xs uppercase tracking-wider">Category</div><div className="font-semibold text-zinc-900 mt-1">{registration.weight_category}</div></div>}
+                  {registration.entry_total && <div><div className="text-zinc-500 text-xs uppercase tracking-wider">Entry Total</div><div className="font-semibold text-zinc-900 mt-1">{registration.entry_total}kg</div></div>}
+                  {registration.snatch_opener && <div><div className="text-zinc-500 text-xs uppercase tracking-wider">Snatch Opener</div><div className="font-semibold text-zinc-900 mt-1">{registration.snatch_opener}kg</div></div>}
+                  {registration.cnj_opener && <div><div className="text-zinc-500 text-xs uppercase tracking-wider">C&J Opener</div><div className="font-semibold text-zinc-900 mt-1">{registration.cnj_opener}kg</div></div>}
                 </div>
-                <div className="flex flex-wrap gap-3 mt-6">
-                  {canSubmitPreliminary() && <button onClick={() => setShowPreliminaryModal(true)} className="px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-800">Submit Preliminary Entry</button>}
-                  {canSubmitFinal() && <button onClick={() => setShowFinalModal(true)} className="px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-800">Submit Final Entry</button>}
+                <div className="flex flex-wrap gap-3">
+                  {canSubmitPreliminary() && <button onClick={() => setShowPreliminaryModal(true)} className="btn-primary">Submit Preliminary Entry</button>}
+                  {canSubmitFinal() && <button onClick={() => setShowFinalModal(true)} className="btn-primary">Submit Final Entry</button>}
                   {registration.status !== 'withdrawn' && registration.status !== 'confirmed' && (
-                    <button onClick={handleWithdraw} className="px-4 py-2 bg-white text-blue-600 border-2 border-blue-600 rounded-lg font-medium hover:bg-blue-50">Withdraw</button>
+                    <button onClick={handleWithdraw} className="btn-outline">Withdraw</button>
                   )}
                 </div>
               </motion.div>
             )}
 
             {(event.registration_start_date || event.preliminary_entry_start || event.final_entry_start) && (
-              <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4 mb-3">
-                <h3 className="text-base font-bold text-black mb-3">Important Dates</h3>
+              <div className="bg-white border border-zinc-200 rounded-card p-6 mb-8 shadow-sm">
+                <h3 className="text-lg font-display font-semibold text-zinc-900 mb-6">Important Dates</h3>
                 <div className="space-y-4">
                   {event.registration_start_date && (
-                    <div className="flex items-center gap-4">
-                      <div className={`w-3 h-3 rounded-full ${phase === 'registration' ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                      <div><div className="font-semibold text-black">Registration</div><div className="text-sm text-gray-600">{formatDateTime(event.registration_start_date)}{event.registration_end_date && ` - ${formatDateTime(event.registration_end_date)}`}</div></div>
+                    <div className="flex items-start gap-4">
+                      <div className={`w-3 h-3 rounded-full mt-1.5 flex-shrink-0 ${phase === 'registration' ? 'bg-emerald-500' : 'bg-zinc-300'}`}></div>
+                      <div><div className="font-semibold text-zinc-900">Registration</div><div className="text-sm text-zinc-600 mt-0.5">{formatDateTime(event.registration_start_date)}{event.registration_end_date && ` - ${formatDateTime(event.registration_end_date)}`}</div></div>
                     </div>
                   )}
                   {event.preliminary_entry_start && (
-                    <div className="flex items-center gap-4">
-                      <div className={`w-3 h-3 rounded-full ${phase === 'preliminary_entries' ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                      <div><div className="font-semibold text-black">Preliminary Entries</div><div className="text-sm text-gray-600">{formatDateTime(event.preliminary_entry_start)}{event.preliminary_entry_deadline && ` - ${formatDateTime(event.preliminary_entry_deadline)}`}</div></div>
+                    <div className="flex items-start gap-4">
+                      <div className={`w-3 h-3 rounded-full mt-1.5 flex-shrink-0 ${phase === 'preliminary_entries' ? 'bg-emerald-500' : 'bg-zinc-300'}`}></div>
+                      <div><div className="font-semibold text-zinc-900">Preliminary Entries</div><div className="text-sm text-zinc-600 mt-0.5">{formatDateTime(event.preliminary_entry_start)}{event.preliminary_entry_deadline && ` - ${formatDateTime(event.preliminary_entry_deadline)}`}</div></div>
                     </div>
                   )}
                   {event.final_entry_start && (
-                    <div className="flex items-center gap-4">
-                      <div className={`w-3 h-3 rounded-full ${phase === 'final_entries' ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                      <div><div className="font-semibold text-black">Final Entries</div><div className="text-sm text-gray-600">{formatDateTime(event.final_entry_start)}{event.final_entry_deadline && ` - ${formatDateTime(event.final_entry_deadline)}`}</div></div>
+                    <div className="flex items-start gap-4">
+                      <div className={`w-3 h-3 rounded-full mt-1.5 flex-shrink-0 ${phase === 'final_entries' ? 'bg-emerald-500' : 'bg-zinc-300'}`}></div>
+                      <div><div className="font-semibold text-zinc-900">Final Entries</div><div className="text-sm text-zinc-600 mt-0.5">{formatDateTime(event.final_entry_start)}{event.final_entry_deadline && ` - ${formatDateTime(event.final_entry_deadline)}`}</div></div>
                     </div>
                   )}
-                  <div className="flex items-center gap-4">
-                    <div className="w-3 h-3 rounded-full bg-gray-300"></div>
-                    <div><div className="font-semibold text-black">Competition</div><div className="text-sm text-gray-600">{formatDate(event.start_date)}</div></div>
+                  <div className="flex items-start gap-4">
+                    <div className="w-3 h-3 rounded-full mt-1.5 bg-zinc-300 flex-shrink-0"></div>
+                    <div><div className="font-semibold text-zinc-900">Competition</div><div className="text-sm text-zinc-600 mt-0.5">{formatDate(event.start_date)}</div></div>
                   </div>
                 </div>
               </div>
@@ -444,9 +446,9 @@ export default function EventDetailPage() {
           </div>
 
           <div className="lg:col-span-1">
-            <div className="sticky top-36">
-              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="bg-white border-2 border-black rounded-lg p-4 mb-6">
-                <h3 className="text-xl font-bold text-black mb-6">Event Details</h3>
+            <div className="sticky top-24">
+              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="bg-white border border-zinc-200 rounded-card p-6 mb-6 shadow-sm">
+                <h3 className="text-lg font-display font-semibold text-zinc-900 mb-6">Event Details</h3>
                 <div className="space-y-5">
                   <div className="flex items-start gap-3">
                     <Calendar className="w-5 h-5 text-black mt-0.5 flex-shrink-0" />
@@ -481,64 +483,78 @@ export default function EventDetailPage() {
                 </div>
                 {canRegister() && (
                   <div className="mt-6">
-                    <button onClick={() => user ? setShowRegisterModal(true) : router.push(`/login?redirect=/events/${params.slug}`)} className="w-full px-6 py-3 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 transition-colors">
+                    <button onClick={() => user ? setShowRegisterModal(true) : router.push(`/login?redirect=/events/${params.slug}`)} className="w-full btn-primary">
                       Register for Event
                     </button>
                   </div>
                 )}
                 {!canRegister() && !registration && phase === 'upcoming' && event.registration_start_date && (
-                  <div className="mt-6 text-center text-sm text-gray-500">Registration opens {formatDateTime(event.registration_start_date)}</div>
+                  <div className="mt-6 text-center text-sm text-zinc-500">Registration opens {formatDateTime(event.registration_start_date)}</div>
                 )}
               </motion.div>
             </div>
           </div>
         </div>
+
+        {/* Preliminary Entry Form Display */}
+        {phase === 'preliminary_entries' && event.preliminary_entry_open && (
+          <div className="mt-12">
+            <PreliminaryEntryForm eventId={event.id} eventTitle={event.title || event.name || 'Preliminary Entry Form'} />
+          </div>
+        )}
+
+        {/* Final Entry Form Display */}
+        {phase === 'final_entries' && event.final_entry_open && (
+          <div className="mt-12">
+            <FinalEntryForm eventId={event.id} eventTitle={event.title || event.name || 'Final Entry Form'} />
+          </div>
+        )}
       </div>
 
       {/* Registration Modal */}
       {showRegisterModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-lg p-4 max-w-lg w-full max-h-[90vh] overflow-y-auto">
-            <h2 className="text-lg font-bold text-black mb-6">Register for Event</h2>
-            <div className="space-y-4">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-card p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-lg">
+            <h2 className="text-2xl font-display font-semibold text-zinc-900 mb-6">Register for Event</h2>
+            <div className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Gender *</label>
-                <select title="Select gender" value={regForm.gender} onChange={(e) => setRegForm({ ...regForm, gender: e.target.value, weightCategory: '' })} className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none">
+                <label className="block text-sm font-medium text-zinc-700 mb-2">Gender *</label>
+                <select title="Select gender" value={regForm.gender} onChange={(e) => setRegForm({ ...regForm, gender: e.target.value, weightCategory: '' })} className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900">
                   <option value="male">Male</option>
                   <option value="female">Female</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Weight Category *</label>
-                <select title="Select weight category" value={regForm.weightCategory} onChange={(e) => setRegForm({ ...regForm, weightCategory: e.target.value })} className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none">
+                <label className="block text-sm font-medium text-zinc-700 mb-2">Weight Category *</label>
+                <select title="Select weight category" value={regForm.weightCategory} onChange={(e) => setRegForm({ ...regForm, weightCategory: e.target.value })} className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900">
                   <option value="">Select category</option>
                   {WEIGHT_CATEGORIES[regForm.gender as keyof typeof WEIGHT_CATEGORIES].map(cat => <option key={cat} value={cat}>{cat}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Club Name</label>
-                <input type="text" value={regForm.clubName} onChange={(e) => setRegForm({ ...regForm, clubName: e.target.value })} className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none" placeholder="Your weightlifting club" />
+                <label className="block text-sm font-medium text-zinc-700 mb-2">Club Name</label>
+                <input type="text" value={regForm.clubName} onChange={(e) => setRegForm({ ...regForm, clubName: e.target.value })} className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" placeholder="Your weightlifting club" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Federation ID</label>
-                <input type="text" value={regForm.federationId} onChange={(e) => setRegForm({ ...regForm, federationId: e.target.value })} className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none" placeholder="Membership number" />
+                <label className="block text-sm font-medium text-zinc-700 mb-2">Federation ID</label>
+                <input type="text" value={regForm.federationId} onChange={(e) => setRegForm({ ...regForm, federationId: e.target.value })} className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" placeholder="Membership number" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Coach Name</label>
-                <input type="text" value={regForm.coachName} onChange={(e) => setRegForm({ ...regForm, coachName: e.target.value })} className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none" placeholder="Your coach's name" />
+                <label className="block text-sm font-medium text-zinc-700 mb-2">Coach Name</label>
+                <input type="text" value={regForm.coachName} onChange={(e) => setRegForm({ ...regForm, coachName: e.target.value })} className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" placeholder="Your coach's name" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Coach Phone</label>
-                <input type="tel" value={regForm.coachPhone} onChange={(e) => setRegForm({ ...regForm, coachPhone: e.target.value })} className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none" placeholder="Coach contact number" />
+                <label className="block text-sm font-medium text-zinc-700 mb-2">Coach Phone</label>
+                <input type="tel" value={regForm.coachPhone} onChange={(e) => setRegForm({ ...regForm, coachPhone: e.target.value })} className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" placeholder="Coach contact number" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                <textarea value={regForm.athleteNotes} onChange={(e) => setRegForm({ ...regForm, athleteNotes: e.target.value })} className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none" rows={3} placeholder="Any additional notes..." />
+                <label className="block text-sm font-medium text-zinc-700 mb-2">Notes</label>
+                <textarea value={regForm.athleteNotes} onChange={(e) => setRegForm({ ...regForm, athleteNotes: e.target.value })} className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" rows={3} placeholder="Any additional notes..." />
               </div>
             </div>
-            <div className="flex gap-3 mt-6">
-              <button onClick={handleRegister} disabled={submitting} className="flex-1 px-6 py-3 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 disabled:opacity-50">{submitting ? 'Registering...' : 'Register'}</button>
-              <button onClick={() => setShowRegisterModal(false)} className="px-6 py-3 border-2 border-gray-300 rounded-lg font-semibold hover:bg-gray-50">Cancel</button>
+            <div className="flex gap-3 mt-8">
+              <button onClick={handleRegister} disabled={submitting} className="flex-1 btn-primary disabled:opacity-50">{submitting ? 'Registering...' : 'Register'}</button>
+              <button onClick={() => setShowRegisterModal(false)} className="btn-secondary">Cancel</button>
             </div>
           </motion.div>
         </div>

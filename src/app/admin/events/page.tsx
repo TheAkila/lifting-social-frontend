@@ -629,7 +629,7 @@ export default function AdminEventsPage() {
           ) : (
             <div className="grid grid-cols-1 gap-6">
               {events.map((event) => (
-                <div key={event._id} className="card">
+                <div key={event.id} className="card">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">

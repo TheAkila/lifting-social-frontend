@@ -163,7 +163,7 @@ export default function AdminRSSFeeds() {
             <button
               onClick={handleRefreshAll}
               disabled={refreshing}
-              className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-[10px] flex items-center gap-2 transition-colors disabled:opacity-50">
+              className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-[10px] flex items-center gap-2 transition-colors disabled:opacity-50"
             >
               {refreshing ? (
                 <>

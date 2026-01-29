@@ -1,21 +1,26 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import AdminSyncDashboard from '@/components/admin/AdminSyncDashboard';
 
 export default function AdminSyncPage() {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!loading && (!user || user.role !== 'admin')) {
+    if (user === null) {
       router.push('/login');
+    } else if (user && user.role !== 'admin') {
+      router.push('/');
+    } else if (user) {
+      setLoading(false);
     }
-  }, [user, loading, router]);
+  }, [user, router]);
 
-  if (loading) {
+  if (loading || !user) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -23,7 +28,7 @@ export default function AdminSyncPage() {
     );
   }
 
-  if (!user || user.role !== 'admin') {
+  if (user.role !== 'admin') {
     return null;
   }
 
