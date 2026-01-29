@@ -5,14 +5,9 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
+import { signInWithGoogle } from '@/lib/supabase'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import Logo from '@/components/layout/Logo'
-
-declare global {
-  interface Window {
-    google: any
-  }
-}
 
 export default function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false)
@@ -24,23 +19,8 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   
-  const { login, signup, googleLogin } = useAuth()
+  const { login, signup } = useAuth()
   const router = useRouter()
-
-  // Load Google Sign-In script
-  useEffect(() => {
-    const script = document.createElement('script')
-    script.src = 'https://accounts.google.com/gsi/client'
-    script.async = true
-    script.defer = true
-    document.head.appendChild(script)
-    
-    return () => {
-      if (document.head.contains(script)) {
-        document.head.removeChild(script)
-      }
-    }
-  }, [])
 
   // Hide navbar, announcement bar, and footer
   useEffect(() => {
@@ -61,34 +41,17 @@ export default function LoginPage() {
     }
   }, [])
 
-  const handleGoogleSuccess = async (response: any) => {
+  const handleGoogleLogin = async () => {
     setGoogleLoading(true)
     setError('')
     
     try {
-      // Decode JWT token from Google
-      const jwt = response.credential
-      const parts = jwt.split('.')
-      const decoded = JSON.parse(atob(parts[1]))
-      
-      const { email, name, picture, sub: googleId } = decoded
-      
-      // Call Google login on backend
-      await googleLogin(email, name, picture, googleId)
-      
-      // Redirect after successful login
-      const searchParams = new URLSearchParams(window.location.search)
-      const redirect = searchParams.get('redirect')
-      
-      if (redirect) {
-        router.push(redirect)
-      } else {
-        router.push('/')
-      }
+      // Use Supabase OAuth for Google
+      await signInWithGoogle()
+      // Supabase will handle the redirect to /auth/callback
     } catch (err: any) {
-      console.error('Google login error:', err)
-      setError(err.message || 'Google login failed. Please try again.')
-    } finally {
+      console.error('Google sign in error:', err)
+      setError(err.message || 'Google sign in failed. Please try again.')
       setGoogleLoading(false)
     }
   }
@@ -96,34 +59,42 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    setIsLoading(true)
+    
+    if (!email || !password) {
+      setError('Please fill in all fields')
+      return
+    }
+    
+    if (isSignUp && !name) {
+      setError('Name is required for signup')
+      return
+    }
 
+    setIsLoading(true)
+    
     try {
       if (isSignUp) {
-        if (!name.trim()) {
-          throw new Error('Name is required')
+        // Sign up
+        if (password.length < 6) {
+          setError('Password must be at least 6 characters')
+          setIsLoading(false)
+          return
         }
         await signup(email, password, name)
       } else {
+        // Login
         await login(email, password)
       }
       
-      // Check if there's a redirect query parameter
-      const searchParams = new URLSearchParams(window.location.search)
-      const redirect = searchParams.get('redirect')
-      
-      if (redirect) {
-        router.push(redirect)
-      } else {
-        router.push('/')
-      }
+      router.push('/')
     } catch (err: any) {
       console.error('Auth error:', err)
-      setError(err.message || (isSignUp ? 'Signup failed. Please try again.' : 'Invalid email or password. Please try again.'))
+      setError(err.message || `${isSignUp ? 'Signup' : 'Login'} failed. Please try again.`)
     } finally {
       setIsLoading(false)
     }
   }
+
 
   return (
     <div className="fixed inset-0 bg-gray-100 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
@@ -182,19 +153,19 @@ export default function LoginPage() {
           )}
 
           {/* Google Sign-In Button */}
-          <div
-            id="google-signin-button"
-            className="mb-4 flex justify-center"
-            onClick={() => setGoogleLoading(true)}
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            disabled={googleLoading || isLoading}
+            className="w-full mb-4 flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <button
-              type="button"
-              disabled={googleLoading}
-              className="flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {googleLoading ? (
+            {googleLoading ? (
+              <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
+                <span className="text-sm font-medium text-gray-700">Signing in...</span>
+              </>
+            ) : (
+              <>
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path
                     fill="currentColor"
@@ -213,36 +184,10 @@ export default function LoginPage() {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-              )}
-              <span className="text-sm font-medium text-gray-700">
-                {googleLoading ? 'Signing in...' : `Continue with Google`}
-              </span>
-            </button>
-          </div>
-
-          <script src="https://accounts.google.com/gsi/client" async defer></script>
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                window.onload = function () {
-                  if (typeof window.google !== 'undefined') {
-                    google.accounts.id.initialize({
-                      client_id: '${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}',
-                      callback: window.handleGoogleSignIn
-                    });
-                    google.accounts.id.renderButton(
-                      document.getElementById('google-signin-button'),
-                      { 
-                        theme: 'outline',
-                        size: 'large',
-                        locale: 'en'
-                      }
-                    );
-                  }
-                };
-              `,
-            }}
-          />
+                <span className="text-sm font-medium text-gray-700">Continue with Google</span>
+              </>
+            )}
+          </button>
 
           {/* Divider */}
           <div className="relative my-4">
@@ -339,7 +284,7 @@ export default function LoginPage() {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || googleLoading}
               className="w-full py-2.5 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
             >
               {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
