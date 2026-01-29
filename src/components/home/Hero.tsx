@@ -2,118 +2,211 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { ArrowRight, Users, Trophy, Heart, Sparkles } from 'lucide-react'
+import { ArrowRight, Sparkles } from 'lucide-react'
+import Image from 'next/image'
 
 export default function Hero() {
   return (
-    <section className="relative min-h-[85vh] sm:min-h-[90vh] flex items-center justify-center overflow-hidden bg-white pt-16 sm:pt-0">
-      {/* Subtle Background Gradient */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-50 via-white to-white" />
-        <motion.div
-          animate={{
-            scale: [1, 1.1, 1],
-            opacity: [0.15, 0.25, 0.15],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-          className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px]"
-        />
-        <motion.div
-          animate={{
-            scale: [1.1, 1, 1.1],
-            opacity: [0.1, 0.2, 0.1],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-          className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] bg-gray-200/30 rounded-full blur-[100px]"
-        />
-      </div>
-
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center max-w-4xl mx-auto">
-          {/* Pre-headline Badge */}
+    <section className="relative bg-white overflow-hidden pt-20 sm:pt-24 md:pt-32">
+      <div className="container mx-auto px-4">
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-[90vh] lg:min-h-[70vh]">
+          {/* Left Content */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 bg-black text-white border border-gray-800 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 mb-6 sm:mb-8"
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="flex flex-col justify-center"
           >
-            <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
-            <span className="text-xs sm:text-sm font-medium">
-              Sri Lankan Weightlifting Culture
-            </span>
+            {/* Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2 bg-black/5 text-black px-3.5 py-2 rounded-full w-fit mb-6"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span className="text-xs sm:text-sm font-medium">
+                Sri Lankan Strength Culture
+              </span>
+            </motion.div>
+
+            {/* Main Headline */}
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="font-display text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-black mb-6 leading-tight"
+            >
+              Lift Better.
+              <br />
+              <span className="text-gray-600">Live Stronger.</span>
+            </motion.h1>
+
+            {/* Subheadline */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed max-w-xl"
+            >
+              Premium gear, inspiring stories, and a thriving community of weightlifters dedicated to their craft.
+            </motion.p>
+
+            {/* CTA Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="flex flex-col sm:flex-row gap-4 mb-8"
+            >
+              <Link
+                href="/shop"
+                className="group inline-flex items-center justify-center gap-2 bg-black hover:bg-gray-900 text-white px-8 py-4 rounded-lg font-semibold text-base transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+              >
+                <span>Shop Now</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              
+              <Link
+                href="/stories"
+                className="inline-flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-black px-8 py-4 rounded-lg font-semibold text-base transition-all duration-300"
+              >
+                <span>Read Stories</span>
+              </Link>
+            </motion.div>
+
+            {/* Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="grid grid-cols-3 gap-6 pt-8 border-t border-gray-200"
+            >
+              <div>
+                <p className="text-2xl md:text-3xl font-bold text-black">500+</p>
+                <p className="text-sm text-gray-500 mt-1">Community Members</p>
+              </div>
+              <div>
+                <p className="text-2xl md:text-3xl font-bold text-black">100%</p>
+                <p className="text-sm text-gray-500 mt-1">Quality Assured</p>
+              </div>
+              <div>
+                <p className="text-2xl md:text-3xl font-bold text-black">24/7</p>
+                <p className="text-sm text-gray-500 mt-1">Support Available</p>
+              </div>
+            </motion.div>
           </motion.div>
 
-          {/* Main Headline */}
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 tracking-tight text-black px-2"
-          >
-            Lift. Train. Inspire.
-          </motion.h1>
-
-          {/* Subheadline */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-base sm:text-lg md:text-xl text-gray-700 mb-8 sm:mb-10 max-w-2xl mx-auto leading-relaxed px-4"
-          >
-            Where modern fitness meets authentic Sri Lankan weightlifting heritage.
-            Join our community, shop premium gear, celebrate strength.
-          </motion.p>
-
-          {/* CTA Buttons */}
+          {/* Right Image Showcase */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="relative h-[500px] sm:h-[600px] md:h-[700px] hidden lg:block"
           >
-            <Link
-              href="/shop"
-              className="group w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-black hover:bg-gray-900 text-white px-6 sm:px-7 py-3 sm:py-3.5 rounded-[10px] font-medium text-sm sm:text-base transition-all duration-250 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+            {/* Large Background Shape */}
+            <div className="absolute inset-0 bg-gradient-to-br from-black/5 to-black/10 rounded-3xl overflow-hidden">
+              <div 
+                className="absolute inset-0 bg-gradient-to-br from-gray-900 to-black flex items-center justify-center"
+              >
+                {/* Placeholder for hero image - using gradient for now */}
+                <div className="text-white text-center">
+                  <div className="w-32 h-32 rounded-full bg-white/10 flex items-center justify-center mb-4">
+                    <Sparkles className="w-16 h-16 text-white/30" />
+                  </div>
+                  <p className="text-white/40 text-sm">Hero Image Placeholder</p>
+                </div>
+              </div>
+
+              {/* Decorative Elements */}
+              <motion.div
+                animate={{
+                  y: [0, 20, 0],
+                  opacity: [0.5, 0.8, 0.5],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+                className="absolute bottom-8 left-8 w-20 h-20 bg-white/10 rounded-lg"
+              />
+              <motion.div
+                animate={{
+                  y: [20, 0, 20],
+                  opacity: [0.5, 0.8, 0.5],
+                }}
+                transition={{
+                  duration: 5,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+                className="absolute top-8 right-8 w-32 h-32 border border-white/20 rounded-xl"
+              />
+            </div>
+
+            {/* Floating Card */}
+            <motion.div
+              animate={{
+                y: [0, -10, 0],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: 'easeInOut',
+              }}
+              className="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-2xl p-6 max-w-xs z-10"
             >
-              <span>Shop Collection</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
-            
-            <Link
-              href="/stories"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-black px-6 sm:px-7 py-3 sm:py-3.5 rounded-[10px] font-medium text-sm sm:text-base border-2 border-black hover:border-gray-800 transition-all duration-250"
-            >
-              Explore Stories
-            </Link>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center text-white font-bold">
+                  ⭐
+                </div>
+                <div>
+                  <p className="font-semibold text-black">Premium Quality</p>
+                  <p className="text-xs text-gray-500">Trusted by athletes</p>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
+
+        {/* Mobile Image Area */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="relative h-80 sm:h-96 lg:hidden mt-12 sm:mt-16"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-black rounded-2xl overflow-hidden">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-white text-center">
+                <div className="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-3">
+                  <Sparkles className="w-12 h-12 text-white/30" />
+                </div>
+                <p className="text-white/40 text-sm">Hero Image</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
 
-      {/* Scroll Indicator - Hidden on mobile */}
+      {/* Scroll Indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 hidden sm:block"
+        transition={{ delay: 1 }}
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 hidden md:block"
       >
         <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-          className="w-5 h-8 border-2 border-black rounded-full flex items-start justify-center p-1.5"
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+          className="flex flex-col items-center gap-2"
         >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-1 h-1 bg-black rounded-full"
-          />
+          <p className="text-xs text-gray-500 font-medium">Scroll to explore</p>
+          <motion.div className="w-5 h-8 border border-gray-300 rounded-full flex justify-center p-2">
+            <motion.div className="w-1 h-1 bg-gray-400 rounded-full" />
+          </motion.div>
         </motion.div>
       </motion.div>
     </section>
