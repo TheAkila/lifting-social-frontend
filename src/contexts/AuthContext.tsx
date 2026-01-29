@@ -14,6 +14,7 @@ interface AuthContextType {
   user: User | null
   login: (email: string, password: string) => Promise<User>
   signup: (email: string, password: string, name: string) => Promise<User>
+  googleLogin: (email: string, name: string, picture: string, googleId: string) => Promise<User>
   logout: () => void
   isLoading: boolean
 }
@@ -57,20 +58,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
         console.error('Login failed with error:', errorData)
-        throw new Error(errorData.message || 'Login failed')
+        throw new Error(errorData.error?.message || errorData.message || 'Login failed')
       }
 
       const data = await response.json()
-      console.log('Login successful, user data:', { email: data.user.email, role: data.user.role })
+      console.log('Login successful, user data:', { email: data.data.user.email, role: data.data.user.role })
       
       const userData = {
-        id: data.user.id || data.user._id,
-        email: data.user.email,
-        name: data.user.name,
-        role: data.user.role || 'user',
+        id: data.data.user.id,
+        email: data.data.user.email,
+        name: data.data.user.name,
+        role: data.data.user.role || 'user',
+        avatar: data.data.user.avatar,
       }
       setUser(userData)
-      localStorage.setItem('authToken', data.token)
+      localStorage.setItem('authToken', data.data.token)
       localStorage.setItem('userData', JSON.stringify(userData))
       return userData
     } catch (error) {
@@ -89,22 +91,56 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       })
 
       if (!response.ok) {
-        throw new Error('Signup failed')
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error?.message || errorData.message || 'Signup failed')
       }
 
       const data = await response.json()
       const userData = {
-        id: data.user.id || data.user._id,
-        email: data.user.email,
-        name: data.user.name,
-        role: data.user.role || 'user',
+        id: data.data.user.id,
+        email: data.data.user.email,
+        name: data.data.user.name,
+        role: data.data.user.role || 'user',
+        avatar: data.data.user.avatar,
       }
       setUser(userData)
-      localStorage.setItem('authToken', data.token)
+      localStorage.setItem('authToken', data.data.token)
       localStorage.setItem('userData', JSON.stringify(userData))
       return userData
     } catch (error) {
       console.error('Signup failed:', error)
+      throw error
+    }
+  }
+
+  const googleLogin = async (email: string, name: string, picture: string, googleId: string): Promise<User> => {
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+      const response = await fetch(`${API_URL}/auth/google/callback`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name, picture, googleId }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error?.message || errorData.message || 'Google login failed')
+      }
+
+      const data = await response.json()
+      const userData = {
+        id: data.data.user.id,
+        email: data.data.user.email,
+        name: data.data.user.name,
+        role: data.data.user.role || 'user',
+        avatar: data.data.user.avatar,
+      }
+      setUser(userData)
+      localStorage.setItem('authToken', data.data.token)
+      localStorage.setItem('userData', JSON.stringify(userData))
+      return userData
+    } catch (error) {
+      console.error('Google login failed:', error)
       throw error
     }
   }
@@ -116,7 +152,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, signup, googleLogin, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   )
