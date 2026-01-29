@@ -99,13 +99,14 @@ export default function AuthCallbackPage() {
             console.log('✅ Verified storage:')
             console.log('  sessionStorage userData:', sessionStorage.getItem('userData'))
             console.log('  localStorage userData:', localStorage.getItem('userData'))
-
+            
+            // Dispatch storage event to notify listeners (for multiple tabs/windows)
+            window.dispatchEvent(new Event('storage'))
+            
             console.log('✅ Authentication successful! Redirecting to home...')
             
-            // Redirect to home
-            setTimeout(() => {
-              router.push('/')
-            }, 500)
+            // Redirect to home immediately
+            router.push('/')
           } else {
             throw new Error('No user in session')
           }

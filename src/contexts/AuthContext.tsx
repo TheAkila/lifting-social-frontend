@@ -72,6 +72,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     restoreSession()
+
+    // Listen for auth state changes (handles Google OAuth redirect)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state changed:', event)
+        
+        if (event === 'SIGNED_IN' && session?.user) {
+          // User just signed in, update from storage
+          const storedUserData = sessionStorage.getItem('userData') || localStorage.getItem('userData')
+          if (storedUserData) {
+            try {
+              const userData = JSON.parse(storedUserData)
+              setUser(userData)
+              console.log('User updated from storage:', userData.email)
+            } catch (err) {
+              console.error('Failed to parse stored user data:', err)
+            }
+          }
+        } else if (event === 'SIGNED_OUT') {
+          // User signed out
+          setUser(null)
+          localStorage.removeItem('authToken')
+          localStorage.removeItem('userData')
+          localStorage.removeItem('refreshToken')
+          sessionStorage.removeItem('authToken')
+          sessionStorage.removeItem('userData')
+          sessionStorage.removeItem('refreshToken')
+        }
+      }
+    )
+
+    return () => {
+      subscription?.unsubscribe()
+    }
   }, [])
 
   const login = async (email: string, password: string): Promise<User> => {
