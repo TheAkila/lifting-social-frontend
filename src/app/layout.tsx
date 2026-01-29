@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   keywords: 'Olympic weightlifting, Sri Lanka, fitness apparel, athlete stories, weightlifting culture',
   authors: [{ name: 'Lifting Social' }],
   icons: {
-    icon: '/lifting-social-logo.svg',
+    icon: '/logo.svg',
   },
   openGraph: {
     title: 'Lifting Social',
