@@ -2,25 +2,15 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/contexts/AuthContext'
 import { signInWithGoogle } from '@/lib/supabase'
-import { Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import Logo from '@/components/layout/Logo'
 
 export default function LoginPage() {
-  const [isSignUp, setIsSignUp] = useState(false)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [name, setName] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
-  const [showDevForm, setShowDevForm] = useState(false)
   
-  const { login, signup } = useAuth()
   const router = useRouter()
 
   // Hide navbar, announcement bar, and footer
@@ -57,71 +47,6 @@ export default function LoginPage() {
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    
-    // Validation
-    if (!email || !password) {
-      setError('Please fill in all fields')
-      return
-    }
-    
-    if (isSignUp && !name.trim()) {
-      setError('Name is required for signup')
-      return
-    }
-
-    if (isSignUp && password.length < 6) {
-      setError('Password must be at least 6 characters')
-      return
-    }
-
-    setIsLoading(true)
-    
-    try {
-      if (isSignUp) {
-        // Sign up
-        console.log('Attempting signup with:', { email, name })
-        const result = await signup(email, password, name)
-        console.log('Signup successful:', result)
-      } else {
-        // Login
-        console.log('Attempting login with:', { email })
-        const result = await login(email, password)
-        console.log('Login successful:', result)
-      }
-      
-      // Redirect after successful auth
-      setTimeout(() => {
-        router.push('/')
-      }, 500)
-    } catch (err: any) {
-      console.error('Auth error:', err)
-      
-      // Parse error message
-      let errorMessage = `${isSignUp ? 'Signup' : 'Login'} failed. Please try again.`
-      
-      if (typeof err === 'string') {
-        errorMessage = err
-      } else if (err?.message) {
-        errorMessage = err.message
-      } else if (err?.error?.message) {
-        errorMessage = err.error.message
-      }
-      
-      // Remove or truncate extra context
-      if (errorMessage.includes('fetch failed')) {
-        errorMessage = 'Unable to connect to server. Please check the backend is running.'
-      }
-      
-      setError(errorMessage)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-
   return (
     <div className="fixed inset-0 bg-gray-100 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
       <motion.div
@@ -152,8 +77,8 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={handleGoogleLogin}
-            disabled={googleLoading || isLoading}
-            className="w-full mb-6 flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+            disabled={googleLoading}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
           >
             {googleLoading ? (
               <>
@@ -184,119 +109,6 @@ export default function LoginPage() {
               </>
             )}
           </button>
-
-          {/* Development Only: Email/Password Form */}
-          <div className="border-t border-gray-200 pt-6">
-            <button
-              onClick={() => setShowDevForm(!showDevForm)}
-              className="w-full text-center text-xs text-gray-500 hover:text-gray-700 mb-4"
-            >
-              {showDevForm ? '▼ Development Login (Hide)' : '▶ Development Login'}
-            </button>
-            
-            {showDevForm && (
-              <>
-                {/* Tabs */}
-                <div className="flex gap-2 mb-4 bg-gray-100 p-1 rounded-lg">
-                  <button
-                    onClick={() => {
-                      setIsSignUp(false)
-                      setError('')
-                    }}
-                    className={`flex-1 py-2 px-3 rounded-md font-medium text-xs transition-colors ${
-                      !isSignUp
-                        ? 'bg-white text-blue-600 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-800'
-                    }`}
-                  >
-                    Login
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsSignUp(true)
-                      setError('')
-                    }}
-                    className={`flex-1 py-2 px-3 rounded-md font-medium text-xs transition-colors ${
-                      isSignUp
-                        ? 'bg-white text-blue-600 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-800'
-                    }`}
-                  >
-                    Sign Up
-                  </button>
-                </div>
-
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="space-y-3">
-                  {/* Name (Sign Up Only) */}
-                  {isSignUp && (
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">
-                        Full Name
-                      </label>
-                      <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="John Doe"
-                        required={isSignUp}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm"
-                      />
-                    </div>
-                  )}
-
-                  {/* Email */}
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="admin@test.com"
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm"
-                    />
-                  </div>
-
-                  {/* Password */}
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
-                      Password
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={showPassword ? 'text' : 'password'}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="••••••••"
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm pr-10"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                      >
-                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Submit Button */}
-                  <button
-                    type="submit"
-                    disabled={isLoading || googleLoading}
-                    className="w-full py-2 bg-blue-600 text-white rounded-md font-medium text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-                  >
-                    {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-                    {isLoading ? (isSignUp ? 'Creating...' : 'Logging in...') : (isSignUp ? 'Create Account' : 'Login')}
-                  </button>
-                </form>
-              </>
-            )}
-          </div>
         </div>
       </motion.div>
     </div>
