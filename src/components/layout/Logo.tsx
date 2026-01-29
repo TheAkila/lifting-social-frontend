@@ -14,7 +14,7 @@ export default function Logo({ className = '' }: Props) {
         alt="Lifting Social - Lift. Train. Inspire"
         width={320}
         height={110}
-        className="h-16 w-auto"
+        className="h-16 w-auto rounded-lg"
         priority
       />
     </div>
