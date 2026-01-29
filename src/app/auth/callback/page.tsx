@@ -86,34 +86,27 @@ export default function AuthCallbackPage() {
             }
 
             console.log('Storing user data:', userData)
+            
+            // Store in both storages
             localStorage.setItem('authToken', session.access_token)
             localStorage.setItem('refreshToken', refreshToken || '')
             localStorage.setItem('userData', JSON.stringify(userData))
             
-            // Also store in sessionStorage for immediate access
             sessionStorage.setItem('authToken', session.access_token)
             sessionStorage.setItem('refreshToken', refreshToken || '')
             sessionStorage.setItem('userData', JSON.stringify(userData))
             
+            // Force a microtask to ensure storage is written
+            await new Promise(resolve => setTimeout(resolve, 0))
+            
             // Verify storage
-            console.log('✅ Verified storage:')
-            console.log('  sessionStorage userData:', sessionStorage.getItem('userData'))
-            console.log('  localStorage userData:', localStorage.getItem('userData'))
+            const storedData = sessionStorage.getItem('userData')
+            console.log('✅ Verified storage before redirect:', storedData ? JSON.parse(storedData).email : 'NOT FOUND')
             
-            // Dispatch custom event to notify AuthContext
-            const event = new CustomEvent('authUserUpdate', { detail: userData })
-            window.dispatchEvent(event)
-            console.log('✅ Auth update event dispatched')
-            
-            // Dispatch storage event for listeners
-            window.dispatchEvent(new Event('storage'))
-
             console.log('✅ Authentication successful! Redirecting to home...')
             
-            // Redirect to home with small delay to ensure storage is committed
-            setTimeout(() => {
-              router.push('/')
-            }, 100)
+            // Use window.location for a full page load with fresh context
+            window.location.href = '/'
           } else {
             throw new Error('No user in session')
           }

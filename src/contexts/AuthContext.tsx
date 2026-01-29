@@ -27,22 +27,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
     if (typeof window === 'undefined') return null
     
+    console.log('🔍 AuthContext initializing...')
+    
     // Try sessionStorage first
     let userData = sessionStorage.getItem('userData')
+    console.log('  sessionStorage userData:', userData ? 'FOUND' : 'NOT FOUND')
     
     // Fall back to localStorage
     if (!userData) {
       userData = localStorage.getItem('userData')
+      console.log('  localStorage userData:', userData ? 'FOUND' : 'NOT FOUND')
     }
     
     if (userData) {
       try {
-        return JSON.parse(userData)
+        const parsedUser = JSON.parse(userData)
+        console.log('✅ User initialized from storage:', parsedUser.email)
+        return parsedUser
       } catch (err) {
         console.error('Failed to parse user data on init', err)
         return null
       }
     }
+    console.log('⚠️ No user data found in storage')
     return null
   })
   
@@ -55,13 +62,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken')
         const refreshToken = sessionStorage.getItem('refreshToken') || localStorage.getItem('refreshToken')
         
+        console.log('Restoring session... token exists:', !!token, 'refreshToken exists:', !!refreshToken)
+        
         // If we have a refresh token, restore Supabase session
         if (token && refreshToken) {
           try {
-            await supabase.auth.setSession({
+            const { error } = await supabase.auth.setSession({
               access_token: token,
               refresh_token: refreshToken,
             })
+            if (error) {
+              console.log('Could not restore Supabase session:', error.message)
+            } else {
+              console.log('✅ Supabase session restored successfully')
+            }
           } catch (err) {
             console.log('Could not restore Supabase session:', err)
           }
@@ -73,41 +87,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     restoreSession()
 
-    // Listen for storage changes from other tabs/callback page
-    const handleStorageChange = (e: StorageEvent | Event) => {
-      console.log('Storage event detected')
-      const userDataStr = sessionStorage.getItem('userData') || localStorage.getItem('userData')
-      if (userDataStr) {
-        try {
-          const userData = JSON.parse(userDataStr)
-          console.log('User data updated from storage event:', userData.email)
-          setUser(userData)
-        } catch (err) {
-          console.error('Failed to parse user data from storage event:', err)
-        }
-      }
-    }
-
-    // Listen for auth state changes (handles Google OAuth redirect)
+    // Listen for auth state changes (handles Google OAuth)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event)
+        console.log('🔔 Auth state changed:', event, session?.user?.email)
         
         if (event === 'SIGNED_IN' && session?.user) {
-          console.log('SIGNED_IN detected, checking storage...')
-          // User just signed in, update from storage
+          // Check if we already have user data in storage
           const storedUserData = sessionStorage.getItem('userData') || localStorage.getItem('userData')
-          if (storedUserData) {
+          if (storedUserData && !user) {
             try {
               const userData = JSON.parse(storedUserData)
+              console.log('✅ Setting user from storage after SIGNED_IN:', userData.email)
               setUser(userData)
-              console.log('User updated from storage after SIGNED_IN:', userData.email)
             } catch (err) {
               console.error('Failed to parse stored user data:', err)
             }
           }
         } else if (event === 'SIGNED_OUT') {
-          // User signed out
           setUser(null)
           localStorage.removeItem('authToken')
           localStorage.removeItem('userData')
@@ -119,23 +116,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     )
 
-    // Listen to storage events (fires when another tab updates storage)
-    window.addEventListener('storage', handleStorageChange)
-    
-    // Listen for custom auth update event from callback page
-    const handleAuthUpdate = (e: Event) => {
-      const event = e as CustomEvent
-      console.log('Custom auth update event received:', event.detail?.email)
-      if (event.detail) {
-        setUser(event.detail)
-      }
-    }
-    window.addEventListener('authUserUpdate', handleAuthUpdate)
-
     return () => {
       subscription?.unsubscribe()
-      window.removeEventListener('storage', handleStorageChange)
-      window.removeEventListener('authUserUpdate', handleAuthUpdate)
     }
   }, [])
 
