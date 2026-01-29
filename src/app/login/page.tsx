@@ -60,13 +60,19 @@ export default function LoginPage() {
     e.preventDefault()
     setError('')
     
+    // Validation
     if (!email || !password) {
       setError('Please fill in all fields')
       return
     }
     
-    if (isSignUp && !name) {
+    if (isSignUp && !name.trim()) {
       setError('Name is required for signup')
+      return
+    }
+
+    if (isSignUp && password.length < 6) {
+      setError('Password must be at least 6 characters')
       return
     }
 
@@ -75,21 +81,40 @@ export default function LoginPage() {
     try {
       if (isSignUp) {
         // Sign up
-        if (password.length < 6) {
-          setError('Password must be at least 6 characters')
-          setIsLoading(false)
-          return
-        }
-        await signup(email, password, name)
+        console.log('Attempting signup with:', { email, name })
+        const result = await signup(email, password, name)
+        console.log('Signup successful:', result)
       } else {
         // Login
-        await login(email, password)
+        console.log('Attempting login with:', { email })
+        const result = await login(email, password)
+        console.log('Login successful:', result)
       }
       
-      router.push('/')
+      // Redirect after successful auth
+      setTimeout(() => {
+        router.push('/')
+      }, 500)
     } catch (err: any) {
       console.error('Auth error:', err)
-      setError(err.message || `${isSignUp ? 'Signup' : 'Login'} failed. Please try again.`)
+      
+      // Parse error message
+      let errorMessage = `${isSignUp ? 'Signup' : 'Login'} failed. Please try again.`
+      
+      if (typeof err === 'string') {
+        errorMessage = err
+      } else if (err?.message) {
+        errorMessage = err.message
+      } else if (err?.error?.message) {
+        errorMessage = err.error.message
+      }
+      
+      // Remove or truncate extra context
+      if (errorMessage.includes('fetch failed')) {
+        errorMessage = 'Unable to connect to server. Please check the backend is running.'
+      }
+      
+      setError(errorMessage)
     } finally {
       setIsLoading(false)
     }

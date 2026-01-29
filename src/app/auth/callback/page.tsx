@@ -3,9 +3,11 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function AuthCallbackPage() {
   const router = useRouter()
+  const { login: contextLogin } = useAuth()
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -119,7 +121,7 @@ export default function AuthCallbackPage() {
     }
 
     handleCallback()
-  }, [router])
+  }, [router, contextLogin])
 
   if (error) {
     return (
