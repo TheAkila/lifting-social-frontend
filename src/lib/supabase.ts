@@ -80,15 +80,23 @@ export const signInWithEmail = async (email: string, password: string) => {
  */
 export const signInWithGoogle = async () => {
   try {
+    // Get the correct redirect URL
+    const redirectUrl = typeof window !== 'undefined' 
+      ? `${window.location.origin}/auth/callback`
+      : 'http://localhost:3001/auth/callback'
+    
+    console.log('Initiating OAuth with redirect URL:', redirectUrl)
+    
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: redirectUrl,
       },
     })
 
     if (error) throw error
 
+    console.log('OAuth redirect initiated:', data)
     return data
   } catch (error: any) {
     console.error('Google sign in error:', error)
