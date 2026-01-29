@@ -23,55 +23,51 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  // Initialize user from storage immediately (synchronously)
+  const [user, setUser] = useState<User | null>(() => {
+    if (typeof window === 'undefined') return null
+    
+    // Try sessionStorage first
+    let userData = sessionStorage.getItem('userData')
+    
+    // Fall back to localStorage
+    if (!userData) {
+      userData = localStorage.getItem('userData')
+    }
+    
+    if (userData) {
+      try {
+        return JSON.parse(userData)
+      } catch (err) {
+        console.error('Failed to parse user data on init', err)
+        return null
+      }
+    }
+    return null
+  })
+  
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    // Check for stored token and user data in localStorage or sessionStorage
+    // Restore session in background if needed
     const restoreSession = async () => {
       try {
-        // Try to get from sessionStorage first (immediate session)
-        let token = sessionStorage.getItem('authToken')
-        let userData = sessionStorage.getItem('userData')
-        let refreshToken = sessionStorage.getItem('refreshToken')
+        const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken')
+        const refreshToken = sessionStorage.getItem('refreshToken') || localStorage.getItem('refreshToken')
         
-        // Fall back to localStorage
-        if (!token) {
-          token = localStorage.getItem('authToken')
-          userData = localStorage.getItem('userData')
-          refreshToken = localStorage.getItem('refreshToken')
-        }
-
-        if (token && userData) {
+        // If we have a refresh token, restore Supabase session
+        if (token && refreshToken) {
           try {
-            const parsedUser = JSON.parse(userData)
-            setUser(parsedUser)
-            
-            // Restore Supabase session if we have refresh token
-            if (refreshToken) {
-              try {
-                await supabase.auth.setSession({
-                  access_token: token,
-                  refresh_token: refreshToken,
-                })
-              } catch (err) {
-                console.log('Could not restore Supabase session:', err)
-              }
-            }
+            await supabase.auth.setSession({
+              access_token: token,
+              refresh_token: refreshToken,
+            })
           } catch (err) {
-            console.error('Failed to parse user data', err)
-            localStorage.removeItem('authToken')
-            localStorage.removeItem('userData')
-            localStorage.removeItem('refreshToken')
-            sessionStorage.removeItem('authToken')
-            sessionStorage.removeItem('userData')
-            sessionStorage.removeItem('refreshToken')
+            console.log('Could not restore Supabase session:', err)
           }
         }
       } catch (err) {
         console.error('Session restore error:', err)
-      } finally {
-        setIsLoading(false)
       }
     }
 
