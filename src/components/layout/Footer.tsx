@@ -186,7 +186,7 @@ export default function Footer() {
                     <Mail className="w-4 h-4 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-zinc-400">hello@liftingsocial.lk</p>
+                    <p className="text-sm text-zinc-400">theliftingsocial@gmail.com</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
@@ -194,7 +194,7 @@ export default function Footer() {
                     <Phone className="w-4 h-4 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-zinc-400">+94 77 123 4567</p>
+                    <p className="text-sm text-zinc-400">+94 76 482 9645</p>
                   </div>
                 </div>
               </div>

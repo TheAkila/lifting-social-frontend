@@ -87,6 +87,24 @@ export default function AuthCallbackPage() {
 
             console.log('Storing user data:', userData)
             
+            // Sync user to backend database
+            try {
+              const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+              await fetch(`${API_URL}/auth/google/callback`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  email: session.user.email,
+                  name: session.user.user_metadata?.full_name || session.user.email,
+                  avatar: session.user.user_metadata?.avatar_url,
+                  googleId: session.user.user_metadata?.sub
+                })
+              })
+              console.log('✅ User synced to backend')
+            } catch (err) {
+              console.error('Failed to sync user to backend:', err)
+            }
+            
             // Store in both storages
             localStorage.setItem('authToken', session.access_token)
             localStorage.setItem('refreshToken', refreshToken || '')
