@@ -40,21 +40,21 @@ export default function LatestStories() {
   }
 
   return (
-    <section className="py-16 sm:py-24 md:py-32 bg-gray-50">
+    <section className="py-12 sm:py-16 md:py-20 bg-white">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-8 sm:gap-6 mb-12 sm:mb-16">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 sm:gap-6 mb-8 sm:mb-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="font-display text-4xl sm:text-5xl font-bold text-black mb-4">
-              Community Stories
+            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-zinc-900">
+              Weightlifting News
             </h2>
-            <p className="text-gray-600 text-lg max-w-lg">
-              Inspiring journeys from weightlifters in our community
+            <p className="text-zinc-500 mt-2 text-sm sm:text-base">
+              Stories, interviews, and updates from the weightlifting world
             </p>
           </motion.div>
           
@@ -66,27 +66,27 @@ export default function LatestStories() {
           >
             <Link
               href="/stories"
-              className="inline-flex items-center gap-2 text-black hover:text-gray-600 text-base font-semibold transition-colors group whitespace-nowrap"
+              className="inline-flex items-center gap-2 bg-zinc-900 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-zinc-800 transition-colors group"
             >
               <span>View All Stories</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </Link>
           </motion.div>
         </div>
 
         {/* Stories Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {loading ? (
             Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="animate-pulse">
-                <div className="aspect-video bg-gray-200 rounded-lg mb-4" />
-                <div className="h-6 bg-gray-200 rounded w-3/4 mb-3" />
-                <div className="h-4 bg-gray-200 rounded w-1/3" />
+                <div className="aspect-[4/3] bg-zinc-200 rounded-[12px] mb-4" />
+                <div className="h-5 bg-zinc-200 rounded w-3/4 mb-2" />
+                <div className="h-4 bg-zinc-200 rounded w-1/4" />
               </div>
             ))
           ) : stories.length === 0 ? (
             <div className="col-span-full text-center py-16">
-              <p className="text-gray-500">No stories available at the moment.</p>
+              <p className="text-zinc-500">No stories available at the moment.</p>
             </div>
           ) : (
             stories.map((story, index) => (
@@ -95,20 +95,20 @@ export default function LatestStories() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
                 className="group"
               >
                 <Link href={`/stories/${story.slug}`} className="block">
                   {/* Image Container */}
-                  <div className="relative aspect-video rounded-lg overflow-hidden mb-5 bg-black">
+                  <div className="relative aspect-[4/3] rounded-[12px] overflow-hidden mb-4 bg-zinc-100">
                     {story.image ? (
                       <div 
-                        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" 
+                        className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105" 
                         style={{ backgroundImage: `url(${story.image})` }} 
                       />
                     ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-black/60 to-black flex items-center justify-center">
-                        <span className="text-white/30 font-display font-bold text-lg text-center px-4">
+                      <div className="absolute inset-0 bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
+                        <span className="text-white/40 font-display font-bold text-lg text-center px-4">
                           {story.title}
                         </span>
                       </div>
@@ -117,28 +117,31 @@ export default function LatestStories() {
                     {/* Video indicator */}
                     {story.videoId && (
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <motion.div
-                          whileHover={{ scale: 1.15 }}
-                          className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-lg"
-                        >
-                          <Play className="w-6 h-6 text-black ml-1" fill="currentColor" />
-                        </motion.div>
+                        <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                          <Play className="w-5 h-5 text-zinc-900 ml-0.5" fill="currentColor" />
+                        </div>
                       </div>
                     )}
 
                     {/* Gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                   </div>
 
                   {/* Content */}
-                  <div>
-                    <h3 className="font-display text-xl font-bold text-black leading-snug line-clamp-2 mb-3 group-hover:text-gray-600 transition-colors">
+                  <div className="space-y-2">
+                    <h3 className="font-display text-lg font-semibold text-zinc-900 leading-snug line-clamp-2 group-hover:text-brand-accent transition-colors">
                       {story.title}
                     </h3>
                     
-                    <time className="text-sm text-gray-500">
-                      {formatDate(story.createdAt || story.publishDate)}
-                    </time>
+                    <div className="flex items-center justify-between">
+                      <time className="text-sm text-zinc-500">
+                        {formatDate(story.createdAt || story.publishDate)}
+                      </time>
+                      
+                      <span className="text-sm font-medium text-zinc-900 uppercase tracking-wider group-hover:text-brand-accent transition-colors">
+                        Read More
+                      </span>
+                    </div>
                   </div>
                 </Link>
               </motion.article>
