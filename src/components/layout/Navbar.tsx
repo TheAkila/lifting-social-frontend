@@ -151,15 +151,9 @@ export default function Navbar() {
                 <div className="hidden md:flex items-center space-x-2">
                   <Link
                     href="/login"
-                    className="px-4 py-2 text-sm font-medium text-zinc-600 hover:text-zinc-900 transition-colors duration-200"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    href="/signup"
                     className="px-4 py-2 text-sm font-medium text-white bg-zinc-900 hover:bg-zinc-800 rounded-[10px] transition-all duration-200"
                   >
-                    Sign Up
+                    Login
                   </Link>
                 </div>
               )}
@@ -281,16 +275,9 @@ export default function Navbar() {
                         <Link
                           href="/login"
                           onClick={() => setIsMobileMenuOpen(false)}
-                          className="block w-full py-3 text-center text-base font-medium text-zinc-600 border border-zinc-200 rounded-[10px] hover:bg-zinc-50 transition-all duration-200"
-                        >
-                          Login
-                        </Link>
-                        <Link
-                          href="/signup"
-                          onClick={() => setIsMobileMenuOpen(false)}
                           className="block w-full py-3 text-center text-base font-medium text-white bg-zinc-900 hover:bg-zinc-800 rounded-[10px] transition-all duration-200"
                         >
-                          Sign Up
+                          Login
                         </Link>
                       </div>
                     )}
