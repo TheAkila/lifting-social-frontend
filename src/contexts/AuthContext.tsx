@@ -73,19 +73,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     restoreSession()
 
+    // Listen for storage changes from other tabs/callback page
+    const handleStorageChange = (e: StorageEvent | Event) => {
+      console.log('Storage event detected')
+      const userDataStr = sessionStorage.getItem('userData') || localStorage.getItem('userData')
+      if (userDataStr) {
+        try {
+          const userData = JSON.parse(userDataStr)
+          console.log('User data updated from storage event:', userData.email)
+          setUser(userData)
+        } catch (err) {
+          console.error('Failed to parse user data from storage event:', err)
+        }
+      }
+    }
+
     // Listen for auth state changes (handles Google OAuth redirect)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event)
         
         if (event === 'SIGNED_IN' && session?.user) {
+          console.log('SIGNED_IN detected, checking storage...')
           // User just signed in, update from storage
           const storedUserData = sessionStorage.getItem('userData') || localStorage.getItem('userData')
           if (storedUserData) {
             try {
               const userData = JSON.parse(storedUserData)
               setUser(userData)
-              console.log('User updated from storage:', userData.email)
+              console.log('User updated from storage after SIGNED_IN:', userData.email)
             } catch (err) {
               console.error('Failed to parse stored user data:', err)
             }
@@ -103,8 +119,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     )
 
+    // Listen to storage events (fires when another tab updates storage)
+    window.addEventListener('storage', handleStorageChange)
+    
+    // Listen for custom auth update event from callback page
+    const handleAuthUpdate = (e: Event) => {
+      const event = e as CustomEvent
+      console.log('Custom auth update event received:', event.detail?.email)
+      if (event.detail) {
+        setUser(event.detail)
+      }
+    }
+    window.addEventListener('authUserUpdate', handleAuthUpdate)
+
     return () => {
       subscription?.unsubscribe()
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('authUserUpdate', handleAuthUpdate)
     }
   }, [])
 

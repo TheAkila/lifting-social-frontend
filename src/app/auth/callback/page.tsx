@@ -100,13 +100,20 @@ export default function AuthCallbackPage() {
             console.log('  sessionStorage userData:', sessionStorage.getItem('userData'))
             console.log('  localStorage userData:', localStorage.getItem('userData'))
             
-            // Dispatch storage event to notify listeners (for multiple tabs/windows)
-            window.dispatchEvent(new Event('storage'))
+            // Dispatch custom event to notify AuthContext
+            const event = new CustomEvent('authUserUpdate', { detail: userData })
+            window.dispatchEvent(event)
+            console.log('✅ Auth update event dispatched')
             
+            // Dispatch storage event for listeners
+            window.dispatchEvent(new Event('storage'))
+
             console.log('✅ Authentication successful! Redirecting to home...')
             
-            // Redirect to home immediately
-            router.push('/')
+            // Redirect to home with small delay to ensure storage is committed
+            setTimeout(() => {
+              router.push('/')
+            }, 100)
           } else {
             throw new Error('No user in session')
           }
