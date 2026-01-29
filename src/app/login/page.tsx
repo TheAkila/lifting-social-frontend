@@ -18,6 +18,7 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
+  const [showDevForm, setShowDevForm] = useState(false)
   
   const { login, signup } = useAuth()
   const router = useRouter()
@@ -136,38 +137,8 @@ export default function LoginPage() {
               <Logo />
             </div>
             <p className="text-sm text-gray-600">
-              {isSignUp ? 'Create your account' : 'Login to your account'}
+              Sign in to your account
             </p>
-          </div>
-
-          {/* Tabs */}
-          <div className="flex gap-2 mb-6 bg-gray-100 p-1 rounded-lg">
-            <button
-              onClick={() => {
-                setIsSignUp(false)
-                setError('')
-              }}
-              className={`flex-1 py-2 px-3 rounded-md font-medium text-sm transition-colors ${
-                !isSignUp
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-800'
-              }`}
-            >
-              Login
-            </button>
-            <button
-              onClick={() => {
-                setIsSignUp(true)
-                setError('')
-              }}
-              className={`flex-1 py-2 px-3 rounded-md font-medium text-sm transition-colors ${
-                isSignUp
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-800'
-              }`}
-            >
-              Sign Up
-            </button>
           </div>
 
           {/* Error Message */}
@@ -182,16 +153,16 @@ export default function LoginPage() {
             type="button"
             onClick={handleGoogleLogin}
             disabled={googleLoading || isLoading}
-            className="w-full mb-4 flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full mb-6 flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
           >
             {googleLoading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span className="text-sm font-medium text-gray-700">Signing in...</span>
+                <span className="text-sm text-gray-700">Signing in...</span>
               </>
             ) : (
               <>
-                <svg className="w-4 h-4" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path
                     fill="currentColor"
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -209,124 +180,123 @@ export default function LoginPage() {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                <span className="text-sm font-medium text-gray-700">Continue with Google</span>
+                <span className="text-sm text-gray-700">Sign in with Google</span>
               </>
             )}
           </button>
 
-          {/* Divider */}
-          <div className="relative my-4">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200" />
-            </div>
-            <div className="relative flex justify-center text-xs">
-              <span className="px-3 bg-white text-gray-500">or continue with email</span>
-            </div>
+          {/* Development Only: Email/Password Form */}
+          <div className="border-t border-gray-200 pt-6">
+            <button
+              onClick={() => setShowDevForm(!showDevForm)}
+              className="w-full text-center text-xs text-gray-500 hover:text-gray-700 mb-4"
+            >
+              {showDevForm ? '▼ Development Login (Hide)' : '▶ Development Login'}
+            </button>
+            
+            {showDevForm && (
+              <>
+                {/* Tabs */}
+                <div className="flex gap-2 mb-4 bg-gray-100 p-1 rounded-lg">
+                  <button
+                    onClick={() => {
+                      setIsSignUp(false)
+                      setError('')
+                    }}
+                    className={`flex-1 py-2 px-3 rounded-md font-medium text-xs transition-colors ${
+                      !isSignUp
+                        ? 'bg-white text-blue-600 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-800'
+                    }`}
+                  >
+                    Login
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsSignUp(true)
+                      setError('')
+                    }}
+                    className={`flex-1 py-2 px-3 rounded-md font-medium text-xs transition-colors ${
+                      isSignUp
+                        ? 'bg-white text-blue-600 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-800'
+                    }`}
+                  >
+                    Sign Up
+                  </button>
+                </div>
+
+                {/* Form */}
+                <form onSubmit={handleSubmit} className="space-y-3">
+                  {/* Name (Sign Up Only) */}
+                  {isSignUp && (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
+                        Full Name
+                      </label>
+                      <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="John Doe"
+                        required={isSignUp}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm"
+                      />
+                    </div>
+                  )}
+
+                  {/* Email */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="admin@test.com"
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm"
+                    />
+                  </div>
+
+                  {/* Password */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••••"
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={isLoading || googleLoading}
+                    className="w-full py-2 bg-blue-600 text-white rounded-md font-medium text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                  >
+                    {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+                    {isLoading ? (isSignUp ? 'Creating...' : 'Logging in...') : (isSignUp ? 'Create Account' : 'Login')}
+                  </button>
+                </form>
+              </>
+            )}
           </div>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Name (Sign Up Only) */}
-            {isSignUp && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="John Doe"
-                  required={isSignUp}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                />
-              </div>
-            )}
-
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Email Address
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-              />
-            </div>
-
-            {/* Password */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-              {isSignUp && (
-                <p className="mt-1 text-xs text-gray-500">
-                  Password must be at least 6 characters
-                </p>
-              )}
-            </div>
-
-            {/* Remember Me & Forgot Password (Login Only) */}
-            {!isSignUp && (
-              <div className="flex items-center justify-between text-sm">
-                <label className="flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="ml-2 text-gray-600">Remember me</span>
-                </label>
-                <Link
-                  href="/forgot-password"
-                  className="text-blue-600 hover:text-blue-700 font-medium"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-            )}
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading || googleLoading}
-              className="w-full py-2.5 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-            >
-              {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-              {isLoading ? (isSignUp ? 'Creating account...' : 'Logging in...') : (isSignUp ? 'Create Account' : 'Login')}
-            </button>
-          </form>
-
-          {/* Footer Text */}
-          <p className="text-center text-xs text-gray-600 mt-4">
-            {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
-            <button
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="text-blue-600 hover:text-blue-700 font-medium"
-            >
-              {isSignUp ? 'Login here' : 'Sign up'}
-            </button>
-          </p>
         </div>
       </motion.div>
     </div>
