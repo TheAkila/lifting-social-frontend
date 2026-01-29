@@ -87,7 +87,12 @@ export default function AuthCallbackPage() {
 
             console.log('Storing user data:', userData)
             localStorage.setItem('authToken', session.access_token)
+            localStorage.setItem('refreshToken', refreshToken || '')
             localStorage.setItem('userData', JSON.stringify(userData))
+            
+            // Also store in sessionStorage for immediate access
+            sessionStorage.setItem('authToken', session.access_token)
+            sessionStorage.setItem('userData', JSON.stringify(userData))
 
             console.log('✅ Authentication successful! Redirecting to home...')
             

@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { supabase } from '@/lib/supabase'
 
 interface User {
   id: string
@@ -26,21 +27,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Check for stored token and user data
-    const token = localStorage.getItem('authToken')
-    const userData = localStorage.getItem('userData')
-    
-    if (token && userData) {
+    // Check for stored token and user data in localStorage or sessionStorage
+    const restoreSession = async () => {
       try {
-        const parsedUser = JSON.parse(userData)
-        setUser(parsedUser)
+        // Try to get from sessionStorage first (immediate session)
+        let token = sessionStorage.getItem('authToken')
+        let userData = sessionStorage.getItem('userData')
+        let refreshToken = sessionStorage.getItem('refreshToken')
+        
+        // Fall back to localStorage
+        if (!token) {
+          token = localStorage.getItem('authToken')
+          userData = localStorage.getItem('userData')
+          refreshToken = localStorage.getItem('refreshToken')
+        }
+
+        if (token && userData) {
+          try {
+            const parsedUser = JSON.parse(userData)
+            setUser(parsedUser)
+            
+            // Restore Supabase session if we have refresh token
+            if (refreshToken) {
+              try {
+                await supabase.auth.setSession({
+                  access_token: token,
+                  refresh_token: refreshToken,
+                })
+              } catch (err) {
+                console.log('Could not restore Supabase session:', err)
+              }
+            }
+          } catch (err) {
+            console.error('Failed to parse user data', err)
+            localStorage.removeItem('authToken')
+            localStorage.removeItem('userData')
+            localStorage.removeItem('refreshToken')
+            sessionStorage.removeItem('authToken')
+            sessionStorage.removeItem('userData')
+            sessionStorage.removeItem('refreshToken')
+          }
+        }
       } catch (err) {
-        console.error('Failed to parse user data', err)
-        localStorage.removeItem('authToken')
-        localStorage.removeItem('userData')
+        console.error('Session restore error:', err)
+      } finally {
+        setIsLoading(false)
       }
     }
-    setIsLoading(false)
+
+    restoreSession()
   }, [])
 
   const login = async (email: string, password: string): Promise<User> => {
@@ -74,6 +109,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(userData)
       localStorage.setItem('authToken', data.data.token)
       localStorage.setItem('userData', JSON.stringify(userData))
+      sessionStorage.setItem('authToken', data.data.token)
+      sessionStorage.setItem('userData', JSON.stringify(userData))
       return userData
     } catch (error) {
       console.error('Login failed:', error)
@@ -106,6 +143,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(userData)
       localStorage.setItem('authToken', data.data.token)
       localStorage.setItem('userData', JSON.stringify(userData))
+      sessionStorage.setItem('authToken', data.data.token)
+      sessionStorage.setItem('userData', JSON.stringify(userData))
       return userData
     } catch (error) {
       console.error('Signup failed:', error)
@@ -149,6 +188,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
     localStorage.removeItem('authToken')
     localStorage.removeItem('userData')
+    localStorage.removeItem('refreshToken')
+    sessionStorage.removeItem('authToken')
+    sessionStorage.removeItem('userData')
+    sessionStorage.removeItem('refreshToken')
   }
 
   return (
