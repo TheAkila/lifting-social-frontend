@@ -143,11 +143,6 @@ export default function Navbar() {
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                     className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-[10px] transition-all duration-200"
                   >
-                    {user.avatar ? (
-                      <img src={user.avatar} alt={user.name} className="w-6 h-6 rounded-full" />
-                    ) : (
-                      <User className="w-4 h-4" />
-                    )}
                     <span className="hidden lg:inline">{user.name?.split(' ')[0]}</span>
                     <ChevronDown className={`w-4 h-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
