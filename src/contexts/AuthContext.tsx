@@ -53,7 +53,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return null
   })
   
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    // Mark as loaded after a short delay to ensure user is initialized
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 100)
+
+    return () => clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     // Restore session in background if needed
