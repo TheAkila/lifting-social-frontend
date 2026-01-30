@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { ShoppingCart, User, Menu, X, LogOut, ChevronDown, Trophy, Settings } from 'lucide-react'
+import { ShoppingCart, User, Menu, X, LogOut, ChevronDown, Settings } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -112,17 +112,6 @@ export default function Navbar() {
 
               {/* Divider */}
               <div className="hidden md:block w-px h-5 bg-zinc-200" />
-
-              {/* My Events - Only show if user is logged in */}
-              {user && (
-                <Link
-                  href="/dashboard"
-                  className="relative p-2 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-[10px] transition-all duration-200"
-                  title="My Events"
-                >
-                  <Trophy className="w-5 h-5" />
-                </Link>
-              )}
 
               {/* Cart */}
               <Link
