@@ -90,7 +90,7 @@ export default function AuthCallbackPage() {
             // Sync user to backend database
             try {
               const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-              await fetch(`${API_URL}/auth/google/callback`, {
+              const backendResponse = await fetch(`${API_URL}/auth/google/callback`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -100,18 +100,31 @@ export default function AuthCallbackPage() {
                   googleId: session.user.user_metadata?.sub
                 })
               })
-              console.log('✅ User synced to backend')
+              
+              if (backendResponse.ok) {
+                const backendData = await backendResponse.json()
+                console.log('✅ User synced to backend, got JWT token')
+                
+                // Store the BACKEND JWT token (not Supabase token)
+                const backendToken = backendData.data?.token
+                if (backendToken) {
+                  localStorage.setItem('authToken', backendToken)
+                  sessionStorage.setItem('authToken', backendToken)
+                  console.log('✅ Backend JWT token stored')
+                }
+              }
             } catch (err) {
               console.error('Failed to sync user to backend:', err)
             }
             
-            // Store in both storages
-            localStorage.setItem('authToken', session.access_token)
+            // Store Supabase tokens separately
+            localStorage.setItem('supabaseToken', session.access_token)
             localStorage.setItem('refreshToken', refreshToken || '')
-            localStorage.setItem('userData', JSON.stringify(userData))
-            
-            sessionStorage.setItem('authToken', session.access_token)
+            sessionStorage.setItem('supabaseToken', session.access_token)
             sessionStorage.setItem('refreshToken', refreshToken || '')
+            
+            // Store user data
+            localStorage.setItem('userData', JSON.stringify(userData))
             sessionStorage.setItem('userData', JSON.stringify(userData))
             
             // Force a microtask to ensure storage is written
