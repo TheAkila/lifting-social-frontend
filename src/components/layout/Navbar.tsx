@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { ShoppingCart, User, Menu, X, LogOut, ChevronDown, Settings } from 'lucide-react'
+import { ShoppingCart, User, Menu, X, LogOut, ChevronDown } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -176,14 +176,6 @@ export default function Navbar() {
                             className="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 hover:bg-zinc-50 transition-colors"
                           >
                             <span>Dashboard</span>
-                          </Link>
-                          <Link
-                            href="/dashboard/settings"
-                            onClick={() => setIsUserMenuOpen(false)}
-                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 hover:bg-zinc-50 transition-colors"
-                          >
-                            <Settings className="w-4 h-4" />
-                            <span>Settings</span>
                           </Link>
                         </div>
 
