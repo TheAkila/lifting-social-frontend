@@ -76,20 +76,14 @@ export default function AuthCallbackPage() {
               .eq('id', session.user.id)
               .single()
 
-            // Store user data in localStorage
-            const userData = {
-              id: session.user.id,
-              email: session.user.email,
-              name: profile?.name || session.user.user_metadata?.full_name || session.user.email,
-              avatar: profile?.avatar || session.user.user_metadata?.avatar_url,
-              role: profile?.role || 'user',
-            }
-
-            console.log('Storing user data:', userData)
+            // Sync user to backend database and get JWT token
+            let backendToken = null
+            let backendUserData = null
             
-            // Sync user to backend database
             try {
               const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+              console.log('Syncing user to backend:', session.user.email)
+              
               const backendResponse = await fetch(`${API_URL}/auth/google/callback`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -103,18 +97,49 @@ export default function AuthCallbackPage() {
               
               if (backendResponse.ok) {
                 const backendData = await backendResponse.json()
-                console.log('✅ User synced to backend, got JWT token')
+                console.log('✅ Backend response:', backendData)
                 
-                // Store the BACKEND JWT token (not Supabase token)
-                const backendToken = backendData.data?.token
+                backendToken = backendData.data?.token
+                backendUserData = backendData.data?.user
+                
                 if (backendToken) {
-                  localStorage.setItem('authToken', backendToken)
-                  sessionStorage.setItem('authToken', backendToken)
-                  console.log('✅ Backend JWT token stored')
+                  console.log('✅ Got backend JWT token')
+                } else {
+                  console.error('❌ No token in backend response')
                 }
+              } else {
+                console.error('❌ Backend sync failed:', backendResponse.status)
               }
             } catch (err) {
-              console.error('Failed to sync user to backend:', err)
+              console.error('❌ Failed to sync user to backend:', err)
+            }
+
+            // Store user data - use backend data if available, fallback to Supabase
+            const userData = backendUserData ? {
+              id: backendUserData.id,
+              email: backendUserData.email,
+              name: backendUserData.name,
+              role: backendUserData.role,
+              avatar: backendUserData.avatar
+            } : {
+              id: session.user.id,
+              email: session.user.email,
+              name: profile?.name || session.user.user_metadata?.full_name || session.user.email,
+              avatar: profile?.avatar || session.user.user_metadata?.avatar_url,
+              role: profile?.role || 'user',
+            }
+
+            console.log('Storing user data:', userData)
+            
+            // Store the BACKEND JWT token for API calls
+            if (backendToken) {
+              localStorage.setItem('authToken', backendToken)
+              sessionStorage.setItem('authToken', backendToken)
+              console.log('✅ Backend JWT token stored')
+            } else {
+              console.warn('⚠️ No backend token available, using Supabase token as fallback')
+              localStorage.setItem('authToken', session.access_token)
+              sessionStorage.setItem('authToken', session.access_token)
             }
             
             // Store Supabase tokens separately
@@ -128,11 +153,15 @@ export default function AuthCallbackPage() {
             sessionStorage.setItem('userData', JSON.stringify(userData))
             
             // Force a microtask to ensure storage is written
-            await new Promise(resolve => setTimeout(resolve, 0))
+            await new Promise(resolve => setTimeout(resolve, 50))
             
-            // Verify storage
+            // Verify storage with detailed logging
+            const storedToken = sessionStorage.getItem('authToken')
             const storedData = sessionStorage.getItem('userData')
-            console.log('✅ Verified storage before redirect:', storedData ? JSON.parse(storedData).email : 'NOT FOUND')
+            console.log('=== VERIFICATION BEFORE REDIRECT ===')
+            console.log('✅ authToken stored:', storedToken ? 'YES (length: ' + storedToken.length + ')' : 'NO')
+            console.log('✅ userData stored:', storedData ? JSON.parse(storedData).email : 'NOT FOUND')
+            console.log('===================================')
             
             console.log('✅ Authentication successful! Redirecting to home...')
             
