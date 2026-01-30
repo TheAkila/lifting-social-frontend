@@ -218,8 +218,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         avatar: data.data.user.avatar,
       }
       setUser(userData)
+      // Store in both localStorage and sessionStorage for consistency
       localStorage.setItem('authToken', data.data.token)
       localStorage.setItem('userData', JSON.stringify(userData))
+      sessionStorage.setItem('authToken', data.data.token)
+      sessionStorage.setItem('userData', JSON.stringify(userData))
+      console.log('✅ Google login successful, tokens stored in both storages')
       return userData
     } catch (error) {
       console.error('Google login failed:', error)
