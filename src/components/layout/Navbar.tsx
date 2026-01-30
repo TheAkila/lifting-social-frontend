@@ -175,7 +175,6 @@ export default function Navbar() {
                             onClick={() => setIsUserMenuOpen(false)}
                             className="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 hover:bg-zinc-50 transition-colors"
                           >
-                            <Trophy className="w-4 h-4" />
                             <span>Dashboard</span>
                           </Link>
                           <Link
