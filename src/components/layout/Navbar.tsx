@@ -25,11 +25,17 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
+  const [isHydrated, setIsHydrated] = useState(false)
   const { totalItems } = useCart()
   const { user, logout } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
   const userMenuRef = useRef<HTMLDivElement>(null)
+
+  // Ensure component is hydrated before rendering user-dependent content
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -131,7 +137,7 @@ export default function Navbar() {
               </Link>
 
               {/* User Actions */}
-              {user ? (
+              {isHydrated && user ? (
                 <div className="hidden md:block relative" ref={userMenuRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
@@ -199,7 +205,7 @@ export default function Navbar() {
                     )}
                   </AnimatePresence>
                 </div>
-              ) : (
+              ) : isHydrated ? (
                 <div className="hidden md:flex items-center space-x-2">
                   <Link
                     href="/login"
@@ -208,7 +214,7 @@ export default function Navbar() {
                     Login
                   </Link>
                 </div>
-              )}
+              ) : null}
 
               {/* Mobile Menu Toggle */}
               <button
