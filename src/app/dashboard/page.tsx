@@ -65,17 +65,25 @@ export default function UserDashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    console.log('=== DASHBOARD AUTH CHECK ===')
+    console.log('authLoading:', authLoading)
+    console.log('user:', user ? user.email : 'null')
+    console.log('===========================')
+    
     if (!authLoading && !user) {
+      console.log('❌ No user found, redirecting to login')
       router.push('/login')
       return
     }
 
     if (user && user.role === 'admin') {
+      console.log('✅ Admin user, redirecting to admin panel')
       router.push('/admin')
       return
     }
 
     if (user) {
+      console.log('✅ User authenticated, loading registrations')
       loadRegistrations()
     }
   }, [user, authLoading, router])
