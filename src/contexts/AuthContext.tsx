@@ -56,28 +56,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Mark as loaded after a short delay to ensure user is initialized
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 100)
-
-    return () => clearTimeout(timer)
+    // Mark as loaded immediately since user state is initialized synchronously
+    // The user state is set in the useState initializer above, so we can mark as loaded right away
+    console.log('🔄 Marking auth as loaded. User state:', user ? user.email : 'null')
+    setIsLoading(false)
   }, [])
 
   useEffect(() => {
     // Restore session in background if needed
     const restoreSession = async () => {
       try {
-        const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken')
+        // Use supabaseToken for Supabase session restoration (not authToken which is backend JWT)
+        const supabaseToken = sessionStorage.getItem('supabaseToken') || localStorage.getItem('supabaseToken')
         const refreshToken = sessionStorage.getItem('refreshToken') || localStorage.getItem('refreshToken')
         
-        console.log('Restoring session... token exists:', !!token, 'refreshToken exists:', !!refreshToken)
+        console.log('Restoring session... supabaseToken exists:', !!supabaseToken, 'refreshToken exists:', !!refreshToken)
         
         // If we have a refresh token, restore Supabase session
-        if (token && refreshToken) {
+        if (supabaseToken && refreshToken) {
           try {
             const { error } = await supabase.auth.setSession({
-              access_token: token,
+              access_token: supabaseToken,
               refresh_token: refreshToken,
             })
             if (error) {
@@ -118,9 +117,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           localStorage.removeItem('authToken')
           localStorage.removeItem('userData')
           localStorage.removeItem('refreshToken')
+          localStorage.removeItem('supabaseToken')
           sessionStorage.removeItem('authToken')
           sessionStorage.removeItem('userData')
           sessionStorage.removeItem('refreshToken')
+          sessionStorage.removeItem('supabaseToken')
         }
       }
     )
@@ -129,6 +130,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       subscription?.unsubscribe()
     }
   }, [])
+
+  // Add a periodic check to ensure user state stays in sync with storage
+  useEffect(() => {
+    const checkUserSync = () => {
+      const storedUserData = sessionStorage.getItem('userData') || localStorage.getItem('userData')
+      if (storedUserData && !user) {
+        try {
+          const userData = JSON.parse(storedUserData)
+          console.log('⚠️ User was lost but storage has data, restoring:', userData.email)
+          setUser(userData)
+        } catch (err) {
+          console.error('Failed to restore user from storage:', err)
+        }
+      }
+    }
+
+    // Check immediately on mount and every 500ms for the first 2 seconds
+    checkUserSync()
+    const interval = setInterval(checkUserSync, 500)
+    const timeout = setTimeout(() => clearInterval(interval), 2000)
+
+    return () => {
+      clearInterval(interval)
+      clearTimeout(timeout)
+    }
+  }, [user])
 
   const login = async (email: string, password: string): Promise<User> => {
     try {
@@ -245,9 +272,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('authToken')
     localStorage.removeItem('userData')
     localStorage.removeItem('refreshToken')
+    localStorage.removeItem('supabaseToken')
     sessionStorage.removeItem('authToken')
     sessionStorage.removeItem('userData')
     sessionStorage.removeItem('refreshToken')
+    sessionStorage.removeItem('supabaseToken')
   }
 
   return (

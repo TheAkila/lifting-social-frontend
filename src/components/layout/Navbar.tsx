@@ -35,7 +35,13 @@ export default function Navbar() {
   // Ensure component is hydrated before rendering user-dependent content
   useEffect(() => {
     setIsHydrated(true)
+    console.log('🔵 Navbar hydrated. User from useAuth():', user?.email || 'NULL')
   }, [])
+  
+  // Debug: Log whenever user changes
+  useEffect(() => {
+    console.log('🔵 Navbar user changed:', user?.email || 'NULL', '| isHydrated:', isHydrated)
+  }, [user, isHydrated])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -167,7 +173,12 @@ export default function Navbar() {
                         <div className="py-1">
                           <Link
                             href={user.role === 'admin' ? '/admin' : '/dashboard'}
-                            onClick={() => setIsUserMenuOpen(false)}
+                            onClick={() => {
+                              console.log('🔗 Dashboard link clicked!')
+                              console.log('  User role:', user.role)
+                              console.log('  Target href:', user.role === 'admin' ? '/admin' : '/dashboard')
+                              setIsUserMenuOpen(false)
+                            }}
                             className="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 hover:bg-zinc-50 transition-colors"
                           >
                             <span>Dashboard</span>

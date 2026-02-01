@@ -8,7 +8,6 @@ import { FaBox, FaNewspaper, FaUsers, FaChartBar, FaCalendar, FaUserTie, FaRss }
 import api from '@/lib/api'
 
 export default function AdminDashboard() {
-  const { user, logout } = useAuth()
   const router = useRouter()
   const [stats, setStats] = useState({
     products: 0,
@@ -17,18 +16,45 @@ export default function AdminDashboard() {
     events: 0,
   })
   const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<any>(null)
+  const [authChecked, setAuthChecked] = useState(false)
 
+  // Check auth on mount - read directly from storage
   useEffect(() => {
-    if (user === null) {
+    console.log('🚀 Admin page mounted, checking auth...')
+    const storedUserData = sessionStorage.getItem('userData') || localStorage.getItem('userData')
+    const storedToken = sessionStorage.getItem('authToken') || localStorage.getItem('authToken')
+    
+    console.log('📦 Admin Storage check:')
+    console.log('  - userData:', storedUserData ? 'EXISTS' : 'MISSING')
+    console.log('  - authToken:', storedToken ? 'EXISTS' : 'MISSING')
+    
+    if (!storedUserData || !storedToken) {
+      console.log('❌ Missing auth data, redirecting to login')
       router.push('/login?redirect=/admin')
-    } else if (user && user.role !== 'admin') {
-      // User is logged in but not an admin
-      alert('Access denied. Admin privileges required.')
-      router.push('/')
-    } else if (user) {
-      loadStats()
+      return
     }
-  }, [user, router])
+    
+    try {
+      const parsedUser = JSON.parse(storedUserData)
+      console.log('✅ Parsed user:', parsedUser.email, '| Role:', parsedUser.role)
+      
+      if (parsedUser.role !== 'admin') {
+        console.log('🚫 Not an admin, redirecting to home')
+        alert('Access denied. Admin privileges required.')
+        router.push('/')
+        return
+      }
+      
+      console.log('✅ Admin verified, loading stats')
+      setUser(parsedUser)
+      setAuthChecked(true)
+      loadStats()
+    } catch (e) {
+      console.error('❌ Failed to parse user data:', e)
+      router.push('/login?redirect=/admin')
+    }
+  }, [])
 
   const loadStats = async () => {
     try {

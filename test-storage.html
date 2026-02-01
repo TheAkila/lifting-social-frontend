@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+console.log('=== STORAGE TEST ===');
+console.log('sessionStorage userData:', sessionStorage.getItem('userData'));
+console.log('sessionStorage authToken:', sessionStorage.getItem('authToken'));
+console.log('localStorage userData:', localStorage.getItem('userData'));
+console.log('localStorage authToken:', localStorage.getItem('authToken'));
+
+const userData = sessionStorage.getItem('userData') || localStorage.getItem('userData');
+if (userData) {
+  const parsed = JSON.parse(userData);
+  console.log('Parsed user:', parsed);
+  console.log('User role:', parsed.role);
+}
+</script>
+<h1>Check browser console</h1>
+</body>
+</html>

@@ -131,6 +131,12 @@ export default function AuthCallbackPage() {
 
             console.log('Storing user data:', userData)
             
+            // Store Supabase tokens FIRST (for session restoration)
+            localStorage.setItem('supabaseToken', session.access_token)
+            localStorage.setItem('refreshToken', refreshToken || '')
+            sessionStorage.setItem('supabaseToken', session.access_token)
+            sessionStorage.setItem('refreshToken', refreshToken || '')
+            
             // Store the BACKEND JWT token for API calls
             if (backendToken) {
               localStorage.setItem('authToken', backendToken)
@@ -142,12 +148,6 @@ export default function AuthCallbackPage() {
               sessionStorage.setItem('authToken', session.access_token)
             }
             
-            // Store Supabase tokens separately
-            localStorage.setItem('supabaseToken', session.access_token)
-            localStorage.setItem('refreshToken', refreshToken || '')
-            sessionStorage.setItem('supabaseToken', session.access_token)
-            sessionStorage.setItem('refreshToken', refreshToken || '')
-            
             // Store user data
             localStorage.setItem('userData', JSON.stringify(userData))
             sessionStorage.setItem('userData', JSON.stringify(userData))
@@ -158,10 +158,22 @@ export default function AuthCallbackPage() {
             // Verify storage with detailed logging
             const storedToken = sessionStorage.getItem('authToken')
             const storedData = sessionStorage.getItem('userData')
+            const storedSupabaseToken = sessionStorage.getItem('supabaseToken')
+            const storedRefreshToken = sessionStorage.getItem('refreshToken')
+            
             console.log('=== VERIFICATION BEFORE REDIRECT ===')
             console.log('✅ authToken stored:', storedToken ? 'YES (length: ' + storedToken.length + ')' : 'NO')
+            console.log('✅ supabaseToken stored:', storedSupabaseToken ? 'YES (length: ' + storedSupabaseToken.length + ')' : 'NO')
+            console.log('✅ refreshToken stored:', storedRefreshToken ? 'YES (length: ' + storedRefreshToken.length + ')' : 'NO')
             console.log('✅ userData stored:', storedData ? JSON.parse(storedData).email : 'NOT FOUND')
             console.log('===================================')
+            
+            // Double-check localStorage too
+            console.log('=== LOCALSTORAGE CHECK ===')
+            console.log('authToken:', !!localStorage.getItem('authToken'))
+            console.log('supabaseToken:', !!localStorage.getItem('supabaseToken'))
+            console.log('userData:', !!localStorage.getItem('userData'))
+            console.log('==========================')
             
             console.log('✅ Authentication successful! Redirecting to home...')
             
