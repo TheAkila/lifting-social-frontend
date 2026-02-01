@@ -1,29 +1,35 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ShoppingBag } from 'lucide-react'
+import { Dumbbell, Zap, TrendingUp } from 'lucide-react'
 
 export default function ShopHeader() {
   return (
-    <section className="bg-zinc-950 py-8 sm:py-12 md:py-16">
-      <div className="container mx-auto px-4">
+    <section className="relative bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 py-12 sm:py-16 md:py-20 overflow-hidden">
+      {/* Animated Background Pattern */}
+      <div className="absolute inset-0 opacity-[0.03]">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.1) 35px, rgba(255,255,255,.1) 70px)`
+        }} />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center max-w-2xl mx-auto"
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-3xl mx-auto"
         >
-          <div className="inline-flex items-center gap-2 bg-zinc-800 text-zinc-300 px-3 py-1 rounded-full text-xs font-medium mb-4 sm:mb-6">
-            <ShoppingBag className="w-3 h-3" />
-            <span>Premium Collection</span>
-          </div>
+         
           
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-white mb-3 sm:mb-4">
-            Shop the Movement
+          {/* Main Heading */}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-black text-white mb-4 sm:mb-6 leading-tight">
+            Train Like a
+          
+            
+              Champion
+         
           </h1>
-          <p className="text-sm sm:text-base md:text-lg text-zinc-400 px-4">
-            Premium weightlifting apparel and gear designed for champions
-          </p>
         </motion.div>
       </div>
     </section>
