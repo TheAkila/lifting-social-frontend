@@ -83,7 +83,8 @@ export default function AuthCallbackPage() {
             
             try {
               const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-              console.log('Syncing user to backend:', session.user.email)
+              console.log('🔄 Syncing user to backend:', session.user.email)
+              console.log('   Request URL:', `${API_URL}/auth/google/callback`)
               
               const backendResponse = await fetch(`${API_URL}/auth/google/callback`, {
                 method: 'POST',
@@ -96,23 +97,33 @@ export default function AuthCallbackPage() {
                 })
               })
               
+              console.log('   Response status:', backendResponse.status)
+              const responseText = await backendResponse.text()
+              console.log('   Response text:', responseText)
+              
               if (backendResponse.ok) {
-                const backendData = await backendResponse.json()
-                console.log('✅ Backend response:', backendData)
-                
-                backendToken = backendData.data?.token
-                backendUserData = backendData.data?.user
-                
-                if (backendToken) {
-                  console.log('✅ Got backend JWT token')
-                } else {
-                  console.error('❌ No token in backend response')
+                try {
+                  const backendData = JSON.parse(responseText)
+                  console.log('✅ Backend response parsed:', backendData)
+                  
+                  backendToken = backendData.data?.token || backendData.token
+                  backendUserData = backendData.data?.user || backendData.user
+                  
+                  if (backendToken) {
+                    console.log('✅ Got backend JWT token (length:', backendToken.length, ')')
+                    console.log('   Token preview:', backendToken.substring(0, 50) + '...')
+                  } else {
+                    console.error('❌ No token in backend response - response structure:', Object.keys(backendData))
+                  }
+                } catch (parseErr) {
+                  console.error('❌ Failed to parse backend response:', parseErr)
                 }
               } else {
-                console.error('❌ Backend sync failed:', backendResponse.status)
+                console.error('❌ Backend sync failed with status:', backendResponse.status)
+                console.error('   Response body:', responseText)
               }
             } catch (err) {
-              console.error('❌ Failed to sync user to backend:', err)
+              console.error('❌ Network error calling backend:', err)
             }
 
             // Store user data - use backend data if available, fallback to Supabase
@@ -140,13 +151,23 @@ export default function AuthCallbackPage() {
             
             // Store the BACKEND JWT token for API calls
             if (backendToken) {
-              localStorage.setItem('authToken', backendToken)
-              sessionStorage.setItem('authToken', backendToken)
-              console.log('✅ Backend JWT token stored')
+              // Verify it's a valid JWT (not a Supabase token)
+              if (backendToken.length > 500) {
+                console.error('❌ CRITICAL: Backend returned a Supabase-like token (length > 500)')
+                console.error('   This will cause 401 errors. NOT storing this token.')
+                console.error('   User will need to re-authenticate.')
+              } else {
+                localStorage.setItem('authToken', backendToken)
+                sessionStorage.setItem('authToken', backendToken)
+                console.log('✅ Backend JWT token stored (length:', backendToken.length, ')')
+              }
             } else {
-              console.warn('⚠️ No backend token available, using Supabase token as fallback')
-              localStorage.setItem('authToken', session.access_token)
-              sessionStorage.setItem('authToken', session.access_token)
+              console.error('❌ NO BACKEND TOKEN RECEIVED')
+              console.error('   Backend may have failed to create user or return token')
+              console.error('   NOT storing any token - user will get 401 errors on API calls')
+              console.error('   User should try logging in again or contact support')
+              // DO NOT store Supabase token as fallback
+              // This was the root cause of 401 errors
             }
             
             // Store user data

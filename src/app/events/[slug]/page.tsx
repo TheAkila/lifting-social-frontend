@@ -85,10 +85,15 @@ export default function EventDetailPage() {
   const [submitting, setSubmitting] = useState(false)
   
   const [regForm, setRegForm] = useState({
+    teamName: '',
     gender: 'male',
-    weightCategory: '',
+    teamManager: '',
+    phoneNo: '',
+    notes: '',
+    // Legacy fields for backwards compatibility
     clubName: '',
     federationId: '',
+    weightCategory: '',
     coachName: '',
     coachPhone: '',
     coachEmail: '',
@@ -260,18 +265,60 @@ export default function EventDetailPage() {
       router.push(`/login?redirect=/events/${params.slug}`)
       return
     }
-    if (!regForm.weightCategory) {
-      alert('Please select a weight category')
+
+    // Check if auth token exists
+    const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken')
+    if (!token) {
+      alert('Your session has expired. Please log in again.')
+      router.push(`/login?redirect=/events/${params.slug}`)
+      return
+    }
+
+    if (!regForm.teamName) {
+      alert('Please enter your team name')
+      return
+    }
+    if (!regForm.teamManager) {
+      alert('Please enter team manager name')
+      return
+    }
+    if (!regForm.phoneNo) {
+      alert('Please enter phone number')
       return
     }
     setSubmitting(true)
     try {
+      console.log('Submitting registration with data:', { eventId: event?.id, ...regForm })
       const response = await api.post('/registrations', { eventId: event?.id, ...regForm })
       setRegistration(response.data)
       setShowRegisterModal(false)
       alert('Successfully registered!')
+      // Reload registration data
+      await checkRegistration()
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to register')
+      console.error('Registration error:', err)
+      console.error('Error response:', err.response)
+      console.error('Error status:', err.response?.status)
+      console.error('Error data:', err.response?.data)
+      
+      // Check if it's an authentication error
+      if (err.response?.status === 401 || err.authError) {
+        // Clear storage and force re-login
+        localStorage.removeItem('authToken')
+        localStorage.removeItem('userData')
+        sessionStorage.removeItem('authToken')
+        sessionStorage.removeItem('userData')
+        
+        alert('Your session has expired. Please log in again.')
+        router.push(`/login?redirect=/events/${params.slug}`)
+      } else if (err.response?.status === 400) {
+        // Handle bad request errors (validation, already registered, etc.)
+        alert(err.response?.data?.message || 'Invalid registration data. Please check your information.')
+      } else if (err.response?.status === 404) {
+        alert('Event not found. Please refresh the page and try again.')
+      } else {
+        alert(err.response?.data?.message || err.message || 'Failed to register. Please try again.')
+      }
     } finally {
       setSubmitting(false)
     }
@@ -299,7 +346,14 @@ export default function EventDetailPage() {
       setShowPreliminaryModal(false)
       alert('Preliminary entry submitted!')
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to submit')
+      console.error('Preliminary submission error:', err)
+      
+      if (err.response?.status === 401 || err.authError) {
+        alert('Your session has expired. Please log in again.')
+        router.push(`/login?redirect=/events/${params.slug}`)
+      } else {
+        alert(err.response?.data?.message || err.message || 'Failed to submit')
+      }
     } finally {
       setSubmitting(false)
     }
@@ -322,7 +376,14 @@ export default function EventDetailPage() {
       setShowFinalModal(false)
       alert('Final entry submitted!')
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to submit')
+      console.error('Final submission error:', err)
+      
+      if (err.response?.status === 401 || err.authError) {
+        alert('Your session has expired. Please log in again.')
+        router.push(`/login?redirect=/events/${params.slug}`)
+      } else {
+        alert(err.response?.data?.message || err.message || 'Failed to submit')
+      }
     } finally {
       setSubmitting(false)
     }
@@ -335,7 +396,14 @@ export default function EventDetailPage() {
       setRegistration(prev => prev ? { ...prev, status: 'withdrawn' } : null)
       alert('Successfully withdrawn')
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to withdraw')
+      console.error('Withdrawal error:', err)
+      
+      if (err.response?.status === 401 || err.authError) {
+        alert('Your session has expired. Please log in again.')
+        router.push(`/login?redirect=/events/${params.slug}`)
+      } else {
+        alert(err.response?.data?.message || err.message || 'Failed to withdraw')
+      }
     }
   }
 
@@ -518,38 +586,60 @@ export default function EventDetailPage() {
             <h2 className="text-2xl font-display font-semibold text-zinc-900 mb-6">Register for Event</h2>
             <div className="space-y-5">
               <div>
+                <label className="block text-sm font-medium text-zinc-700 mb-2">Team Name *</label>
+                <input 
+                  type="text" 
+                  value={regForm.teamName} 
+                  onChange={(e) => setRegForm({ ...regForm, teamName: e.target.value, clubName: e.target.value })} 
+                  className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" 
+                  placeholder="Enter your team name" 
+                  required
+                />
+              </div>
+              <div>
                 <label className="block text-sm font-medium text-zinc-700 mb-2">Gender *</label>
-                <select title="Select gender" value={regForm.gender} onChange={(e) => setRegForm({ ...regForm, gender: e.target.value, weightCategory: '' })} className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900">
+                <select 
+                  title="Select gender" 
+                  value={regForm.gender} 
+                  onChange={(e) => setRegForm({ ...regForm, gender: e.target.value })} 
+                  className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900"
+                  required
+                >
                   <option value="male">Male</option>
                   <option value="female">Female</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-zinc-700 mb-2">Weight Category *</label>
-                <select title="Select weight category" value={regForm.weightCategory} onChange={(e) => setRegForm({ ...regForm, weightCategory: e.target.value })} className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900">
-                  <option value="">Select category</option>
-                  {WEIGHT_CATEGORIES[regForm.gender as keyof typeof WEIGHT_CATEGORIES].map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                </select>
+                <label className="block text-sm font-medium text-zinc-700 mb-2">Team Manager *</label>
+                <input 
+                  type="text" 
+                  value={regForm.teamManager} 
+                  onChange={(e) => setRegForm({ ...regForm, teamManager: e.target.value, coachName: e.target.value })} 
+                  className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" 
+                  placeholder="Enter team manager name" 
+                  required
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-zinc-700 mb-2">Club Name</label>
-                <input type="text" value={regForm.clubName} onChange={(e) => setRegForm({ ...regForm, clubName: e.target.value })} className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" placeholder="Your weightlifting club" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-zinc-700 mb-2">Federation ID</label>
-                <input type="text" value={regForm.federationId} onChange={(e) => setRegForm({ ...regForm, federationId: e.target.value })} className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" placeholder="Membership number" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-zinc-700 mb-2">Coach Name</label>
-                <input type="text" value={regForm.coachName} onChange={(e) => setRegForm({ ...regForm, coachName: e.target.value })} className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" placeholder="Your coach's name" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-zinc-700 mb-2">Coach Phone</label>
-                <input type="tel" value={regForm.coachPhone} onChange={(e) => setRegForm({ ...regForm, coachPhone: e.target.value })} className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" placeholder="Coach contact number" />
+                <label className="block text-sm font-medium text-zinc-700 mb-2">Phone Number *</label>
+                <input 
+                  type="tel" 
+                  value={regForm.phoneNo} 
+                  onChange={(e) => setRegForm({ ...regForm, phoneNo: e.target.value, coachPhone: e.target.value })} 
+                  className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" 
+                  placeholder="Contact number" 
+                  required
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-zinc-700 mb-2">Notes</label>
-                <textarea value={regForm.athleteNotes} onChange={(e) => setRegForm({ ...regForm, athleteNotes: e.target.value })} className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" rows={3} placeholder="Any additional notes..." />
+                <textarea 
+                  value={regForm.notes} 
+                  onChange={(e) => setRegForm({ ...regForm, notes: e.target.value, athleteNotes: e.target.value })} 
+                  className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" 
+                  rows={3} 
+                  placeholder="Any additional notes or special requirements..." 
+                />
               </div>
             </div>
             <div className="flex gap-3 mt-8">

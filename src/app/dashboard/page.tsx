@@ -78,10 +78,34 @@ export default function UserDashboard() {
     console.log('🚀 Dashboard mounted, checking auth...')
     const storedUserData = sessionStorage.getItem('userData') || localStorage.getItem('userData')
     const storedToken = sessionStorage.getItem('authToken') || localStorage.getItem('authToken')
+    const storedSupabaseToken = sessionStorage.getItem('supabaseToken') || localStorage.getItem('supabaseToken')
     
     console.log('📦 Storage check:')
     console.log('  - userData:', storedUserData ? 'EXISTS' : 'MISSING')
-    console.log('  - authToken:', storedToken ? 'EXISTS' : 'MISSING')
+    console.log('  - authToken:', storedToken ? 'EXISTS (length: ' + storedToken?.length + ')' : 'MISSING')
+    console.log('  - supabaseToken:', storedSupabaseToken ? 'EXISTS (length: ' + storedSupabaseToken?.length + ')' : 'MISSING')
+    
+    // Token analysis and cleanup
+    if (storedToken) {
+      console.log('  - authToken preview:', storedToken.substring(0, 50) + '...')
+      // Check if it's a Supabase token (starts with eyJ and is very long)
+      if (storedToken.length > 500) {
+        console.error('❌ DETECTED SUPABASE TOKEN STORED AS BACKEND TOKEN!')
+        console.error('   This WILL cause 401 errors on all API calls.')
+        console.error('   Auto-clearing wrong token type...')
+        // Clear the wrong token
+        localStorage.removeItem('authToken')
+        sessionStorage.removeItem('authToken')
+        console.log('✅ Cleared invalid token. User needs to re-login.')
+        // Clear user data too since token is invalid
+        localStorage.removeItem('userData')
+        sessionStorage.removeItem('userData')
+        router.push('/login?error=invalid_token')
+        return
+      } else {
+        console.log('✅ Token appears to be backend JWT (normal length)')
+      }
+    }
     console.log('  - userData value:', storedUserData)
     console.log('  - authToken value:', storedToken)
     
@@ -194,23 +218,120 @@ export default function UserDashboard() {
   // Helper to determine what action is needed
   const getRequiredAction = (reg: EventRegistration) => {
     const eventData = getEventData(reg)
+    const comp = reg.competition
     
-    // Check if preliminary entry is open and user needs to submit
-    if (eventData.preliminaryEntryOpen && ['registered', 'preliminary_pending'].includes(reg.status)) {
-      return { action: 'preliminary', message: 'Submit preliminary entry' }
+    // Check dates for phase determination
+    const now = new Date()
+    const prelimStart = comp?.preliminary_entry_start ? new Date(comp.preliminary_entry_start) : null
+    const prelimEnd = comp?.preliminary_entry_end ? new Date(comp.preliminary_entry_end) : null
+    const finalStart = comp?.final_entry_start ? new Date(comp.final_entry_start) : null
+    const finalEnd = comp?.final_entry_end ? new Date(comp.final_entry_end) : null
+    
+    // Status: registered - waiting for admin approval OR waiting for preliminary entry to open
+    if (reg.status === 'registered') {
+      if (eventData.preliminaryEntryOpen) {
+        return { 
+          action: 'action', 
+          actionType: 'preliminary',
+          message: 'Submit preliminary entry now',
+          phase: 'preliminary-open',
+          color: 'bg-green-100 text-green-700'
+        }
+      }
+      if (prelimStart && prelimStart > now) {
+        const daysUntil = Math.ceil((prelimStart.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+        return { 
+          action: 'wait', 
+          message: `Preliminary entries open in ${daysUntil} days`,
+          phase: 'awaiting-preliminary',
+          color: 'bg-blue-100 text-blue-700'
+        }
+      }
+      return { 
+        action: 'wait', 
+        message: 'Waiting for preliminary entries to open',
+        phase: 'awaiting-preliminary',
+        color: 'bg-blue-100 text-blue-700'
+      }
     }
     
-    // Check if final entry is open and user needs to submit
-    if (eventData.finalEntryOpen && ['preliminary_approved', 'final_pending'].includes(reg.status)) {
-      return { action: 'final', message: 'Submit final entry' }
+    // Status: preliminary_pending or preliminary_submitted - admin needs to approve
+    if (['preliminary_pending', 'preliminary_submitted'].includes(reg.status)) {
+      return { 
+        action: 'wait', 
+        message: 'Admin reviewing your preliminary entry',
+        phase: 'admin-review',
+        color: 'bg-yellow-100 text-yellow-700'
+      }
     }
     
-    // Fallback for waiting states
-    if (reg.status === 'preliminary_pending') {
-      return { action: 'wait', message: 'Waiting for preliminary approval' }
+    // Status: preliminary_approved - can submit final OR waiting for final to open
+    if (reg.status === 'preliminary_approved') {
+      if (eventData.finalEntryOpen) {
+        return { 
+          action: 'action', 
+          actionType: 'final',
+          message: 'Submit final entry now',
+          phase: 'final-open',
+          color: 'bg-green-100 text-green-700'
+        }
+      }
+      if (finalStart && finalStart > now) {
+        const daysUntil = Math.ceil((finalStart.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+        return { 
+          action: 'wait', 
+          message: `Final entries open in ${daysUntil} days`,
+          phase: 'awaiting-final',
+          color: 'bg-blue-100 text-blue-700'
+        }
+      }
+      return { 
+        action: 'wait', 
+        message: 'Waiting for final entries to open',
+        phase: 'awaiting-final',
+        color: 'bg-blue-100 text-blue-700'
+      }
     }
-    if (reg.status === 'final_pending') {
-      return { action: 'wait', message: 'Waiting for final approval' }
+    
+    // Status: final_pending or final_submitted - admin needs to approve
+    if (['final_pending', 'final_submitted'].includes(reg.status)) {
+      return { 
+        action: 'wait', 
+        message: 'Admin reviewing your final entry',
+        phase: 'admin-review',
+        color: 'bg-yellow-100 text-yellow-700'
+      }
+    }
+    
+    // Status: final_approved - waiting for payment or competition
+    if (reg.status === 'final_approved') {
+      return { 
+        action: 'info', 
+        message: 'Entry approved! Prepare for competition',
+        phase: 'approved',
+        color: 'bg-green-100 text-green-700'
+      }
+    }
+    
+    // Status: payment_pending
+    if (reg.status === 'payment_pending') {
+      return { 
+        action: 'action', 
+        actionType: 'payment',
+        message: 'Complete payment',
+        phase: 'payment',
+        color: 'bg-orange-100 text-orange-700'
+      }
+    }
+    
+    // Status: confirmed - all set
+    if (reg.status === 'confirmed') {
+      return { 
+        action: 'info', 
+        message: 'All set! See you at the competition',
+        phase: 'confirmed',
+        color: 'bg-green-100 text-green-700'
+      }
     }
     
     return null
@@ -218,7 +339,13 @@ export default function UserDashboard() {
 
   const activeRegistrations = registrations.filter(r => r.status !== 'withdrawn')
   const confirmedCount = registrations.filter(r => r.status === 'confirmed').length
-  const pendingCount = registrations.filter(r => ['registered', 'preliminary_submitted', 'final_submitted', 'payment_pending'].includes(r.status)).length
+  const pendingCount = registrations.filter(r => 
+    ['registered', 'preliminary_pending', 'preliminary_submitted', 'final_pending', 'final_submitted', 'payment_pending'].includes(r.status)
+  ).length
+  const actionRequiredCount = activeRegistrations.filter(reg => {
+    const action = getRequiredAction(reg)
+    return action?.action === 'action'
+  }).length
 
   return (
     <div className="min-h-screen bg-white pt-24 sm:pt-32 pb-12 sm:pb-16">
@@ -235,6 +362,59 @@ export default function UserDashboard() {
           <p className="text-gray-500 text-base sm:text-lg">Manage your weightlifting competition registrations</p>
         </motion.div>
 
+        {/* Summary Cards */}
+        {activeRegistrations.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8"
+          >
+            {/* Total Events */}
+            <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-5">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                  <Trophy className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm text-blue-600 font-medium">Total Events</p>
+                  <p className="text-2xl font-bold text-blue-900">{activeRegistrations.length}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions Required */}
+            <div className={`border-2 rounded-lg p-5 ${actionRequiredCount > 0 ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`}>
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${actionRequiredCount > 0 ? 'bg-red-600' : 'bg-gray-400'}`}>
+                  <AlertCircle className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <p className={`text-sm font-medium ${actionRequiredCount > 0 ? 'text-red-600' : 'text-gray-600'}`}>
+                    Actions Required
+                  </p>
+                  <p className={`text-2xl font-bold ${actionRequiredCount > 0 ? 'text-red-900' : 'text-gray-900'}`}>
+                    {actionRequiredCount}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Confirmed */}
+            <div className="bg-green-50 border-2 border-green-200 rounded-lg p-5">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+                  <CheckCircle2 className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm text-green-600 font-medium">Confirmed</p>
+                  <p className="text-2xl font-bold text-green-900">{confirmedCount}</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Events List */}
         {activeRegistrations.length === 0 ? (
           <motion.div 
@@ -245,9 +425,15 @@ export default function UserDashboard() {
           >
             <Trophy className="w-20 h-20 text-gray-300 mx-auto mb-6" />
             <h3 className="text-2xl font-bold text-black mb-2">No Event Registrations</h3>
-            <p className="text-gray-500 max-w-md mx-auto">
-              You haven't registered for any weightlifting competitions yet.
+            <p className="text-gray-500 max-w-md mx-auto mb-6">
+              You haven't registered for any weightlifting competitions yet. Browse upcoming events and register to get started!
             </p>
+            <Link href="/events">
+              <button className="px-6 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors inline-flex items-center gap-2">
+                <Plus className="w-4 h-4" />
+                Browse Events
+              </button>
+            </Link>
           </motion.div>
         ) : (
           <div className="space-y-4">
@@ -272,7 +458,7 @@ function EventCard({ reg, index, getRegistrationStatusBadge, getEventData, getRe
   index: number
   getRegistrationStatusBadge: (status: string) => { bg: string, text: string, label: string, icon: any }
   getEventData: (reg: EventRegistration) => { id: string, title: string, slug: string, date: string, location?: string, preliminaryEntryOpen: boolean, finalEntryOpen: boolean }
-  getRequiredAction: (reg: EventRegistration) => { action: string, message: string } | null
+  getRequiredAction: (reg: EventRegistration) => { action: string, actionType?: string, message: string, phase: string, color: string } | null
 }) {
   const statusBadge = getRegistrationStatusBadge(reg.status)
   const StatusIcon = statusBadge.icon
@@ -297,9 +483,18 @@ function EventCard({ reg, index, getRegistrationStatusBadge, getEventData, getRe
               <Trophy className="w-6 h-6 text-white" />
             </div>
             <div className="flex-1">
-              <h3 className="text-xl font-bold text-black mb-1 group-hover:underline">
-                {eventData.title}
-              </h3>
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="text-xl font-bold text-black mb-1 group-hover:underline">
+                  {eventData.title}
+                </h3>
+                {/* Action Badge - Prominent */}
+                {requiredAction && requiredAction.action === 'action' && (
+                  <span className="flex items-center gap-1.5 px-3 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full animate-pulse">
+                    <AlertCircle className="w-3.5 h-3.5" />
+                    ACTION NEEDED
+                  </span>
+                )}
+              </div>
               <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                 <div className="flex items-center gap-1.5">
                   <Calendar className="w-4 h-4 text-gray-400" />
@@ -348,28 +543,39 @@ function EventCard({ reg, index, getRegistrationStatusBadge, getEventData, getRe
               </div>
             )}
           </div>
+
+          {/* Action Status Box */}
+          {requiredAction && (
+            <div className={`mt-4 ml-16 p-4 rounded-lg border-2 ${requiredAction.color} border-current`}>
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex-1">
+                  <p className="font-bold text-sm mb-1">
+                    {requiredAction.action === 'action' ? '⚡ Action Required' : 
+                     requiredAction.action === 'wait' ? '⏳ Waiting' : 
+                     '✓ Status Update'}
+                  </p>
+                  <p className="text-sm">{requiredAction.message}</p>
+                </div>
+                {requiredAction.action === 'action' && (
+                  <Link href={`/events/${eventData.slug}`}>
+                    <button className="px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors text-sm whitespace-nowrap">
+                      Take Action
+                    </button>
+                  </Link>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-3 lg:flex-col lg:items-end">
+        {/* View Event Button */}
+        <div className="flex lg:flex-col lg:items-end">
           <Link href={`/events/${eventData.slug}`} className="flex-1 lg:flex-initial">
             <button className="w-full px-6 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
-              View Event
+              View Details
               <ArrowRight className="w-4 h-4" />
             </button>
           </Link>
-          {requiredAction && requiredAction.action !== 'wait' && (
-            <div className="text-xs text-gray-500 text-right">
-              <p className="font-medium text-yellow-700">Action Required</p>
-              <p>{requiredAction.message}</p>
-            </div>
-          )}
-          {requiredAction && requiredAction.action === 'wait' && (
-            <div className="text-xs text-gray-500 text-right">
-              <p className="font-medium text-blue-600">Pending</p>
-              <p>{requiredAction.message}</p>
-            </div>
-          )}
         </div>
       </div>
     </motion.div>

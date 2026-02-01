@@ -34,11 +34,21 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // Handle unauthorized access
       if (typeof window !== 'undefined') {
-        console.warn('API request unauthorized (401). Token may be invalid or expired.')
-        // Don't auto-redirect or clear token - let the calling code handle it
-        // This prevents clearing token on every failed request
-        // localStorage.removeItem('authToken')
-        // window.location.href = '/login'
+        console.error('API request unauthorized (401). Token may be invalid or expired.')
+        
+        // Clear all auth data
+        localStorage.removeItem('authToken')
+        localStorage.removeItem('userData')
+        localStorage.removeItem('supabaseToken')
+        localStorage.removeItem('refreshToken')
+        sessionStorage.removeItem('authToken')
+        sessionStorage.removeItem('userData')
+        sessionStorage.removeItem('supabaseToken')
+        sessionStorage.removeItem('refreshToken')
+        
+        // Add a more descriptive error message
+        error.authError = true
+        error.message = 'Your session has expired. Please log in again.'
       }
     }
     return Promise.reject(error)
