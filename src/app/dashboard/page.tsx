@@ -72,6 +72,23 @@ export default function UserDashboard() {
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<User | null>(null)
   const [authChecked, setAuthChecked] = useState(false)
+  const [showUpdateModal, setShowUpdateModal] = useState(false)
+  const [selectedRegistration, setSelectedRegistration] = useState<EventRegistration | null>(null)
+  const [updateForm, setUpdateForm] = useState({
+    weightCategory: '',
+    gender: '',
+    clubName: '',
+    coachName: '',
+    coachPhone: '',
+    coachEmail: '',
+    athleteNotes: '',
+    teamName: '',
+    teamManagerName: '',
+    teamManagerPhone: '',
+    teamManagerEmail: '',
+    teamSize: ''
+  })
+  const [submitting, setSubmitting] = useState(false)
 
   // Check auth on mount - read directly from storage
   useEffect(() => {
@@ -177,16 +194,17 @@ export default function UserDashboard() {
 
   const getRegistrationStatusBadge = (status: string) => {
     const badges: Record<string, { bg: string, text: string, label: string, icon: any }> = {
-      registered: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Registered', icon: CheckCircle2 },
+      pending: { bg: 'bg-yellow-100', text: 'text-yellow-700', label: 'Pending Approval', icon: Clock },
+      registered: { bg: 'bg-green-100', text: 'text-green-700', label: 'Registered', icon: CheckCircle2 },
       // Preliminary statuses
       preliminary_pending: { bg: 'bg-yellow-100', text: 'text-yellow-700', label: 'Prelim Pending', icon: Clock },
       preliminary_submitted: { bg: 'bg-yellow-100', text: 'text-yellow-700', label: 'Prelim Submitted', icon: Clock },
-      preliminary_approved: { bg: 'bg-green-100', text: 'text-green-700', label: 'Prelim Approved', icon: CheckCircle2 },
+      preliminary_approved: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Prelim Approved', icon: CheckCircle2 },
       preliminary_rejected: { bg: 'bg-red-100', text: 'text-red-700', label: 'Prelim Rejected', icon: AlertCircle },
       // Final statuses
       final_pending: { bg: 'bg-yellow-100', text: 'text-yellow-700', label: 'Final Pending', icon: Clock },
       final_submitted: { bg: 'bg-yellow-100', text: 'text-yellow-700', label: 'Final Submitted', icon: Clock },
-      final_approved: { bg: 'bg-green-100', text: 'text-green-700', label: 'Final Approved', icon: CheckCircle2 },
+      final_approved: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Final Approved', icon: CheckCircle2 },
       final_rejected: { bg: 'bg-red-100', text: 'text-red-700', label: 'Final Rejected', icon: AlertCircle },
       // Other statuses
       payment_pending: { bg: 'bg-orange-100', text: 'text-orange-700', label: 'Payment Pending', icon: AlertCircle },
@@ -337,6 +355,96 @@ export default function UserDashboard() {
     return null
   }
 
+  const handleDeleteRegistration = async (regId: string, eventTitle: string) => {
+    if (!confirm(`Are you sure you want to delete your registration for ${eventTitle}?`)) return
+    
+    try {
+      await api.delete(`/registrations/${regId}`)
+      alert('Registration deleted successfully')
+      // Reload registrations
+      loadRegistrations()
+    } catch (err: any) {
+      console.error('Failed to delete registration:', err)
+      alert(err.response?.data?.message || 'Failed to delete registration. Please try again.')
+    }
+  }
+
+  const handleUpdateRegistration = (reg: EventRegistration) => {
+    setSelectedRegistration(reg)
+    const isTeam = (reg as any).is_team_registration
+    // Pre-fill form with existing data
+    setUpdateForm({
+      weightCategory: reg.weight_category || '',
+      gender: (reg as any).gender || '',
+      clubName: (reg as any).club_name || '',
+      coachName: (reg as any).coach_name || '',
+      coachPhone: (reg as any).coach_phone || '',
+      coachEmail: (reg as any).coach_email || '',
+      athleteNotes: (reg as any).athlete_notes || '',
+      // For team registrations, team name is stored in club_name field
+      teamName: isTeam ? ((reg as any).club_name || '') : '',
+      teamManagerName: (reg as any).team_manager_name || '',
+      teamManagerPhone: (reg as any).team_manager_phone || '',
+      teamManagerEmail: (reg as any).team_manager_email || '',
+      teamSize: (reg as any).team_size?.toString() || ''
+    })
+    setShowUpdateModal(true)
+  }
+
+  const handleSubmitUpdate = async () => {
+    if (!selectedRegistration) return
+
+    const isTeam = (selectedRegistration as any).is_team_registration
+
+    // Validation
+    if (isTeam) {
+      if (!updateForm.teamName || !updateForm.teamManagerName || !updateForm.teamManagerPhone) {
+        alert('Team name, manager name, and phone are required')
+        return
+      }
+    } else {
+      if (!updateForm.gender || !updateForm.weightCategory) {
+        alert('Gender and weight category are required')
+        return
+      }
+    }
+
+    setSubmitting(true)
+    try {
+      const requestData: any = {
+        isTeamRegistration: isTeam
+      }
+
+      if (isTeam) {
+        requestData.teamName = updateForm.teamName
+        requestData.teamManagerName = updateForm.teamManagerName
+        requestData.teamManagerPhone = updateForm.teamManagerPhone
+        requestData.teamManagerEmail = updateForm.teamManagerEmail || undefined
+        requestData.teamSize = updateForm.teamSize ? parseInt(updateForm.teamSize) : 0
+        requestData.notes = updateForm.athleteNotes || undefined
+      } else {
+        requestData.gender = updateForm.gender
+        requestData.weightCategory = updateForm.weightCategory
+        requestData.clubName = updateForm.clubName || undefined
+        requestData.coachName = updateForm.coachName || undefined
+        requestData.coachPhone = updateForm.coachPhone || undefined
+        requestData.coachEmail = updateForm.coachEmail || undefined
+        requestData.athleteNotes = updateForm.athleteNotes || undefined
+      }
+
+      await api.put(`/registrations/${selectedRegistration.id}`, requestData)
+      alert('Registration updated successfully!')
+      setShowUpdateModal(false)
+      setSelectedRegistration(null)
+      loadRegistrations()
+    } catch (err: any) {
+      console.error('Update error:', err)
+      alert(err.response?.data?.message || 'Failed to update registration. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   const activeRegistrations = registrations.filter(r => r.status !== 'withdrawn')
   const confirmedCount = registrations.filter(r => r.status === 'confirmed').length
   const pendingCount = registrations.filter(r => 
@@ -357,63 +465,10 @@ export default function UserDashboard() {
           className="mb-6 sm:mb-10"
         >
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-black mb-2">
-            My Events
+            Hi {user?.name || 'there'}! 
           </h1>
-          <p className="text-gray-500 text-base sm:text-lg">Manage your weightlifting competition registrations</p>
+          <p className="text-gray-500 text-base sm:text-lg">Welcome back to your weightlifting dashboard</p>
         </motion.div>
-
-        {/* Summary Cards */}
-        {activeRegistrations.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8"
-          >
-            {/* Total Events */}
-            <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-5">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <Trophy className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm text-blue-600 font-medium">Total Events</p>
-                  <p className="text-2xl font-bold text-blue-900">{activeRegistrations.length}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Actions Required */}
-            <div className={`border-2 rounded-lg p-5 ${actionRequiredCount > 0 ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`}>
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${actionRequiredCount > 0 ? 'bg-red-600' : 'bg-gray-400'}`}>
-                  <AlertCircle className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <p className={`text-sm font-medium ${actionRequiredCount > 0 ? 'text-red-600' : 'text-gray-600'}`}>
-                    Actions Required
-                  </p>
-                  <p className={`text-2xl font-bold ${actionRequiredCount > 0 ? 'text-red-900' : 'text-gray-900'}`}>
-                    {actionRequiredCount}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Confirmed */}
-            <div className="bg-green-50 border-2 border-green-200 rounded-lg p-5">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
-                  <CheckCircle2 className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm text-green-600 font-medium">Confirmed</p>
-                  <p className="text-2xl font-bold text-green-900">{confirmedCount}</p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
 
         {/* Events List */}
         {activeRegistrations.length === 0 ? (
@@ -445,20 +500,234 @@ export default function UserDashboard() {
                 getRegistrationStatusBadge={getRegistrationStatusBadge}
                 getEventData={getEventData}
                 getRequiredAction={getRequiredAction}
+                onDelete={handleDeleteRegistration}
+                onUpdate={handleUpdateRegistration}
               />
             ))}
           </div>
         )}
       </div>
+
+      {/* Update Modal */}
+      {showUpdateModal && selectedRegistration && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+          >
+            <div className="p-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Update Registration</h2>
+              
+              {(selectedRegistration as any).is_team_registration ? (
+                // Team Registration Form
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Team Name *</label>
+                    <input
+                      type="text"
+                      value={updateForm.teamName}
+                      onChange={(e) => setUpdateForm({ ...updateForm, teamName: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Team Manager Name *</label>
+                    <input
+                      type="text"
+                      value={updateForm.teamManagerName}
+                      onChange={(e) => setUpdateForm({ ...updateForm, teamManagerName: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Team Manager Phone *</label>
+                    <input
+                      type="tel"
+                      value={updateForm.teamManagerPhone}
+                      onChange={(e) => setUpdateForm({ ...updateForm, teamManagerPhone: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Team Manager Email</label>
+                    <input
+                      type="email"
+                      value={updateForm.teamManagerEmail}
+                      onChange={(e) => setUpdateForm({ ...updateForm, teamManagerEmail: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Team Size</label>
+                    <input
+                      type="number"
+                      value={updateForm.teamSize}
+                      onChange={(e) => setUpdateForm({ ...updateForm, teamSize: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      min="0"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                    <textarea
+                      value={updateForm.athleteNotes}
+                      onChange={(e) => setUpdateForm({ ...updateForm, athleteNotes: e.target.value })}
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              ) : (
+                // Individual Registration Form
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Gender *</label>
+                    <select
+                      value={updateForm.gender}
+                      onChange={(e) => setUpdateForm({ ...updateForm, gender: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    >
+                      <option value="">Select Gender</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Weight Category *</label>
+                    <select
+                      value={updateForm.weightCategory}
+                      onChange={(e) => setUpdateForm({ ...updateForm, weightCategory: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    >
+                      <option value="">Select Category</option>
+                      {updateForm.gender === 'male' ? (
+                        <>
+                          <option value="55">55kg</option>
+                          <option value="61">61kg</option>
+                          <option value="67">67kg</option>
+                          <option value="73">73kg</option>
+                          <option value="81">81kg</option>
+                          <option value="89">89kg</option>
+                          <option value="96">96kg</option>
+                          <option value="102">102kg</option>
+                          <option value="109">109kg</option>
+                          <option value="+109">+109kg</option>
+                        </>
+                      ) : updateForm.gender === 'female' ? (
+                        <>
+                          <option value="45">45kg</option>
+                          <option value="49">49kg</option>
+                          <option value="55">55kg</option>
+                          <option value="59">59kg</option>
+                          <option value="64">64kg</option>
+                          <option value="71">71kg</option>
+                          <option value="76">76kg</option>
+                          <option value="81">81kg</option>
+                          <option value="87">87kg</option>
+                          <option value="+87">+87kg</option>
+                        </>
+                      ) : null}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Club/Team Name</label>
+                    <input
+                      type="text"
+                      value={updateForm.clubName}
+                      onChange={(e) => setUpdateForm({ ...updateForm, clubName: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Coach Name</label>
+                    <input
+                      type="text"
+                      value={updateForm.coachName}
+                      onChange={(e) => setUpdateForm({ ...updateForm, coachName: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Coach Phone</label>
+                    <input
+                      type="tel"
+                      value={updateForm.coachPhone}
+                      onChange={(e) => setUpdateForm({ ...updateForm, coachPhone: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Coach Email</label>
+                    <input
+                      type="email"
+                      value={updateForm.coachEmail}
+                      onChange={(e) => setUpdateForm({ ...updateForm, coachEmail: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Additional Notes</label>
+                    <textarea
+                      value={updateForm.athleteNotes}
+                      onChange={(e) => setUpdateForm({ ...updateForm, athleteNotes: e.target.value })}
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => {
+                    setShowUpdateModal(false)
+                    setSelectedRegistration(null)
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  disabled={submitting}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSubmitUpdate}
+                  disabled={submitting}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+                >
+                  {submitting ? 'Updating...' : 'Update Registration'}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   )
 }
-function EventCard({ reg, index, getRegistrationStatusBadge, getEventData, getRequiredAction }: {
+function EventCard({ reg, index, getRegistrationStatusBadge, getEventData, getRequiredAction, onDelete, onUpdate }: {
   reg: EventRegistration
   index: number
   getRegistrationStatusBadge: (status: string) => { bg: string, text: string, label: string, icon: any }
   getEventData: (reg: EventRegistration) => { id: string, title: string, slug: string, date: string, location?: string, preliminaryEntryOpen: boolean, finalEntryOpen: boolean }
   getRequiredAction: (reg: EventRegistration) => { action: string, actionType?: string, message: string, phase: string, color: string } | null
+  onDelete: (regId: string, eventTitle: string) => void
+  onUpdate: (reg: EventRegistration) => void
 }) {
   const statusBadge = getRegistrationStatusBadge(reg.status)
   const StatusIcon = statusBadge.icon
@@ -473,111 +742,94 @@ function EventCard({ reg, index, getRegistrationStatusBadge, getEventData, getRe
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 + index * 0.05 }}
-      className="border-2 border-black rounded-lg p-6 hover:bg-gray-50 transition-colors group"
+      className="border border-gray-200 rounded-lg p-5 hover:border-gray-300 hover:shadow-sm transition-all"
     >
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-        {/* Event Info */}
+      {/* Header: Title and Status */}
+      <div className="flex items-start justify-between gap-3 mb-4">
         <div className="flex-1">
-          <div className="flex items-start gap-4 mb-4">
-            <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center flex-shrink-0">
-              <Trophy className="w-6 h-6 text-white" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">{eventData.title}</h3>
+          <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
+            <div className="flex items-center gap-1">
+              <Calendar className="w-4 h-4 text-gray-400" />
+              <span>{eventDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
             </div>
-            <div className="flex-1">
-              <div className="flex items-start justify-between gap-2">
-                <h3 className="text-xl font-bold text-black mb-1 group-hover:underline">
-                  {eventData.title}
-                </h3>
-                {/* Action Badge - Prominent */}
-                {requiredAction && requiredAction.action === 'action' && (
-                  <span className="flex items-center gap-1.5 px-3 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full animate-pulse">
-                    <AlertCircle className="w-3.5 h-3.5" />
-                    ACTION NEEDED
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-                <div className="flex items-center gap-1.5">
-                  <Calendar className="w-4 h-4 text-gray-400" />
-                  <span>{eventDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                  {isUpcoming && daysUntil <= 30 && (
-                    <span className="ml-1 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
-                      {daysUntil} days
-                    </span>
-                  )}
-                </div>
-                {eventData.location && (
-                  <div className="flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4 text-gray-400" />
-                    <span>{eventData.location}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Registration Details */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pl-16">
-            <div>
-              <p className="text-xs text-gray-500 mb-1">Status</p>
-              <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${statusBadge.bg} ${statusBadge.text}`}>
-                <StatusIcon className="w-3.5 h-3.5" />
-                {statusBadge.label}
-              </div>
-            </div>
-            {reg.weight_category && (
-              <div>
-                <p className="text-xs text-gray-500 mb-1">Category</p>
-                <p className="text-sm font-semibold text-black">{reg.weight_category}</p>
-              </div>
-            )}
-            {reg.entry_total && (
-              <div>
-                <p className="text-xs text-gray-500 mb-1">Entry Total</p>
-                <p className="text-sm font-semibold text-black">{reg.entry_total}kg</p>
-              </div>
-            )}
-            {reg.snatch_opener && reg.cnj_opener && (
-              <div>
-                <p className="text-xs text-gray-500 mb-1">Openers</p>
-                <p className="text-sm font-semibold text-black">{reg.snatch_opener}kg / {reg.cnj_opener}kg</p>
+            {eventData.location && (
+              <div className="flex items-center gap-1">
+                <MapPin className="w-4 h-4 text-gray-400" />
+                <span>{eventData.location}</span>
               </div>
             )}
           </div>
-
-          {/* Action Status Box */}
-          {requiredAction && (
-            <div className={`mt-4 ml-16 p-4 rounded-lg border-2 ${requiredAction.color} border-current`}>
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex-1">
-                  <p className="font-bold text-sm mb-1">
-                    {requiredAction.action === 'action' ? '⚡ Action Required' : 
-                     requiredAction.action === 'wait' ? '⏳ Waiting' : 
-                     '✓ Status Update'}
-                  </p>
-                  <p className="text-sm">{requiredAction.message}</p>
-                </div>
-                {requiredAction.action === 'action' && (
-                  <Link href={`/events/${eventData.slug}`}>
-                    <button className="px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors text-sm whitespace-nowrap">
-                      Take Action
-                    </button>
-                  </Link>
-                )}
-              </div>
-            </div>
-          )}
         </div>
-
-        {/* View Event Button */}
-        <div className="flex lg:flex-col lg:items-end">
-          <Link href={`/events/${eventData.slug}`} className="flex-1 lg:flex-initial">
-            <button className="w-full px-6 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
-              View Details
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </Link>
+        <div className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-medium ${statusBadge.bg} ${statusBadge.text}`}>
+          <StatusIcon className="w-3.5 h-3.5" />
+          <span>{statusBadge.label}</span>
         </div>
       </div>
+
+      {/* Details Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 pb-4 border-t border-gray-200 pt-4">
+        {reg.weight_category && (
+          <div>
+            <p className="text-xs text-gray-500 font-medium mb-1">CATEGORY</p>
+            <p className="text-sm font-semibold text-gray-900">{reg.weight_category}</p>
+          </div>
+        )}
+        {reg.entry_total && (
+          <div>
+            <p className="text-xs text-gray-500 font-medium mb-1">ENTRY TOTAL</p>
+            <p className="text-sm font-semibold text-gray-900">{reg.entry_total}kg</p>
+          </div>
+        )}
+        {reg.snatch_opener && (
+          <div>
+            <p className="text-xs text-gray-500 font-medium mb-1">SNATCH</p>
+            <p className="text-sm font-semibold text-gray-900">{reg.snatch_opener}kg</p>
+          </div>
+        )}
+        {reg.cnj_opener && (
+          <div>
+            <p className="text-xs text-gray-500 font-medium mb-1">C&J</p>
+            <p className="text-sm font-semibold text-gray-900">{reg.cnj_opener}kg</p>
+          </div>
+        )}
+      </div>
+
+      {/* Action Required */}
+      {requiredAction && (
+        <div className={`p-3 rounded-lg border border-current ${requiredAction.color} mb-4`}>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-gray-900 mb-0.5">{requiredAction.message}</p>
+            </div>
+            {requiredAction.action === 'action' && (
+              <Link href={`/events/${eventData.slug}`}>
+                <button className="px-3 py-1.5 bg-gray-900 text-white rounded text-xs font-medium hover:bg-gray-800 transition-colors whitespace-nowrap">
+                  Take Action
+                </button>
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Action Buttons - Only show for pending registrations */}
+      {reg.status === 'pending' && (
+        <div className="flex gap-2">
+          <button
+            onClick={() => onUpdate(reg)}
+            className="flex-1 px-3 py-2 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700 transition-colors"
+          >
+            Update
+          </button>
+          <button
+            onClick={() => onDelete(reg.id, eventData.title)}
+            className="flex-1 px-3 py-2 bg-red-600 text-white rounded text-xs font-medium hover:bg-red-700 transition-colors"
+          >
+            Delete
+          </button>
+        </div>
+      )}
     </motion.div>
   )
 }
