@@ -41,26 +41,27 @@ export default function AuthCallbackPage() {
           if (session?.user) {
             console.log('Session established, user:', session.user.email)
             
-            // Create or update user profile in users table
+            // Create or update user profile in website_users table (NOT users table!)
             const { data: existingProfile } = await supabase
-              .from('users')
+              .from('website_users')
               .select('*')
               .eq('id', session.user.id)
               .single()
 
             if (!existingProfile) {
-              console.log('Creating new user profile')
+              console.log('Creating new user profile in website_users')
               const { error: insertError } = await supabase
-                .from('users')
+                .from('website_users')
                 .insert([
                   {
                     id: session.user.id,
                     email: session.user.email,
                     name: session.user.user_metadata?.full_name || session.user.email,
+                    password: '', // Empty password for OAuth users
                     avatar: session.user.user_metadata?.avatar_url,
                     auth_provider: 'google',
                     google_id: session.user.user_metadata?.sub,
-                    is_active: true,
+                    role: 'user',
                   },
                 ])
 
@@ -69,9 +70,9 @@ export default function AuthCallbackPage() {
               }
             }
 
-            // Get the latest profile
+            // Get the latest profile from website_users
             const { data: profile } = await supabase
-              .from('users')
+              .from('website_users')
               .select('*')
               .eq('id', session.user.id)
               .single()

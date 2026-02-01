@@ -23,10 +23,10 @@ export const signUpWithEmail = async (email: string, password: string, name: str
 
     if (authError) throw authError
 
-    // Update user profile in users table
+    // Update user profile in website_users table
     if (authData.user) {
       const { error: updateError } = await supabase
-        .from('users')
+        .from('website_users')
         .insert([
           {
             id: authData.user.id,
@@ -114,9 +114,9 @@ export const getCurrentUser = async () => {
     if (error) throw error
 
     if (data.user) {
-      // Get user profile from users table
+      // Get user profile from website_users table
       const { data: profile, error: profileError } = await supabase
-        .from('users')
+        .from('website_users')
         .select('*')
         .eq('id', data.user.id)
         .single()
@@ -161,7 +161,7 @@ export const onAuthStateChange = (callback: (user: any) => void) => {
     if (session?.user) {
       // Get user profile
       const { data: profile } = await supabase
-        .from('users')
+        .from('website_users')
         .select('*')
         .eq('id', session.user.id)
         .single()

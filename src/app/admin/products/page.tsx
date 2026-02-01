@@ -23,7 +23,8 @@ export default function AdminProducts() {
     image: '',
     images: [] as string[],
     description: '',
-    category: 'Apparel',
+    category: 'men',
+    subcategory: '',
     inventory: '0',
     inStock: true,
     featured: false,
@@ -164,7 +165,8 @@ export default function AdminProducts() {
       image: product.image || '',
       images: product.images || [],
       description: product.description || '',
-      category: product.category || 'Apparel',
+      category: product.category || 'men',
+      subcategory: product.subcategory || '',
       inventory: product.inventory?.toString() || '0',
       inStock: product.inStock !== false,
       featured: product.featured || false,
@@ -186,7 +188,8 @@ export default function AdminProducts() {
       image: '',
       images: [],
       description: '',
-      category: 'Apparel',
+      category: 'men',
+      subcategory: '',
       inventory: '0',
       inStock: true,
       featured: false,
@@ -310,15 +313,67 @@ export default function AdminProducts() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-2">Category</label>
+                  <label className="block text-sm font-semibold mb-2">Main Category *</label>
                   <select
                     value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value, subcategory: '' })}
+                    className="input-field"
+                    required
+                  >
+                    <option value="men">Men</option>
+                    <option value="women">Women</option>
+                    <option value="accessories">Accessories</option>
+                    <option value="supplements">Supplements</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Subcategory</label>
+                  <select
+                    value={formData.subcategory}
+                    onChange={(e) => setFormData({ ...formData, subcategory: e.target.value })}
                     className="input-field"
                   >
-                    <option value="Apparel">Apparel</option>
-                    <option value="Accessories">Accessories</option>
-                    <option value="Equipment">Equipment</option>
+                    <option value="">Select subcategory...</option>
+                    {formData.category === 'men' && (
+                      <>
+                        <option value="T-Shirts">T-Shirts</option>
+                        <option value="Tanks">Tanks</option>
+                        <option value="Hoodies">Hoodies</option>
+                        <option value="Shorts">Shorts</option>
+                        <option value="Joggers">Joggers</option>
+                        <option value="Compression">Compression</option>
+                      </>
+                    )}
+                    {formData.category === 'women' && (
+                      <>
+                        <option value="Sports Bras">Sports Bras</option>
+                        <option value="Leggings">Leggings</option>
+                        <option value="Tops">Tops</option>
+                        <option value="Shorts">Shorts</option>
+                        <option value="Hoodies">Hoodies</option>
+                        <option value="Sets">Sets</option>
+                      </>
+                    )}
+                    {formData.category === 'accessories' && (
+                      <>
+                        <option value="Belts">Belts</option>
+                        <option value="Wraps">Wraps</option>
+                        <option value="Straps">Straps</option>
+                        <option value="Bags">Bags</option>
+                        <option value="Knee Sleeves">Knee Sleeves</option>
+                        <option value="Grips">Grips</option>
+                      </>
+                    )}
+                    {formData.category === 'supplements' && (
+                      <>
+                        <option value="Protein">Protein</option>
+                        <option value="Pre-Workout">Pre-Workout</option>
+                        <option value="Creatine">Creatine</option>
+                        <option value="Vitamins">Vitamins</option>
+                        <option value="Recovery">Recovery</option>
+                        <option value="Energy">Energy</option>
+                      </>
+                    )}
                   </select>
                 </div>
                 <div>
@@ -650,9 +705,11 @@ export default function AdminProducts() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-brand-light/20">
+                    <th className="text-left py-3 px-4">Image</th>
                     <th className="text-left py-3 px-4">Name</th>
                     <th className="text-left py-3 px-4">Price</th>
                     <th className="text-left py-3 px-4">Category</th>
+                    <th className="text-left py-3 px-4">Subcategory</th>
                     <th className="text-left py-3 px-4">Stock</th>
                     <th className="text-center py-3 px-4">Featured</th>
                     <th className="text-right py-3 px-4">Actions</th>
@@ -661,12 +718,30 @@ export default function AdminProducts() {
                 <tbody>
                   {products.map((product) => (
                     <tr key={product._id} className="border-b border-gray-200 hover:bg-gray-50">
+                      <td className="py-3 px-4">
+                        {product.image ? (
+                          <img src={product.image} alt={product.name} className="w-12 h-12 object-cover rounded" />
+                        ) : (
+                          <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                            <FaImage className="text-gray-400" />
+                          </div>
+                        )}
+                      </td>
                       <td className="py-3 px-4 font-semibold">{product.name}</td>
                       <td className="py-3 px-4">LKR {product.price?.toLocaleString()}</td>
-                      <td className="py-3 px-4">{product.category}</td>
                       <td className="py-3 px-4">
-                        <span className={product.inStock ? 'text-green-400' : 'text-blue-400'}>
-                          {product.inStock ? `${product.inventory} in stock` : 'Out of stock'}
+                        <span className="capitalize inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-zinc-100 text-zinc-700">
+                          {product.category}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        {product.subcategory && (
+                          <span className="text-xs text-zinc-600">{product.subcategory}</span>
+                        )}
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className={product.inStock ? 'text-green-600' : 'text-red-600'}>
+                          {product.inStock ? `${product.inventory || 0} in stock` : 'Out of stock'}
                         </span>
                       </td>
                       <td className="py-3 px-4 text-center">
