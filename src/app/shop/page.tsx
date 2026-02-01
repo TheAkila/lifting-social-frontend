@@ -2,14 +2,12 @@
 
 import { Suspense } from 'react'
 import ShopHeader from '@/components/shop/ShopHeader'
-import ShopCategoryNav from '@/components/shop/ShopCategoryNav'
 import ProductGrid from '@/components/shop/ProductGrid'
 
 function ShopContent() {
   return (
     <>
       <ShopHeader />
-      <ShopCategoryNav />
       <div className="container-custom section-padding">
         {/* Product Grid */}
         <main>
