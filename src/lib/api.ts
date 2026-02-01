@@ -34,8 +34,11 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // Handle unauthorized access
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('authToken')
-        window.location.href = '/login'
+        console.warn('API request unauthorized (401). Token may be invalid or expired.')
+        // Don't auto-redirect or clear token - let the calling code handle it
+        // This prevents clearing token on every failed request
+        // localStorage.removeItem('authToken')
+        // window.location.href = '/login'
       }
     }
     return Promise.reject(error)

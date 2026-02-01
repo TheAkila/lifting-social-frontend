@@ -18,6 +18,14 @@ import {
   AlertCircle
 } from 'lucide-react'
 
+interface User {
+  id: string
+  email: string
+  name: string
+  role: 'user' | 'admin'
+  avatar?: string
+}
+
 interface EventRegistration {
   id: string
   status: string
@@ -59,48 +67,80 @@ interface EventRegistration {
 }
 
 export default function UserDashboard() {
-  const { user, isLoading: authLoading } = useAuth()
   const router = useRouter()
   const [registrations, setRegistrations] = useState<EventRegistration[]>([])
   const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null)
+  const [authChecked, setAuthChecked] = useState(false)
 
+  // Check auth on mount - read directly from storage
   useEffect(() => {
-    console.log('=== DASHBOARD AUTH CHECK ===')
-    console.log('authLoading:', authLoading)
-    console.log('user:', user ? user.email : 'null')
-    console.log('===========================')
+    console.log('🚀 Dashboard mounted, checking auth...')
+    const storedUserData = sessionStorage.getItem('userData') || localStorage.getItem('userData')
+    const storedToken = sessionStorage.getItem('authToken') || localStorage.getItem('authToken')
     
-    if (!authLoading && !user) {
-      console.log('❌ No user found, redirecting to login')
+    console.log('📦 Storage check:')
+    console.log('  - userData:', storedUserData ? 'EXISTS' : 'MISSING')
+    console.log('  - authToken:', storedToken ? 'EXISTS' : 'MISSING')
+    console.log('  - userData value:', storedUserData)
+    console.log('  - authToken value:', storedToken)
+    
+    // Only require userData - token is needed for API calls but not for page access
+    if (!storedUserData) {
+      console.log('❌ Missing user data, redirecting to login')
       router.push('/login')
       return
     }
-
-    if (user && user.role === 'admin') {
-      console.log('✅ Admin user, redirecting to admin panel')
-      router.push('/admin')
-      return
+    
+    // Warn if token is missing but allow access
+    if (!storedToken) {
+      console.warn('⚠️ Auth token missing - API calls may fail. User should re-authenticate.')
     }
+    
+    try {
+      const parsedUser = JSON.parse(storedUserData)
+      console.log('✅ Parsed user:', parsedUser.email, '| Role:', parsedUser.role)
+      
+      if (parsedUser.role === 'admin') {
+        console.log('👑 Admin detected, redirecting to admin panel')
+        router.push('/admin')
+        return
+      }
+      
+      console.log('✅ Setting user and marking auth as checked')
+      setUser(parsedUser)
+    } catch (err) {
+      console.error('Error parsing user data:', err)
+      router.push('/login')
+    } finally {
+      setAuthChecked(true)
+    }
+  }, [router])
 
-    if (user) {
-      console.log('✅ User authenticated, loading registrations')
+  // Load registrations after auth check
+  useEffect(() => {
+    if (authChecked && user) {
       loadRegistrations()
     }
-  }, [user, authLoading, router])
+  }, [authChecked, user])
 
   const loadRegistrations = async () => {
     try {
       setLoading(true)
       const response = await api.get('/registrations')
       setRegistrations(response.data)
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error loading registrations:', err)
+      // If unauthorized, show a message but don't redirect (user can still see the page)
+      if (err.response?.status === 401) {
+        console.warn('Authentication expired. User should re-login for full functionality.')
+      }
     } finally {
       setLoading(false)
     }
   }
 
-  if (authLoading || loading) {
+  if (!authChecked || loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
@@ -227,7 +267,6 @@ export default function UserDashboard() {
     </div>
   )
 }
-
 function EventCard({ reg, index, getRegistrationStatusBadge, getEventData, getRequiredAction }: {
   reg: EventRegistration
   index: number
