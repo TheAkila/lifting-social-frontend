@@ -8,8 +8,6 @@ import Image from 'next/image'
 import api from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'
 import { Calendar, MapPin, Users, ArrowLeft } from 'lucide-react'
-import FinalEntryForm from '@/components/FinalEntryForm'
-import PreliminaryEntryForm from '@/components/PreliminaryEntryForm'
 
 interface Event {
   id: string
@@ -55,6 +53,7 @@ interface Registration {
   status: string
   weight_category?: string
   gender?: string
+  age_category?: string
   entry_total?: number
   best_snatch?: number
   best_clean_jerk?: number
@@ -77,8 +76,8 @@ interface Registration {
 }
 
 const WEIGHT_CATEGORIES = {
-  male: ['55kg', '61kg', '67kg', '73kg', '81kg', '89kg', '96kg', '102kg', '109kg', '+109kg'],
-  female: ['45kg', '49kg', '55kg', '59kg', '64kg', '71kg', '76kg', '81kg', '87kg', '+87kg']
+  male: ['60kg', '65kg', '71kg', '79kg', '88kg', '94kg', '110kg', '+110kg'],
+  female: ['48kg', '53kg', '58kg', '63kg', '69kg', '77kg', '86kg', '+86kg']
 }
 
 export default function EventDetailPage() {
@@ -92,25 +91,13 @@ export default function EventDetailPage() {
   const [showPreliminaryModal, setShowPreliminaryModal] = useState(false)
   const [showFinalModal, setShowFinalModal] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const [isTeamRegistration, setIsTeamRegistration] = useState(true) // Default to team registration
   
   const [regForm, setRegForm] = useState({
     // Team registration fields
     teamName: '',
     teamManagerName: '',
     teamManagerPhone: '',
-    teamManagerEmail: '',
-    teamSize: '',
-    notes: '',
-    // Individual registration fields (kept for backwards compatibility)
-    gender: 'male',
-    weightCategory: '',
-    clubName: '',
-    federationId: '',
-    coachName: '',
-    coachPhone: '',
-    coachEmail: '',
-    athleteNotes: ''
+    ageCategory: ''
   })
 
   const [prelimForm, setPrelimForm] = useState({
@@ -288,64 +275,40 @@ export default function EventDetailPage() {
       return
     }
 
-    // Validate based on registration type
-    if (isTeamRegistration) {
-      if (!regForm.teamName) {
-        alert('Please enter your team name')
-        return
-      }
-      if (!regForm.teamManagerName) {
-        alert('Please enter team manager name')
-        return
-      }
-      if (!regForm.teamManagerPhone) {
-        alert('Please enter team manager phone')
-        return
-      }
-    } else {
-      // Individual registration validation
-      if (!regForm.gender) {
-        alert('Please select gender')
-        return
-      }
-      if (!regForm.weightCategory) {
-        alert('Please select weight category')
-        return
-      }
+    // Validate team registration fields
+    if (!regForm.teamName) {
+      alert('Please enter your team name')
+      return
+    }
+    if (!regForm.teamManagerName) {
+      alert('Please enter team manager name')
+      return
+    }
+    if (!regForm.teamManagerPhone) {
+      alert('Please enter team manager phone')
+      return
+    }
+    if (!regForm.ageCategory) {
+      alert('Please select age category')
+      return
     }
 
     setSubmitting(true)
     try {
       const requestData: any = {
         competitionId: event?.id,
-        isTeamRegistration: isTeamRegistration
-      }
-
-      if (isTeamRegistration) {
-        // Team registration data
-        requestData.teamName = regForm.teamName
-        requestData.teamManagerName = regForm.teamManagerName
-        requestData.teamManagerPhone = regForm.teamManagerPhone
-        requestData.teamManagerEmail = regForm.teamManagerEmail || undefined
-        requestData.teamSize = regForm.teamSize ? parseInt(regForm.teamSize) : 0
-        requestData.notes = regForm.notes || undefined
-      } else {
-        // Individual registration data
-        requestData.gender = regForm.gender
-        requestData.weightCategory = regForm.weightCategory
-        requestData.clubName = regForm.clubName || undefined
-        requestData.coachName = regForm.coachName || undefined
-        requestData.coachPhone = regForm.coachPhone || undefined
-        requestData.coachEmail = regForm.coachEmail || undefined
-        requestData.athleteNotes = regForm.athleteNotes || undefined
-        requestData.federationId = regForm.federationId || undefined
+        isTeamRegistration: true,
+        teamName: regForm.teamName,
+        teamManagerName: regForm.teamManagerName,
+        teamManagerPhone: regForm.teamManagerPhone,
+        ageCategory: regForm.ageCategory
       }
 
       console.log('Submitting registration with data:', requestData)
       const response = await api.post('/registrations', requestData)
       setRegistration(response.data)
       setShowRegisterModal(false)
-      alert(isTeamRegistration ? 'Team registration submitted! Awaiting admin approval.' : 'Registration submitted! Awaiting admin approval.')
+      alert('Team registration submitted! Awaiting admin approval.')
       // Reload registration data
       await checkRegistration()
     } catch (err: any) {
@@ -467,16 +430,16 @@ export default function EventDetailPage() {
 
   const phase = getEventPhase()
   const statusBadge = registration ? getStatusBadge(registration.status) : null
-  const currentGender = registration?.gender || regForm.gender
+  const currentGender = registration?.gender || 'male'
 
   return (
-    <div className="min-h-screen pt-20 bg-zinc-50">
-      <div className="container-custom py-8">
-        <Link href="/events" className="inline-flex items-center gap-2 text-zinc-600 hover:text-zinc-900 mb-8 font-medium transition-colors">
+    <div className="min-h-screen pt-16 sm:pt-20 bg-zinc-50">
+      <div className="container-custom py-4 sm:py-8 px-4 sm:px-6 lg:px-8">
+        <Link href="/events" className="inline-flex items-center gap-2 text-zinc-600 hover:text-zinc-900 mb-6 sm:mb-8 font-medium transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to Events
         </Link>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           <div className="lg:col-span-2">
             {event.cover_image && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative w-full rounded-card overflow-hidden mb-6 bg-zinc-200" style={{ paddingBottom: '56.25%' }}>
@@ -484,33 +447,33 @@ export default function EventDetailPage() {
               </motion.div>
             )}
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-              <div className="flex flex-wrap gap-3 mb-4">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6 sm:mb-8">
+              <div className="flex flex-wrap gap-2 sm:gap-3 mb-3 sm:mb-4">
                 <span className="px-3 py-1.5 rounded-badge text-xs font-medium bg-zinc-900 text-white">{event.event_type}</span>
                 <span className={`px-3 py-1.5 rounded-badge text-xs font-medium ${phase === 'closed' ? 'bg-zinc-200 text-zinc-700' : 'bg-emerald-100 text-emerald-700'}`}>
                   {getPhaseLabel(phase)}
                 </span>
               </div>
-              <h1 className="text-4xl md:text-5xl font-display font-bold text-zinc-900 mb-4">{event.title}</h1>
-              <p className="text-base text-zinc-600 leading-relaxed">{event.description}</p>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-zinc-900 mb-3 sm:mb-4">{event.title}</h1>
+              <p className="text-sm sm:text-base text-zinc-600 leading-relaxed">{event.description}</p>
             </motion.div>
 
             {registration && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white border border-zinc-200 rounded-card p-6 mb-8 shadow-sm">
-                <div className="flex items-center justify-between">
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white border border-zinc-200 rounded-card p-4 sm:p-6 mb-6 sm:mb-8 shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
                     <h3 className="text-lg font-display font-semibold text-zinc-900 mb-2">
                       {registration.is_team_registration ? 'Team Registered' : 'Registered'}
                     </h3>
-                    <p className="text-zinc-600">
+                    <p className="text-sm sm:text-base text-zinc-600">
                       Manage your registration, preliminary entries, and final entries from your dashboard.
                     </p>
                   </div>
-                  <span className={`px-3 py-1.5 rounded-badge text-xs font-medium ${statusBadge?.color}`}>{statusBadge?.label}</span>
+                  <span className={`px-3 py-1.5 rounded-badge text-xs font-medium whitespace-nowrap ${statusBadge?.color}`}>{statusBadge?.label}</span>
                 </div>
                 <button
                   onClick={() => router.push('/dashboard')}
-                  className="mt-4 px-6 py-2.5 bg-zinc-900 text-white rounded-lg font-medium hover:bg-zinc-800 transition-colors"
+                  className="mt-4 w-full sm:w-auto px-6 py-2.5 bg-zinc-900 text-white rounded-lg font-medium hover:bg-zinc-800 transition-colors text-sm sm:text-base"
                 >
                   Go to Dashboard →
                 </button>
@@ -518,23 +481,23 @@ export default function EventDetailPage() {
             )}
 
             {(event.registration_start_date || event.preliminary_entry_start || event.final_entry_start) && (
-              <div className="bg-white border border-zinc-200 rounded-card p-6 mb-8 shadow-sm">
-                <h3 className="text-lg font-display font-semibold text-zinc-900 mb-6">Important Dates</h3>
-                <div className="space-y-4">
+              <div className="bg-white border border-zinc-200 rounded-card p-4 sm:p-6 mb-6 sm:mb-8 shadow-sm">
+                <h3 className="text-lg font-display font-semibold text-zinc-900 mb-4 sm:mb-6">Important Dates</h3>
+                <div className="space-y-3 sm:space-y-4">
                   {event.registration_start_date && (
-                    <div className="flex items-start gap-4">
-                      <div className={`w-3 h-3 rounded-full mt-1.5 flex-shrink-0 ${phase === 'registration' ? 'bg-emerald-500' : 'bg-zinc-300'}`}></div>
-                      <div><div className="font-semibold text-zinc-900">Registration</div><div className="text-sm text-zinc-600 mt-0.5">{formatDateTime(event.registration_start_date)}{event.registration_end_date && ` - ${formatDateTime(event.registration_end_date)}`}</div></div>
+                    <div className="flex items-start gap-3 sm:gap-4">
+                      <div className={`w-3 h-3 rounded-full mt-1 sm:mt-1.5 flex-shrink-0 ${phase === 'registration' ? 'bg-emerald-500' : 'bg-zinc-300'}`}></div>
+                      <div><div className="font-semibold text-zinc-900 text-sm sm:text-base">Registration</div><div className="text-xs sm:text-sm text-zinc-600 mt-0.5">{formatDateTime(event.registration_start_date)}{event.registration_end_date && ` - ${formatDateTime(event.registration_end_date)}`}</div></div>
                     </div>
                   )}
                   {event.preliminary_entry_start && (
-                    <div className="flex items-start gap-4">
-                      <div className={`w-3 h-3 rounded-full mt-1.5 flex-shrink-0 ${phase === 'preliminary_entries' ? 'bg-emerald-500' : 'bg-zinc-300'}`}></div>
-                      <div><div className="font-semibold text-zinc-900">Preliminary Entries</div><div className="text-sm text-zinc-600 mt-0.5">{formatDateTime(event.preliminary_entry_start)}{event.preliminary_entry_deadline && ` - ${formatDateTime(event.preliminary_entry_deadline)}`}</div></div>
+                    <div className="flex items-start gap-3 sm:gap-4">
+                      <div className={`w-3 h-3 rounded-full mt-1 sm:mt-1.5 flex-shrink-0 ${phase === 'preliminary_entries' ? 'bg-emerald-500' : 'bg-zinc-300'}`}></div>
+                      <div><div className="font-semibold text-zinc-900 text-sm sm:text-base">Preliminary Entries</div><div className="text-xs sm:text-sm text-zinc-600 mt-0.5">{formatDateTime(event.preliminary_entry_start)}{event.preliminary_entry_deadline && ` - ${formatDateTime(event.preliminary_entry_deadline)}`}</div></div>
                     </div>
                   )}
                   {event.final_entry_start && (
-                    <div className="flex items-start gap-4">
+                    <div className="flex items-start gap-3 sm:gap-4">
                       <div className={`w-3 h-3 rounded-full mt-1.5 flex-shrink-0 ${phase === 'final_entries' ? 'bg-emerald-500' : 'bg-zinc-300'}`}></div>
                       <div><div className="font-semibold text-zinc-900">Final Entries</div><div className="text-sm text-zinc-600 mt-0.5">{formatDateTime(event.final_entry_start)}{event.final_entry_deadline && ` - ${formatDateTime(event.final_entry_deadline)}`}</div></div>
                     </div>
@@ -598,198 +561,76 @@ export default function EventDetailPage() {
             </div>
           </div>
         </div>
-
-        {/* Preliminary Entry Form Display */}
-        {phase === 'preliminary_entries' && event.preliminary_entry_open && (
-          <div className="mt-12">
-            <PreliminaryEntryForm eventId={event.id} eventTitle={event.title || event.name || 'Preliminary Entry Form'} />
-          </div>
-        )}
-
-        {/* Final Entry Form Display */}
-        {phase === 'final_entries' && event.final_entry_open && (
-          <div className="mt-12">
-            <FinalEntryForm eventId={event.id} eventTitle={event.title || event.name || 'Final Entry Form'} />
-          </div>
-        )}
       </div>
 
       {/* Registration Modal */}
       {showRegisterModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-card p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-lg">
-            <h2 className="text-2xl font-display font-semibold text-zinc-900 mb-6">Register for Event</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-card p-4 sm:p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-lg">
+            <h2 className="text-xl sm:text-2xl font-display font-semibold text-zinc-900 mb-4 sm:mb-6">Team Registration</h2>
             
-            {/* Registration Type Toggle */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-zinc-700 mb-3">Registration Type</label>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setIsTeamRegistration(true)}
-                  className={`flex-1 px-4 py-3 rounded-input border-2 font-medium transition-colors ${
-                    isTeamRegistration
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400'
-                  }`}
-                >
-                  Team Registration
-                </button>
-                <button
-                  onClick={() => setIsTeamRegistration(false)}
-                  className={`flex-1 px-4 py-3 rounded-input border-2 font-medium transition-colors ${
-                    !isTeamRegistration
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400'
-                  }`}
-                >
-                  Individual Registration
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-5">
-              {isTeamRegistration ? (
-                <>
+            <div className="space-y-4 sm:space-y-5">
                   {/* Team Registration Fields */}
                   <div>
-                    <label className="block text-sm font-medium text-zinc-700 mb-2">Team Name *</label>
+                    <label className="block text-xs sm:text-sm font-medium text-zinc-700 mb-2">Team Name *</label>
                     <input 
                       type="text" 
                       value={regForm.teamName} 
                       onChange={(e) => setRegForm({ ...regForm, teamName: e.target.value })} 
-                      className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" 
+                      className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400 text-sm" 
                       placeholder="e.g., University of Colombo Weightlifting" 
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-zinc-700 mb-2">Team Manager Name *</label>
+                    <label className="block text-xs sm:text-sm font-medium text-zinc-700 mb-2">Team Manager Name *</label>
                     <input 
                       type="text" 
                       value={regForm.teamManagerName} 
                       onChange={(e) => setRegForm({ ...regForm, teamManagerName: e.target.value })} 
-                      className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" 
+                      className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400 text-sm" 
                       placeholder="Manager/Coach/Captain name" 
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-zinc-700 mb-2">Manager Phone Number *</label>
+                    <label className="block text-xs sm:text-sm font-medium text-zinc-700 mb-2">Manager Phone Number *</label>
                     <input 
                       type="tel" 
                       value={regForm.teamManagerPhone} 
                       onChange={(e) => setRegForm({ ...regForm, teamManagerPhone: e.target.value })} 
-                      className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" 
+                      className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400 text-sm" 
                       placeholder="+94771234567" 
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-zinc-700 mb-2">Manager Email</label>
-                    <input 
-                      type="email" 
-                      value={regForm.teamManagerEmail} 
-                      onChange={(e) => setRegForm({ ...regForm, teamManagerEmail: e.target.value })} 
-                      className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" 
-                      placeholder="manager@example.com (optional)" 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-zinc-700 mb-2">Expected Team Size</label>
-                    <input 
-                      type="number" 
-                      value={regForm.teamSize} 
-                      onChange={(e) => setRegForm({ ...regForm, teamSize: e.target.value })} 
-                      className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" 
-                      placeholder="Number of athletes (optional)" 
-                      min="0"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-zinc-700 mb-2">Notes</label>
-                    <textarea 
-                      value={regForm.notes} 
-                      onChange={(e) => setRegForm({ ...regForm, notes: e.target.value })} 
-                      className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" 
-                      rows={3} 
-                      placeholder="Any additional notes or special requirements..." 
-                    />
-                  </div>
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <p className="text-sm text-blue-800">
-                      <strong>Note:</strong> You will be able to add individual athletes during the preliminary entry period.
-                    </p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  {/* Individual Registration Fields */}
-                  <div>
-                    <label className="block text-sm font-medium text-zinc-700 mb-2">Gender *</label>
+                    <label className="block text-xs sm:text-sm font-medium text-zinc-700 mb-2">Age Category *</label>
                     <select 
-                      title="Select gender" 
-                      value={regForm.gender} 
-                      onChange={(e) => setRegForm({ ...regForm, gender: e.target.value })} 
-                      className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900"
-                      required
-                    >
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-zinc-700 mb-2">Weight Category *</label>
-                    <select 
-                      title="Select weight category" 
-                      value={regForm.weightCategory} 
-                      onChange={(e) => setRegForm({ ...regForm, weightCategory: e.target.value })} 
-                      className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900"
+                      title="Select age category" 
+                      value={regForm.ageCategory} 
+                      onChange={(e) => setRegForm({ ...regForm, ageCategory: e.target.value })} 
+                      className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 text-sm"
                       required
                     >
                       <option value="">Select category</option>
-                      {WEIGHT_CATEGORIES[regForm.gender as keyof typeof WEIGHT_CATEGORIES].map(cat => (
-                        <option key={cat} value={cat}>{cat}</option>
-                      ))}
+                      <option value="Youth">Youth</option>
+                      <option value="Junior">Junior</option>
+                      <option value="Senior">Senior</option>
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-zinc-700 mb-2">Club/Team Name</label>
-                    <input 
-                      type="text" 
-                      value={regForm.clubName} 
-                      onChange={(e) => setRegForm({ ...regForm, clubName: e.target.value })} 
-                      className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" 
-                      placeholder="Your club name (optional)" 
-                    />
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
+                    <p className="text-xs sm:text-sm text-blue-800">
+                      <strong>Note:</strong> You will be able to add individual athletes during the preliminary entry period.
+                    </p>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-zinc-700 mb-2">Coach Name</label>
-                    <input 
-                      type="text" 
-                      value={regForm.coachName} 
-                      onChange={(e) => setRegForm({ ...regForm, coachName: e.target.value })} 
-                      className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" 
-                      placeholder="Your coach name (optional)" 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-zinc-700 mb-2">Notes</label>
-                    <textarea 
-                      value={regForm.athleteNotes} 
-                      onChange={(e) => setRegForm({ ...regForm, athleteNotes: e.target.value })} 
-                      className="w-full px-4 py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400" 
-                      rows={3} 
-                      placeholder="Any additional notes..." 
-                    />
-                  </div>
-                </>
-              )}
+
             </div>
-            <div className="flex gap-3 mt-8">
-              <button onClick={handleRegister} disabled={submitting} className="flex-1 btn-primary disabled:opacity-50">
-                {submitting ? 'Registering...' : isTeamRegistration ? 'Register Team' : 'Register'}
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-6 sm:mt-8">
+              <button onClick={handleRegister} disabled={submitting} className="flex-1 btn-primary disabled:opacity-50 text-sm sm:text-base py-2 sm:py-2.5">
+                {submitting ? 'Registering...' : 'Register Team'}
               </button>
-              <button onClick={() => setShowRegisterModal(false)} className="btn-secondary">Cancel</button>
+              <button onClick={() => setShowRegisterModal(false)} className="btn-secondary text-sm sm:text-base py-2 sm:py-2.5">Cancel</button>
             </div>
           </motion.div>
         </div>
@@ -797,44 +638,44 @@ export default function EventDetailPage() {
 
       {/* Preliminary Entry Modal */}
       {showPreliminaryModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-lg p-4 max-w-lg w-full max-h-[90vh] overflow-y-auto">
-            <h2 className="text-lg font-bold text-black mb-6">Preliminary Entry</h2>
-            <div className="space-y-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-lg p-4 sm:p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <h2 className="text-lg sm:text-xl font-bold text-black mb-4 sm:mb-6">Preliminary Entry</h2>
+            <div className="space-y-3 sm:space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Weight Category *</label>
-                <select title="Select weight category" value={prelimForm.weightCategory} onChange={(e) => setPrelimForm({ ...prelimForm, weightCategory: e.target.value })} className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Weight Category *</label>
+                <select title="Select weight category" value={prelimForm.weightCategory} onChange={(e) => setPrelimForm({ ...prelimForm, weightCategory: e.target.value })} className="w-full px-3 sm:px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none text-sm">
                   <option value="">Select category</option>
                   {WEIGHT_CATEGORIES[currentGender as keyof typeof WEIGHT_CATEGORIES].map(cat => <option key={cat} value={cat}>{cat}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Entry Total (kg) *</label>
-                <input type="number" value={prelimForm.entryTotal} onChange={(e) => setPrelimForm({ ...prelimForm, entryTotal: e.target.value })} className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none" placeholder="Your planned total" />
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Entry Total (kg) *</label>
+                <input type="number" value={prelimForm.entryTotal} onChange={(e) => setPrelimForm({ ...prelimForm, entryTotal: e.target.value })} className="w-full px-3 sm:px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none text-sm" placeholder="Your planned total" />
                 <p className="text-xs text-gray-500 mt-1">This determines your competition session/group</p>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Best Snatch (kg)</label>
-                  <input type="number" value={prelimForm.bestSnatch} onChange={(e) => setPrelimForm({ ...prelimForm, bestSnatch: e.target.value })} className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none" placeholder="Best snatch" />
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Best Snatch (kg)</label>
+                  <input type="number" value={prelimForm.bestSnatch} onChange={(e) => setPrelimForm({ ...prelimForm, bestSnatch: e.target.value })} className="w-full px-3 sm:px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none text-sm" placeholder="Best snatch" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Best C&J (kg)</label>
-                  <input type="number" value={prelimForm.bestCleanJerk} onChange={(e) => setPrelimForm({ ...prelimForm, bestCleanJerk: e.target.value })} className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none" placeholder="Best C&J" />
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Best C&J (kg)</label>
+                  <input type="number" value={prelimForm.bestCleanJerk} onChange={(e) => setPrelimForm({ ...prelimForm, bestCleanJerk: e.target.value })} className="w-full px-3 sm:px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none text-sm" placeholder="Best C&J" />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Club Name</label>
-                <input type="text" value={prelimForm.clubName} onChange={(e) => setPrelimForm({ ...prelimForm, clubName: e.target.value })} className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none" placeholder="Your club name" />
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Club Name</label>
+                <input type="text" value={prelimForm.clubName} onChange={(e) => setPrelimForm({ ...prelimForm, clubName: e.target.value })} className="w-full px-3 sm:px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none text-sm" placeholder="Your club name" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Coach Name</label>
-                <input type="text" value={prelimForm.coachName} onChange={(e) => setPrelimForm({ ...prelimForm, coachName: e.target.value })} className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none" placeholder="Your coach name" />
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Coach Name</label>
+                <input type="text" value={prelimForm.coachName} onChange={(e) => setPrelimForm({ ...prelimForm, coachName: e.target.value })} className="w-full px-3 sm:px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none text-sm" placeholder="Your coach name" />
               </div>
             </div>
-            <div className="flex gap-3 mt-6">
-              <button onClick={handlePreliminarySubmit} disabled={submitting} className="flex-1 px-6 py-3 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 disabled:opacity-50">{submitting ? 'Submitting...' : 'Submit Preliminary Entry'}</button>
-              <button onClick={() => setShowPreliminaryModal(false)} className="px-6 py-3 border-2 border-gray-300 rounded-lg font-semibold hover:bg-gray-50">Cancel</button>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4 sm:mt-6">
+              <button onClick={handlePreliminarySubmit} disabled={submitting} className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 disabled:opacity-50 text-sm sm:text-base">{submitting ? 'Submitting...' : 'Submit Preliminary Entry'}</button>
+              <button onClick={() => setShowPreliminaryModal(false)} className="px-4 sm:px-6 py-2.5 sm:py-3 border-2 border-gray-300 rounded-lg font-semibold hover:bg-gray-50 text-sm sm:text-base">Cancel</button>
             </div>
           </motion.div>
         </div>
@@ -842,38 +683,38 @@ export default function EventDetailPage() {
 
       {/* Final Entry Modal */}
       {showFinalModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-lg p-4 max-w-lg w-full max-h-[90vh] overflow-y-auto">
-            <h2 className="text-lg font-bold text-black mb-6">Final Entry</h2>
-            <div className="space-y-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-lg p-4 sm:p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <h2 className="text-lg sm:text-xl font-bold text-black mb-4 sm:mb-6">Final Entry</h2>
+            <div className="space-y-3 sm:space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Confirmed Weight Category</label>
-                <select title="Select confirmed weight category" value={finalForm.confirmedWeightCategory} onChange={(e) => setFinalForm({ ...finalForm, confirmedWeightCategory: e.target.value })} className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Confirmed Weight Category</label>
+                <select title="Select confirmed weight category" value={finalForm.confirmedWeightCategory} onChange={(e) => setFinalForm({ ...finalForm, confirmedWeightCategory: e.target.value })} className="w-full px-3 sm:px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none text-sm">
                   <option value="">Same as preliminary ({registration?.weight_category})</option>
                   {WEIGHT_CATEGORIES[currentGender as keyof typeof WEIGHT_CATEGORIES].map(cat => <option key={cat} value={cat}>{cat}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Snatch Opening Attempt (kg) *</label>
-                <input type="number" value={finalForm.snatchOpener} onChange={(e) => setFinalForm({ ...finalForm, snatchOpener: e.target.value })} className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none" placeholder="First snatch attempt" />
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Snatch Opening Attempt (kg) *</label>
+                <input type="number" value={finalForm.snatchOpener} onChange={(e) => setFinalForm({ ...finalForm, snatchOpener: e.target.value })} className="w-full px-3 sm:px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none text-sm" placeholder="First snatch attempt" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Clean & Jerk Opening Attempt (kg) *</label>
-                <input type="number" value={finalForm.cnjOpener} onChange={(e) => setFinalForm({ ...finalForm, cnjOpener: e.target.value })} className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none" placeholder="First C&J attempt" />
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Clean & Jerk Opening Attempt (kg) *</label>
+                <input type="number" value={finalForm.cnjOpener} onChange={(e) => setFinalForm({ ...finalForm, cnjOpener: e.target.value })} className="w-full px-3 sm:px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none text-sm" placeholder="First C&J attempt" />
               </div>
               {event.require_medical_clearance && (
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
                   <input type="checkbox" id="medical" checked={finalForm.medicalClearance} onChange={(e) => setFinalForm({ ...finalForm, medicalClearance: e.target.checked })} className="w-5 h-5 border-2 border-gray-300 rounded" />
-                  <label htmlFor="medical" className="text-sm text-gray-700">I confirm I have medical clearance to compete</label>
+                  <label htmlFor="medical" className="text-xs sm:text-sm text-gray-700">I confirm I have medical clearance to compete</label>
                 </div>
               )}
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <p className="text-sm text-yellow-800"><strong>Note:</strong> Opening attempts can only be increased after weigh-in, not decreased. Please enter conservative opening weights.</p>
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 sm:p-4">
+                <p className="text-xs sm:text-sm text-yellow-800"><strong>Note:</strong> Opening attempts can only be increased after weigh-in, not decreased. Please enter conservative opening weights.</p>
               </div>
             </div>
-            <div className="flex gap-3 mt-6">
-              <button onClick={handleFinalSubmit} disabled={submitting} className="flex-1 px-6 py-3 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 disabled:opacity-50">{submitting ? 'Submitting...' : 'Submit Final Entry'}</button>
-              <button onClick={() => setShowFinalModal(false)} className="px-6 py-3 border-2 border-gray-300 rounded-lg font-semibold hover:bg-gray-50">Cancel</button>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4 sm:mt-6">
+              <button onClick={handleFinalSubmit} disabled={submitting} className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 disabled:opacity-50 text-sm sm:text-base">{submitting ? 'Submitting...' : 'Submit Final Entry'}</button>
+              <button onClick={() => setShowFinalModal(false)} className="px-4 sm:px-6 py-2.5 sm:py-3 border-2 border-gray-300 rounded-lg font-semibold hover:bg-gray-50 text-sm sm:text-base">Cancel</button>
             </div>
           </motion.div>
         </div>
