@@ -289,7 +289,7 @@ export default function UserDashboard() {
         return { 
           action: 'action', 
           actionType: 'preliminary',
-          message: 'Edit your preliminary entry (pending review)',
+          message: 'Your preliminary entry is pending review...you can still edit before approval',
           phase: 'preliminary-pending',
           color: 'bg-yellow-100 text-yellow-700'
         }
@@ -963,7 +963,7 @@ function EventCard({ reg, index, getRegistrationStatusBadge, getEventData, getRe
                 }}
                 className="px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm whitespace-nowrap"
               >
-                {requiredAction.actionType === 'preliminary' ? 'Submit Entry' : 'Submit Final'}
+                {requiredAction.actionType === 'preliminary' ? (reg.status === 'preliminary_pending' ? 'Update Entry' : 'Submit Entry') : 'Submit Final'}
               </button>
             )}
           </div>
