@@ -577,7 +577,7 @@ export default function UserDashboard() {
                 onUpdate={handleUpdateRegistration}
                 onPreliminary={(reg) => {
                   setSelectedRegistration(reg)
-                  setPreliminaryForm({ entryTotal: reg.entry_total?.toString() || '', bodyweight: reg.bodyweight?.toString() || '' })
+                  setPreliminaryForm({ entryTotal: reg.entry_total?.toString() || '', bodyweight: reg.weight_category?.toString() || '' })
                   setShowPreliminaryModal(true)
                 }}
                 onFinal={(reg) => {
