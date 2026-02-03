@@ -155,13 +155,16 @@ export default function DashboardFinalForm({
         <div className="px-4 sm:px-6 py-4 flex-1 overflow-auto">
           <h3 className="font-semibold text-gray-900 mb-3 text-sm sm:text-base">Competitors & Opening Attempts</h3>
           <div className="overflow-x-auto border border-gray-200 rounded-lg">
-            <table className="w-full border-collapse min-w-[640px]">
+            <table className="w-full border-collapse min-w-[900px]">
               <thead>
                 <tr className="bg-gray-100">
                   <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">C/NO.</th>
                   <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">CATEGORY</th>
-                  <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">NAME</th>
+                  <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">NAME OF THE COMPETITOR</th>
+                  <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">DATE OF BIRTH</th>
+                  <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">ID NUMBER</th>
                   <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">BEST TOTAL</th>
+                  <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">NAME OF THE COACH</th>
                   <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">BODYWEIGHT</th>
                   <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">SNATCH OPENER</th>
                   <th className="px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">C&J OPENER</th>
@@ -179,8 +182,17 @@ export default function DashboardFinalForm({
                     <td className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm">
                       {athlete.name}
                     </td>
+                    <td className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm">
+                      {athlete.date_of_birth ? new Date(athlete.date_of_birth).toLocaleDateString() : '-'}
+                    </td>
+                    <td className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm">
+                      {athlete.id_number || '-'}
+                    </td>
                     <td className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm font-bold">
                       {athlete.best_total}kg
+                    </td>
+                    <td className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm">
+                      {athlete.coach_name || '-'}
                     </td>
                     <td className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3">
                       <input
