@@ -71,16 +71,9 @@ export default function DashboardFinalForm({
   }
 
   const handleSubmit = async () => {
-    // Validate all athletes have required fields
-    const invalidAthletes = athletes.filter(
-      a => !a.snatch_opener || !a.cnj_opener || parseFloat(a.snatch_opener.toString()) <= 0 || parseFloat(a.cnj_opener.toString()) <= 0
-    )
-
-    if (invalidAthletes.length > 0) {
-      alert('Please fill in opening attempts for all athletes')
-      return
-    }
-
+    // Validate all athletes have bodyweight if required
+    // For now, allow submission without validation since bodyweight is optional
+    
     setSubmitting(true)
     try {
       await api.post(`/registrations/${registrationId}/final`, {
@@ -88,8 +81,6 @@ export default function DashboardFinalForm({
           competitor_number: a.competitor_number,
           name: a.name,
           weight_category: a.weight_category,
-          snatch_opener: a.snatch_opener ? parseFloat(a.snatch_opener.toString()) : 0,
-          cnj_opener: a.cnj_opener ? parseFloat(a.cnj_opener.toString()) : 0,
           bodyweight: a.bodyweight ? parseFloat(a.bodyweight.toString()) : null
         }))
       })
@@ -121,7 +112,7 @@ export default function DashboardFinalForm({
         <div className="bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex items-center justify-between">
           <div className="flex-1 min-w-0">
             <h2 className="text-lg sm:text-xl font-bold text-gray-900">ENTRY FORM (Final)</h2>
-            <p className="text-xs sm:text-sm text-gray-600 mt-1">Submit opening attempts for final entry</p>
+            <p className="text-xs sm:text-sm text-gray-600 mt-1">Confirm your final entry details</p>
           </div>
           <button
             onClick={onClose}
@@ -153,21 +144,19 @@ export default function DashboardFinalForm({
 
         {/* Athletes Table */}
         <div className="px-4 sm:px-6 py-4 flex-1 overflow-auto">
-          <h3 className="font-semibold text-gray-900 mb-3 text-sm sm:text-base">Competitors & Opening Attempts</h3>
+      
           <div className="overflow-x-auto border border-gray-200 rounded-lg">
-            <table className="w-full border-collapse min-w-[900px]">
+            <table className="w-full border-collapse min-w-[800px]">
               <thead>
                 <tr className="bg-gray-100">
                   <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">C/NO.</th>
                   <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">CATEGORY</th>
                   <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">NAME OF THE COMPETITOR</th>
                   <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">DATE OF BIRTH</th>
+                  <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">AGE CATEGORY</th>
                   <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">ID NUMBER</th>
                   <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">BEST TOTAL</th>
-                  <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">NAME OF THE COACH</th>
-                  <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">BODYWEIGHT</th>
-                  <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">SNATCH OPENER</th>
-                  <th className="px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">C&J OPENER</th>
+                  <th className="px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">BODYWEIGHT</th>
                 </tr>
               </thead>
               <tbody>
@@ -186,15 +175,15 @@ export default function DashboardFinalForm({
                       {athlete.date_of_birth ? new Date(athlete.date_of_birth).toLocaleDateString() : '-'}
                     </td>
                     <td className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm">
+                      {ageCategory}
+                    </td>
+                    <td className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm">
                       {athlete.id_number || '-'}
                     </td>
                     <td className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm font-bold">
                       {athlete.best_total}kg
                     </td>
-                    <td className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm">
-                      {athlete.coach_name || '-'}
-                    </td>
-                    <td className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3">
+                    <td className="px-2 sm:px-3 py-2 sm:py-3">
                       <input
                         type="number"
                         step="0.1"
@@ -204,32 +193,11 @@ export default function DashboardFinalForm({
                         className="w-full px-2 py-1 border border-gray-300 rounded text-xs sm:text-sm"
                       />
                     </td>
-                    <td className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3">
-                      <input
-                        type="number"
-                        placeholder="kg *"
-                        value={athlete.snatch_opener || ''}
-                        onChange={(e) => updateAthlete(index, 'snatch_opener', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs sm:text-sm"
-                        required
-                      />
-                    </td>
-                    <td className="px-2 sm:px-3 py-2 sm:py-3">
-                      <input
-                        type="number"
-                        placeholder="kg *"
-                        value={athlete.cnj_opener || ''}
-                        onChange={(e) => updateAthlete(index, 'cnj_opener', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs sm:text-sm"
-                        required
-                      />
-                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <p className="text-xs text-gray-500 mt-2">* Required fields</p>
         </div>
 
         {/* Footer Actions */}
