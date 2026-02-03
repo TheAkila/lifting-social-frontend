@@ -66,6 +66,7 @@ export default function DashboardPreliminaryForm({
         // Update registration info if available
         if (registrationInfo) {
           if (registrationInfo.club_name) setClubName(registrationInfo.club_name)
+          if (registrationInfo.athlete_notes) setAddress(registrationInfo.athlete_notes) // Load address from athlete_notes
           if (registrationInfo.gender) {
             // Capitalize first letter: 'men' -> 'Men'
             const genderCapitalized = registrationInfo.gender.charAt(0).toUpperCase() + registrationInfo.gender.slice(1)
