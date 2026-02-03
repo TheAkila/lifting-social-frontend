@@ -41,12 +41,14 @@ export default function AuthCallbackPage() {
           if (session?.user) {
             console.log('Session established, user:', session.user.email)
             
-            // Create or update user profile in website_users table (NOT users table!)
+            // Check if user profile exists in website_users table (query by EMAIL, not ID)
             const { data: existingProfile } = await supabase
               .from('website_users')
               .select('*')
-              .eq('id', session.user.id)
+              .eq('email', session.user.email)
               .single()
+
+            console.log('Existing profile check:', existingProfile)
 
             if (!existingProfile) {
               console.log('Creating new user profile in website_users')
@@ -70,11 +72,11 @@ export default function AuthCallbackPage() {
               }
             }
 
-            // Get the latest profile from website_users
+            // Get the latest profile from website_users BY EMAIL (not ID)
             const { data: profile } = await supabase
               .from('website_users')
               .select('*')
-              .eq('id', session.user.id)
+              .eq('email', session.user.email)
               .single()
 
             console.log('Profile from database:', profile)
