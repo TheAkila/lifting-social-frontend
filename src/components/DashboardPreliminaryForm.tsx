@@ -57,9 +57,14 @@ export default function DashboardPreliminaryForm({
       try {
         const response = await api.get(`/registrations/${registrationId}/preliminary-athletes`)
         
-        if (response.data && response.data.length > 0) {
+        console.log('API response:', response.data)
+        
+        // Backend returns { registration: {...}, athletes: [...] }
+        const athletesData = response.data.athletes || response.data
+        
+        if (athletesData && athletesData.length > 0) {
           // Map backend data to frontend format
-          const loadedAthletes = response.data.map((athlete: any, index: number) => ({
+          const loadedAthletes = athletesData.map((athlete: any, index: number) => ({
             id: athlete.id || `${index + 1}`,
             name: athlete.name || '',
             category: athlete.weight_category || '',
@@ -69,10 +74,12 @@ export default function DashboardPreliminaryForm({
             coachName: athlete.coach_name || ''
           }))
           
+          console.log('Loaded athletes:', loadedAthletes)
           setAthletes(loadedAthletes)
         }
-      } catch (err) {
-        console.log('No existing preliminary data or error loading:', err)
+      } catch (err: any) {
+        console.error('Error loading preliminary data:', err)
+        console.error('Error details:', err.response?.data)
         // Keep default empty athlete form
       } finally {
         setLoading(false)
