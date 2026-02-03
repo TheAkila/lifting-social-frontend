@@ -40,6 +40,10 @@ export default function DashboardFinalForm({
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
 
+  const weightCategories = gender === 'Men' 
+    ? ['60', '65', '71', '79', '88', '94', '110', '+110']
+    : ['48', '53', '58', '63', '69', '77', '86', '+86']
+
   useEffect(() => {
     loadPreliminaryAthletes()
   }, [registrationId])
@@ -64,15 +68,24 @@ export default function DashboardFinalForm({
     }
   }
 
-  const updateAthlete = (index: number, field: string, value: string) => {
+  const updateAthlete = (index: number, field: string, value: string | number) => {
     const updated = [...athletes]
     updated[index] = { ...updated[index], [field]: value }
     setAthletes(updated)
   }
 
   const handleSubmit = async () => {
-    // Validate all athletes have bodyweight if required
-    // For now, allow submission without validation since bodyweight is optional
+    // Validate all athletes have weight category and best total
+    for (const athlete of athletes) {
+      if (!athlete.weight_category) {
+        alert(`Please select weight category for ${athlete.name}`)
+        return
+      }
+      if (!athlete.best_total || athlete.best_total <= 0) {
+        alert(`Please enter valid best total for ${athlete.name}`)
+        return
+      }
+    }
     
     setSubmitting(true)
     try {
@@ -80,7 +93,8 @@ export default function DashboardFinalForm({
         athletes: athletes.map(a => ({
           competitor_number: a.competitor_number,
           name: a.name,
-          weight_category: a.weight_category
+          weight_category: a.weight_category,
+          best_total: a.best_total
         }))
       })
       alert('Final entry submitted successfully!')
@@ -163,8 +177,17 @@ export default function DashboardFinalForm({
                     <td className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm text-center font-medium">
                       {String(athlete.competitor_number).padStart(2, '0')}
                     </td>
-                    <td className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm font-semibold">
-                      {athlete.weight_category}kg
+                    <td className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3">
+                      <select
+                        value={athlete.weight_category}
+                        onChange={(e) => updateAthlete(index, 'weight_category', e.target.value)}
+                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs sm:text-sm font-semibold"
+                      >
+                        <option value="">Select</option>
+                        {weightCategories.map(cat => (
+                          <option key={cat} value={cat}>{cat}kg</option>
+                        ))}
+                      </select>
                     </td>
                     <td className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm">
                       {athlete.name}
@@ -178,8 +201,15 @@ export default function DashboardFinalForm({
                     <td className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm">
                       {athlete.id_number || '-'}
                     </td>
-                    <td className="px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm font-bold">
-                      {athlete.best_total}kg
+                    <td className="px-2 sm:px-3 py-2 sm:py-3">
+                      <input
+                        type="number"
+                        step="1"
+                        placeholder="kg"
+                        value={athlete.best_total || ''}
+                        onChange={(e) => updateAthlete(index, 'best_total', parseInt(e.target.value) || 0)}
+                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs sm:text-sm font-bold"
+                      />
                     </td>
                   </tr>
                 ))}
