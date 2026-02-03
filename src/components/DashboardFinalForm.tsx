@@ -99,14 +99,18 @@ export default function DashboardFinalForm({
     
     setSubmitting(true)
     try {
-      await api.post(`/registrations/${registrationId}/final`, {
+      const payload = {
         athletes: athletes.map(a => ({
           competitor_number: a.competitor_number,
           name: a.name,
           weight_category: a.weight_category,
           best_total: a.best_total
         }))
-      })
+      }
+      
+      console.log('Submitting final entry payload:', payload)
+      
+      await api.post(`/registrations/${registrationId}/final`, payload)
       alert('Final entry submitted successfully!')
       onSuccess()
     } catch (err: any) {
