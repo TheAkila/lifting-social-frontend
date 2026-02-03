@@ -206,8 +206,8 @@ export default function AuthCallbackPage() {
               console.log('👑 Admin user - redirecting to /admin')
               window.location.href = '/admin'
             } else {
-              console.log('👤 Regular user - redirecting to /dashboard')
-              window.location.href = '/dashboard'
+              console.log('👤 Regular user - redirecting to home page')
+              window.location.href = '/'
             }
           } else {
             throw new Error('No user in session')
