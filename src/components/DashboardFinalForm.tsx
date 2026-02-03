@@ -53,9 +53,10 @@ export default function DashboardFinalForm({
       const response = await api.get(`/registrations/${registrationId}/preliminary-athletes`)
       const preliminaryAthletes = response.data.athletes || []
       
-      // Initialize athletes with empty opener fields
+      // Initialize athletes and strip 'kg' suffix from weight categories
       setAthletes(preliminaryAthletes.map((a: any) => ({
         ...a,
+        weight_category: a.weight_category?.toString().replace(/kg$/i, '').trim() || '',
         snatch_opener: a.snatch_opener || '',
         cnj_opener: a.cnj_opener || '',
         bodyweight: a.bodyweight || ''
