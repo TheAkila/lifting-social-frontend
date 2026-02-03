@@ -9,6 +9,7 @@ import api from '@/lib/api'
 interface ProductGridProps {
   filters: {
     category: string
+    subcategory?: string
     sizes: string[]
     priceRange: { min: number; max: number } | null
     inStockOnly: boolean
@@ -59,6 +60,14 @@ export default function ProductGrid({ filters }: ProductGridProps) {
             product.category?.toLowerCase() === filters.category.toLowerCase()
         )
       }
+    }
+
+    // Filter by subcategory if provided
+    if (filters.subcategory) {
+      filtered = filtered.filter(
+        (product) =>
+          product.subcategory?.toLowerCase() === filters.subcategory?.toLowerCase()
+      )
     }
 
     if (filters.sizes.length > 0) {
