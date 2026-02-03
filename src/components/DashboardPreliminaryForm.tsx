@@ -61,18 +61,37 @@ export default function DashboardPreliminaryForm({
         
         // Backend returns { registration: {...}, athletes: [...] }
         const athletesData = response.data.athletes || response.data
+        const registrationInfo = response.data.registration
+        
+        // Update registration info if available
+        if (registrationInfo) {
+          if (registrationInfo.club_name) setClubName(registrationInfo.club_name)
+          if (registrationInfo.gender) {
+            // Capitalize first letter: 'men' -> 'Men'
+            const genderCapitalized = registrationInfo.gender.charAt(0).toUpperCase() + registrationInfo.gender.slice(1)
+            setMenWomen(genderCapitalized)
+          }
+        }
         
         if (athletesData && athletesData.length > 0) {
           // Map backend data to frontend format
-          const loadedAthletes = athletesData.map((athlete: any, index: number) => ({
-            id: athlete.id || `${index + 1}`,
-            name: athlete.name || '',
-            category: athlete.weight_category || '',
-            dateOfBirth: athlete.date_of_birth ? athlete.date_of_birth.split('T')[0] : '',
-            idNumber: athlete.id_number || '',
-            bestTotal: athlete.best_total?.toString() || '',
-            coachName: athlete.coach_name || ''
-          }))
+          const loadedAthletes = athletesData.map((athlete: any, index: number) => {
+            // Clean weight category - remove 'kg' suffix if present
+            let category = athlete.weight_category || ''
+            if (category.toLowerCase().endsWith('kg')) {
+              category = category.slice(0, -2).trim()
+            }
+            
+            return {
+              id: athlete.id?.toString() || `${index + 1}`,
+              name: athlete.name || '',
+              category: category,
+              dateOfBirth: athlete.date_of_birth ? athlete.date_of_birth.split('T')[0] : '',
+              idNumber: athlete.id_number || '',
+              bestTotal: athlete.best_total?.toString() || '',
+              coachName: athlete.coach_name || ''
+            }
+          })
           
           console.log('Loaded athletes:', loadedAthletes)
           setAthletes(loadedAthletes)
