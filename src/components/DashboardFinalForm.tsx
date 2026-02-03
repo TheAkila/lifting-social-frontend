@@ -53,14 +53,23 @@ export default function DashboardFinalForm({
       const response = await api.get(`/registrations/${registrationId}/preliminary-athletes`)
       const preliminaryAthletes = response.data.athletes || []
       
+      console.log('Raw athletes data:', preliminaryAthletes)
+      
       // Initialize athletes and strip 'kg' suffix from weight categories
-      setAthletes(preliminaryAthletes.map((a: any) => ({
-        ...a,
-        weight_category: a.weight_category?.toString().replace(/kg$/i, '').trim() || '',
-        snatch_opener: a.snatch_opener || '',
-        cnj_opener: a.cnj_opener || '',
-        bodyweight: a.bodyweight || ''
-      })))
+      const processedAthletes = preliminaryAthletes.map((a: any) => {
+        const strippedCategory = a.weight_category?.toString().replace(/kg$/i, '').trim() || ''
+        console.log(`Athlete ${a.name}: original category = "${a.weight_category}", stripped = "${strippedCategory}"`)
+        return {
+          ...a,
+          weight_category: strippedCategory,
+          snatch_opener: a.snatch_opener || '',
+          cnj_opener: a.cnj_opener || '',
+          bodyweight: a.bodyweight || ''
+        }
+      })
+      
+      console.log('Processed athletes:', processedAthletes)
+      setAthletes(processedAthletes)
     } catch (err) {
       console.error('Failed to load athletes:', err)
       alert('Failed to load preliminary entry athletes')
