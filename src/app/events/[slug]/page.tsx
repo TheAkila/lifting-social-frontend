@@ -405,7 +405,7 @@ export default function EventDetailPage() {
     }
   }
 
-  const canRegister = () => getEventPhase() === 'registration' && !registration
+  const canRegister = () => !registration && event && (event.registration_open || event.is_registration_open || getEventPhase() === 'registration')
   const canSubmitPreliminary = () => getEventPhase() === 'preliminary_entries' && registration && ['registered', 'preliminary_submitted'].includes(registration.status)
   const canSubmitFinal = () => getEventPhase() === 'final_entries' && registration && ['preliminary_approved', 'final_submitted'].includes(registration.status)
 
