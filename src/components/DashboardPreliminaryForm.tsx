@@ -49,6 +49,38 @@ export default function DashboardPreliminaryForm({
     coachName: ''
   }])
   const [submitting, setSubmitting] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  // Load existing preliminary entry data
+  useEffect(() => {
+    const loadExistingData = async () => {
+      try {
+        const response = await api.get(`/registrations/${registrationId}/preliminary-athletes`)
+        
+        if (response.data && response.data.length > 0) {
+          // Map backend data to frontend format
+          const loadedAthletes = response.data.map((athlete: any, index: number) => ({
+            id: athlete.id || `${index + 1}`,
+            name: athlete.name || '',
+            category: athlete.weight_category || '',
+            dateOfBirth: athlete.date_of_birth ? athlete.date_of_birth.split('T')[0] : '',
+            idNumber: athlete.id_number || '',
+            bestTotal: athlete.best_total?.toString() || '',
+            coachName: athlete.coach_name || ''
+          }))
+          
+          setAthletes(loadedAthletes)
+        }
+      } catch (err) {
+        console.log('No existing preliminary data or error loading:', err)
+        // Keep default empty athlete form
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadExistingData()
+  }, [registrationId])
 
   const addAthlete = () => {
     setAthletes([...athletes, {
@@ -220,8 +252,15 @@ export default function DashboardPreliminaryForm({
           </button>
         </div>
 
-        {/* Form Content */}
-        <div className="p-4 sm:p-6">
+        {/* Loading State */}
+        {loading ? (
+          <div className="p-12 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading existing entry data...</p>
+          </div>
+        ) : (
+          /* Form Content */
+          <div className="p-4 sm:p-6">
           {/* Club Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
@@ -395,8 +434,8 @@ export default function DashboardPreliminaryForm({
             </button>
           </div>
         </div>
+        )}
       </motion.div>
     </div>
   )
 }
-
