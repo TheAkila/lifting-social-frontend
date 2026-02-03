@@ -80,8 +80,7 @@ export default function DashboardFinalForm({
         athletes: athletes.map(a => ({
           competitor_number: a.competitor_number,
           name: a.name,
-          weight_category: a.weight_category,
-          bodyweight: a.bodyweight ? parseFloat(a.bodyweight.toString()) : null
+          weight_category: a.weight_category
         }))
       })
       alert('Final entry submitted successfully!')
@@ -155,8 +154,7 @@ export default function DashboardFinalForm({
                   <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">DATE OF BIRTH</th>
                   <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">AGE CATEGORY</th>
                   <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">ID NUMBER</th>
-                  <th className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">BEST TOTAL</th>
-                  <th className="px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">BODYWEIGHT</th>
+                  <th className="px-2 sm:px-3 py-2 sm:py-3 text-left text-xs font-semibold">BEST TOTAL</th>
                 </tr>
               </thead>
               <tbody>
@@ -180,18 +178,8 @@ export default function DashboardFinalForm({
                     <td className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm">
                       {athlete.id_number || '-'}
                     </td>
-                    <td className="border-r border-gray-200 px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm font-bold">
+                    <td className="px-2 sm:px-3 py-2 sm:py-3 text-xs sm:text-sm font-bold">
                       {athlete.best_total}kg
-                    </td>
-                    <td className="px-2 sm:px-3 py-2 sm:py-3">
-                      <input
-                        type="number"
-                        step="0.1"
-                        placeholder="kg"
-                        value={athlete.bodyweight || ''}
-                        onChange={(e) => updateAthlete(index, 'bodyweight', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs sm:text-sm"
-                      />
                     </td>
                   </tr>
                 ))}
