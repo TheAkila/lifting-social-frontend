@@ -77,6 +77,9 @@ export default function AuthCallbackPage() {
               .eq('id', session.user.id)
               .single()
 
+            console.log('Profile from database:', profile)
+            console.log('Profile role:', profile?.role)
+
             // Sync user to backend database and get JWT token
             let backendToken = null
             let backendUserData = null
@@ -126,22 +129,17 @@ export default function AuthCallbackPage() {
               console.error('❌ Network error calling backend:', err)
             }
 
-            // Store user data - use backend data if available, fallback to Supabase
-            const userData = backendUserData ? {
-              id: backendUserData.id,
-              email: backendUserData.email,
-              name: backendUserData.name,
-              role: backendUserData.role,
-              avatar: backendUserData.avatar
-            } : {
+            // Store user data - ALWAYS use Supabase profile role as source of truth
+            const userData = {
               id: session.user.id,
               email: session.user.email,
-              name: profile?.name || session.user.user_metadata?.full_name || session.user.email,
-              avatar: profile?.avatar || session.user.user_metadata?.avatar_url,
-              role: profile?.role || 'user',
+              name: profile?.name || backendUserData?.name || session.user.user_metadata?.full_name || session.user.email,
+              avatar: profile?.avatar || backendUserData?.avatar || session.user.user_metadata?.avatar_url,
+              role: profile?.role || 'user', // Always use database role as source of truth
             }
 
             console.log('Storing user data:', userData)
+            console.log('User role:', userData.role)
             
             // Store Supabase tokens FIRST (for session restoration)
             localStorage.setItem('supabaseToken', session.access_token)
@@ -197,10 +195,18 @@ export default function AuthCallbackPage() {
             console.log('userData:', !!localStorage.getItem('userData'))
             console.log('==========================')
             
-            console.log('✅ Authentication successful! Redirecting to home...')
+            console.log('✅ Authentication successful!')
+            console.log('🚀 Checking role for redirect...')
+            console.log('User role:', userData.role)
             
-            // Use window.location for a full page load with fresh context
-            window.location.href = '/'
+            // Redirect based on role
+            if (userData.role === 'admin') {
+              console.log('👑 Admin user - redirecting to /admin')
+              window.location.href = '/admin'
+            } else {
+              console.log('👤 Regular user - redirecting to /dashboard')
+              window.location.href = '/dashboard'
+            }
           } else {
             throw new Error('No user in session')
           }
