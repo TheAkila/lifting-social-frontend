@@ -46,10 +46,19 @@ export default function ProductGrid({ filters }: ProductGridProps) {
     let filtered = [...products]
 
     if (filters.category && filters.category !== 'All') {
-      filtered = filtered.filter(
-        (product) =>
-          product.category?.toLowerCase() === filters.category.toLowerCase()
-      )
+      if (filters.category === 'apparel') {
+        // Apparel includes both men and women categories
+        filtered = filtered.filter(
+          (product) =>
+            product.category?.toLowerCase() === 'men' ||
+            product.category?.toLowerCase() === 'women'
+        )
+      } else {
+        filtered = filtered.filter(
+          (product) =>
+            product.category?.toLowerCase() === filters.category.toLowerCase()
+        )
+      }
     }
 
     if (filters.sizes.length > 0) {

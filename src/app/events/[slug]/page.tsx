@@ -449,7 +449,6 @@ export default function EventDetailPage() {
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6 sm:mb-8">
               <div className="flex flex-wrap gap-2 sm:gap-3 mb-3 sm:mb-4">
-                <span className="px-3 py-1.5 rounded-badge text-xs font-medium bg-zinc-900 text-white">{event.event_type}</span>
                 <span className={`px-3 py-1.5 rounded-badge text-xs font-medium ${phase === 'closed' ? 'bg-zinc-200 text-zinc-700' : 'bg-emerald-100 text-emerald-700'}`}>
                   {getPhaseLabel(phase)}
                 </span>
@@ -516,34 +515,20 @@ export default function EventDetailPage() {
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="bg-white border border-zinc-200 rounded-card p-6 mb-6 shadow-sm">
                 <h3 className="text-lg font-display font-semibold text-zinc-900 mb-6">Event Details</h3>
                 <div className="space-y-5">
-                  <div className="flex items-start gap-3">
-                    <Calendar className="w-5 h-5 text-black mt-0.5 flex-shrink-0" />
-                    <div><div className="font-semibold text-black text-sm mb-1">Date</div><div className="text-sm text-gray-600">{formatDate(event.start_date)}{event.end_date && event.end_date !== event.start_date && ` to ${formatDate(event.end_date)}`}</div></div>
+                  <div>
+                    <div className="font-semibold text-black text-sm mb-1">Date</div>
+                    <div className="text-sm text-gray-600">{formatDate(event.start_date)}{event.end_date && event.end_date !== event.start_date && ` to ${formatDate(event.end_date)}`}</div>
                   </div>
                   {event.location && (
-                    <div className="flex items-start gap-3">
-                      <MapPin className="w-5 h-5 text-black mt-0.5 flex-shrink-0" />
-                      <div><div className="font-semibold text-black text-sm mb-1">Location</div><div className="text-sm text-gray-600">{event.location}</div>{event.venue && <div className="text-sm text-gray-500">{event.venue}</div>}</div>
-                    </div>
-                  )}
-                  {event.max_participants && (
-                    <div className="flex items-start gap-3">
-                      <Users className="w-5 h-5 text-black mt-0.5 flex-shrink-0" />
-                      <div>
-                        <div className="font-semibold text-black text-sm mb-1">Participants</div>
-                        <div className="text-sm text-gray-600">{event.current_participants || 0} / {event.max_participants}</div>
-                        <div className="w-full bg-gray-200 rounded-full h-2 mt-2"><div className="bg-black rounded-full h-2" style={{ width: `${Math.min(100, ((event.current_participants || 0) / event.max_participants) * 100)}%` }}></div></div>
-                      </div>
-                    </div>
-                  )}
-                  {event.entry_fee && (
-                    <div className="flex items-start gap-3">
-                      <div><div className="font-semibold text-black text-sm mb-1">Entry Fee</div><div className="text-sm text-gray-600">Rs. {event.entry_fee.toLocaleString()}</div></div>
+                    <div>
+                      <div className="font-semibold text-black text-sm mb-1">Location</div>
+                      <div className="text-sm text-gray-600">{event.location}</div>
                     </div>
                   )}
                   {event.organizer && (
-                    <div className="flex items-start gap-3">
-                      <div><div className="font-semibold text-black text-sm mb-1">Organizer</div><div className="text-sm text-gray-600">{event.organizer}</div></div>
+                    <div>
+                      <div className="font-semibold text-black text-sm mb-1">Organizer</div>
+                      <div className="text-sm text-gray-600">{event.organizer}</div>
                     </div>
                   )}
                 </div>

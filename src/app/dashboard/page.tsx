@@ -7,6 +7,7 @@ import api from '@/lib/api'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import DashboardPreliminaryForm from '@/components/DashboardPreliminaryForm'
+import DashboardFinalForm from '@/components/DashboardFinalForm'
 import { 
   Trophy,
   Calendar,
@@ -93,11 +94,6 @@ export default function UserDashboard() {
   })
   const [preliminaryForm, setPreliminaryForm] = useState({
     entryTotal: '',
-    bodyweight: ''
-  })
-  const [finalForm, setFinalForm] = useState({
-    snatchOpener: '',
-    cnjOpener: '',
     bodyweight: ''
   })
   const [submitting, setSubmitting] = useState(false)
@@ -213,11 +209,13 @@ export default function UserDashboard() {
       preliminary_submitted: { bg: 'bg-yellow-100', text: 'text-yellow-700', label: 'Prelim Submitted', icon: Clock },
       preliminary_approved: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Prelim Approved', icon: CheckCircle2 },
       preliminary_rejected: { bg: 'bg-red-100', text: 'text-red-700', label: 'Prelim Rejected', icon: AlertCircle },
+      preliminary_declined: { bg: 'bg-red-100', text: 'text-red-700', label: 'Prelim Declined', icon: AlertCircle },
       // Final statuses
       final_pending: { bg: 'bg-yellow-100', text: 'text-yellow-700', label: 'Final Pending', icon: Clock },
       final_submitted: { bg: 'bg-yellow-100', text: 'text-yellow-700', label: 'Final Submitted', icon: Clock },
       final_approved: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Final Approved', icon: CheckCircle2 },
       final_rejected: { bg: 'bg-red-100', text: 'text-red-700', label: 'Final Rejected', icon: AlertCircle },
+      final_declined: { bg: 'bg-red-100', text: 'text-red-700', label: 'Final Declined', icon: AlertCircle },
       // Other statuses
       payment_pending: { bg: 'bg-orange-100', text: 'text-orange-700', label: 'Payment Pending', icon: AlertCircle },
       confirmed: { bg: 'bg-green-100', text: 'text-green-700', label: 'Confirmed', icon: CheckCircle2 },
@@ -295,6 +293,25 @@ export default function UserDashboard() {
       }
     }
     
+    // Status: preliminary_declined - need to resubmit preliminary
+    if (reg.status === 'preliminary_declined') {
+      if (eventData.preliminaryEntryOpen) {
+        return { 
+          action: 'action', 
+          actionType: 'preliminary',
+          message: 'Preliminary declined - resubmit now',
+          phase: 'preliminary-declined',
+          color: 'bg-red-100 text-red-700'
+        }
+      }
+      return { 
+        action: 'wait', 
+        message: 'Preliminary declined - waiting to resubmit',
+        phase: 'preliminary-declined',
+        color: 'bg-red-100 text-red-700'
+      }
+    }
+    
     // Status: preliminary_approved - can submit final OR waiting for final to open
     if (reg.status === 'preliminary_approved') {
       if (eventData.finalEntryOpen) {
@@ -320,6 +337,25 @@ export default function UserDashboard() {
         message: 'Waiting for final entries to open',
         phase: 'awaiting-final',
         color: 'bg-blue-100 text-blue-700'
+      }
+    }
+    
+    // Status: final_declined - need to resubmit final
+    if (reg.status === 'final_declined') {
+      if (eventData.finalEntryOpen) {
+        return { 
+          action: 'action', 
+          actionType: 'final',
+          message: 'Final declined - resubmit now',
+          phase: 'final-declined',
+          color: 'bg-red-100 text-red-700'
+        }
+      }
+      return { 
+        action: 'wait', 
+        message: 'Final declined - waiting to resubmit',
+        phase: 'final-declined',
+        color: 'bg-red-100 text-red-700'
       }
     }
     
@@ -482,31 +518,6 @@ export default function UserDashboard() {
     }
   }
 
-  const handleSubmitFinal = async () => {
-    if (!selectedRegistration || !finalForm.snatchOpener || !finalForm.cnjOpener) {
-      alert('Please enter both opening attempts')
-      return
-    }
-
-    setSubmitting(true)
-    try {
-      await api.post(`/registrations/${selectedRegistration.id}/final`, {
-        snatch_opener: parseFloat(finalForm.snatchOpener),
-        cnj_opener: parseFloat(finalForm.cnjOpener),
-        bodyweight: finalForm.bodyweight ? parseFloat(finalForm.bodyweight) : undefined
-      })
-      alert('Final entry submitted successfully!')
-      setShowFinalModal(false)
-      setSelectedRegistration(null)
-      setFinalForm({ snatchOpener: '', cnjOpener: '', bodyweight: '' })
-      loadRegistrations()
-    } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to submit final entry')
-    } finally {
-      setSubmitting(false)
-    }
-  }
-
   const activeRegistrations = registrations.filter(r => r.status !== 'withdrawn')
   const confirmedCount = registrations.filter(r => r.status === 'confirmed').length
   const pendingCount = registrations.filter(r => 
@@ -571,11 +582,6 @@ export default function UserDashboard() {
                 }}
                 onFinal={(reg) => {
                   setSelectedRegistration(reg)
-                  setFinalForm({ 
-                    snatchOpener: reg.snatch_opener?.toString() || '', 
-                    cnjOpener: reg.cnj_opener?.toString() || '', 
-                    bodyweight: reg.bodyweight?.toString() || '' 
-                  })
                   setShowFinalModal(true)
                 }}
               />
@@ -799,78 +805,21 @@ export default function UserDashboard() {
 
       {/* Final Entry Modal */}
       {showFinalModal && selectedRegistration && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
-          >
-            <div className="p-4 sm:p-6">
-              <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">Submit Final Entry</h2>
-              <p className="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-6">
-                Enter your opening attempts for <strong>{getEventData(selectedRegistration).title}</strong>
-              </p>
-
-              <div className="space-y-3 sm:space-y-4">
-                <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Snatch Opener (kg) *</label>
-                  <input
-                    type="number"
-                    value={finalForm.snatchOpener}
-                    onChange={(e) => setFinalForm({ ...finalForm, snatchOpener: e.target.value })}
-                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                    placeholder="e.g., 100"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Clean & Jerk Opener (kg) *</label>
-                  <input
-                    type="number"
-                    value={finalForm.cnjOpener}
-                    onChange={(e) => setFinalForm({ ...finalForm, cnjOpener: e.target.value })}
-                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                    placeholder="e.g., 130"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Bodyweight (kg)</label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    value={finalForm.bodyweight}
-                    onChange={(e) => setFinalForm({ ...finalForm, bodyweight: e.target.value })}
-                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                    placeholder="Optional"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 mt-4 sm:mt-6">
-                <button
-                  onClick={() => {
-                    setShowFinalModal(false)
-                    setSelectedRegistration(null)
-                  }}
-                  className="flex-1 px-4 py-2 sm:py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base"
-                  disabled={submitting}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSubmitFinal}
-                  disabled={submitting}
-                  className="flex-1 px-4 py-2 sm:py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 text-sm sm:text-base"
-                >
-                  {submitting ? 'Submitting...' : 'Submit Final'}
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        </div>
+        <DashboardFinalForm
+          registrationId={selectedRegistration.id}
+          clubName={selectedRegistration.club_name || ''}
+          gender={selectedRegistration.gender || 'male'}
+          ageCategory={selectedRegistration.age_category || ''}
+          onClose={() => {
+            setShowFinalModal(false)
+            setSelectedRegistration(null)
+          }}
+          onSuccess={() => {
+            setShowFinalModal(false)
+            setSelectedRegistration(null)
+            loadRegistrations()
+          }}
+        />
       )}
     </div>
   )

@@ -77,33 +77,118 @@ export default function DashboardPreliminaryForm({
     : ['48', '53', '58', '63', '69', '77', '86', '+86']
 
   const handleSubmit = async () => {
-    // Validate
+    // Validate club information
     if (!clubName.trim()) {
-      alert('Please enter club name')
+      alert('Please enter the club/institute/school name')
       return
     }
 
-    const validAthletes = athletes.filter(a => a.name && a.category && a.bestTotal)
+    if (!telephone.trim()) {
+      alert('Please enter telephone number')
+      return
+    }
+
+    // Validate telephone format (basic validation)
+    const phoneRegex = /^[0-9+\-\s()]{8,}$/
+    if (!phoneRegex.test(telephone.trim())) {
+      alert('Please enter a valid telephone number (minimum 8 digits)')
+      return
+    }
+
+    // Check if at least one athlete is added
+    if (athletes.length === 0) {
+      alert('Please add at least one athlete')
+      return
+    }
+
+    // Validate each athlete
+    const errors: string[] = []
+    const validAthletes: any[] = []
+
+    athletes.forEach((athlete, index) => {
+      const athleteNum = index + 1
+      
+      // Check required fields
+      if (!athlete.name.trim()) {
+        errors.push(`Athlete ${athleteNum}: Name is required`)
+        return
+      }
+
+      if (!athlete.category) {
+        errors.push(`Athlete ${athleteNum} (${athlete.name}): Weight category is required`)
+        return
+      }
+
+      if (!athlete.bestTotal) {
+        errors.push(`Athlete ${athleteNum} (${athlete.name}): Best total is required`)
+        return
+      }
+
+      // Validate best total
+      const bestTotal = parseFloat(athlete.bestTotal)
+      if (isNaN(bestTotal) || bestTotal <= 0) {
+        errors.push(`Athlete ${athleteNum} (${athlete.name}): Best total must be a positive number`)
+        return
+      }
+
+      if (bestTotal > 500) {
+        errors.push(`Athlete ${athleteNum} (${athlete.name}): Best total seems unrealistic (${bestTotal}kg). Please verify.`)
+        return
+      }
+
+      // Validate date of birth if provided
+      if (athlete.dateOfBirth) {
+        const dob = new Date(athlete.dateOfBirth)
+        const now = new Date()
+        const age = now.getFullYear() - dob.getFullYear()
+        
+        if (dob > now) {
+          errors.push(`Athlete ${athleteNum} (${athlete.name}): Date of birth cannot be in the future`)
+          return
+        }
+        
+        if (age < 10 || age > 100) {
+          errors.push(`Athlete ${athleteNum} (${athlete.name}): Please verify date of birth (age appears to be ${age})`)
+          return
+        }
+      }
+
+      // Validate ID number if provided
+      if (athlete.idNumber && athlete.idNumber.trim().length < 5) {
+        errors.push(`Athlete ${athleteNum} (${athlete.name}): ID number should be at least 5 characters`)
+        return
+      }
+
+      // If all validations pass, add to valid athletes
+      validAthletes.push({
+        name: athlete.name.trim(),
+        weight_category: athlete.category,
+        date_of_birth: athlete.dateOfBirth || undefined,
+        id_number: athlete.idNumber ? athlete.idNumber.trim() : undefined,
+        best_total: bestTotal,
+        coach_name: athlete.coachName ? athlete.coachName.trim() : undefined
+      })
+    })
+
+    // Show all validation errors at once
+    if (errors.length > 0) {
+      alert('Please fix the following errors:\n\n' + errors.join('\n'))
+      return
+    }
+
     if (validAthletes.length === 0) {
-      alert('Please add at least one athlete with name, category, and best total')
+      alert('Please add at least one complete athlete entry')
       return
     }
 
     setSubmitting(true)
     try {
       await api.post(`/registrations/${registrationId}/preliminary`, {
-        club_name: clubName,
+        club_name: clubName.trim(),
         gender: menWomen.toLowerCase(),
-        address,
-        telephone,
-        athletes: validAthletes.map(a => ({
-          name: a.name,
-          weight_category: a.category,
-          date_of_birth: a.dateOfBirth || undefined,
-          id_number: a.idNumber || undefined,
-          best_total: parseFloat(a.bestTotal),
-          coach_name: a.coachName || undefined
-        }))
+        address: address.trim() || undefined,
+        telephone: telephone.trim(),
+        athletes: validAthletes
       })
       alert('Preliminary entry submitted successfully!')
       onSuccess()
