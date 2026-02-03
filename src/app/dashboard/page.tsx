@@ -975,13 +975,13 @@ function EventCard({ reg, index, getRegistrationStatusBadge, getEventData, getRe
         <div className="flex gap-3 pt-2">
           <button
             onClick={() => onUpdate(reg)}
-            className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-md hover:shadow-lg"
+            className="flex-1 px-4 py-3 bg-slate-900 dark:bg-slate-50 text-slate-50 dark:text-slate-900 rounded-lg text-sm font-bold hover:bg-slate-800 dark:hover:bg-slate-200 transition-all shadow-md hover:shadow-lg"
           >
             Update Details
           </button>
           <button
             onClick={() => onDelete(reg.id, eventData.title)}
-            className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg text-sm font-bold hover:bg-red-700 transition-all shadow-md hover:shadow-lg"
+            className="flex-1 px-4 py-3 bg-slate-600 dark:bg-slate-400 text-white dark:text-slate-900 rounded-lg text-sm font-bold hover:bg-slate-700 dark:hover:bg-slate-300 transition-all shadow-md hover:shadow-lg"
           >
             Delete
           </button>
