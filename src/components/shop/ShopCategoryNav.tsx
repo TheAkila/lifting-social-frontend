@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 
 const categories = [
@@ -41,6 +41,24 @@ export default function ShopCategoryNav() {
   const [accessoriesOpen, setAccessoriesOpen] = useState(false)
   const [supplementsRef, setSupplementsRef] = useState<HTMLButtonElement | null>(null)
   const [accessoriesRef, setAccessoriesRef] = useState<HTMLButtonElement | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setSupplementsOpen(false)
+        setAccessoriesOpen(false)
+      }
+    }
+
+    if (supplementsOpen || accessoriesOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside)
+      }
+    }
+  }, [supplementsOpen, accessoriesOpen])
   
   const isActive = (href: string) => {
     return pathname === href
@@ -53,7 +71,7 @@ export default function ShopCategoryNav() {
   return (
     <nav className="bg-white border-t border-b border-zinc-200 sticky top-[72px] z-40">
       <div className="container mx-auto px-2 sm:px-4 lg:px-8">
-        <div className="flex items-center justify-center py-2 sm:py-3 gap-0.5 sm:gap-1 overflow-x-auto">
+        <div ref={containerRef} className="flex items-center justify-center py-2 sm:py-3 gap-0.5 sm:gap-1 overflow-x-auto">
           {/* All Products Link */}
           <Link 
             href="/shop"
@@ -97,7 +115,10 @@ export default function ShopCategoryNav() {
           {/* Supplements Dropdown */}
           <button
             ref={setSupplementsRef}
-            onClick={() => setSupplementsOpen(!supplementsOpen)}
+            onClick={() => {
+              setSupplementsOpen(!supplementsOpen)
+              setAccessoriesOpen(false)
+            }}
             className={`group relative px-1.5 sm:px-2 md:px-3 lg:px-4 py-1 sm:py-1.5 md:py-2 rounded-[6px] text-xs sm:text-sm md:text-base font-semibold transition-all whitespace-nowrap flex items-center gap-0.5 sm:gap-1 flex-shrink-0 ${
               isSupplementsActive
                 ? 'bg-zinc-900 text-white'
@@ -127,7 +148,10 @@ export default function ShopCategoryNav() {
           {/* Accessories Dropdown */}
           <button
             ref={setAccessoriesRef}
-            onClick={() => setAccessoriesOpen(!accessoriesOpen)}
+            onClick={() => {
+              setAccessoriesOpen(!accessoriesOpen)
+              setSupplementsOpen(false)
+            }}
             className={`group relative px-1.5 sm:px-2 md:px-3 lg:px-4 py-1 sm:py-1.5 md:py-2 rounded-[6px] text-xs sm:text-sm md:text-base font-semibold transition-all whitespace-nowrap flex items-center gap-0.5 sm:gap-1 flex-shrink-0 ${
               isAccessoriesActive
                 ? 'bg-zinc-900 text-white'

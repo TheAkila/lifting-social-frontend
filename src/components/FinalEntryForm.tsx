@@ -7,12 +7,12 @@ import { motion } from 'framer-motion'
 interface FinalEntry {
   id: string
   athleteName: string
+  dateOfBirth?: string
   registrationNumber: string
   weightCategory: string
   bestTotal?: number
-  snatchOpener: number
-  cnjOpener: number
-  signature?: string
+  coachName?: string
+  gender?: string
 }
 
 interface FinalEntryFormProps {
@@ -24,7 +24,6 @@ export default function FinalEntryForm({ eventId, eventTitle }: FinalEntryFormPr
   const [entries, setEntries] = useState<FinalEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [sortBy, setSortBy] = useState<'weight' | 'name'>('weight')
 
   useEffect(() => {
     loadFinalEntries()
@@ -44,15 +43,6 @@ export default function FinalEntryForm({ eventId, eventTitle }: FinalEntryFormPr
       setLoading(false)
     }
   }
-
-  const sortedEntries = [...entries].sort((a, b) => {
-    if (sortBy === 'weight') {
-      const weightA = parseFloat(a.weightCategory)
-      const weightB = parseFloat(b.weightCategory)
-      return weightA - weightB
-    }
-    return a.athleteName.localeCompare(b.athleteName)
-  })
 
   if (loading) {
     return (
@@ -84,92 +74,59 @@ export default function FinalEntryForm({ eventId, eventTitle }: FinalEntryFormPr
       animate={{ opacity: 1, y: 0 }}
       className="bg-white rounded-card border border-zinc-200 shadow-sm overflow-hidden"
     >
-      <div className="p-6 border-b border-zinc-200">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-display font-semibold text-zinc-900">{eventTitle}</h2>
-          <p className="text-sm text-zinc-500">Total Entries: {entries.length}</p>
-        </div>
-        <div className="flex gap-3">
-          <button
-            onClick={() => setSortBy('weight')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              sortBy === 'weight'
-                ? 'bg-blue-100 text-blue-700'
-                : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
-            }`}
-          >
-            Sort by Weight Category
-          </button>
-          <button
-            onClick={() => setSortBy('name')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              sortBy === 'name'
-                ? 'bg-blue-100 text-blue-700'
-                : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
-            }`}
-          >
-            Sort by Name
-          </button>
-        </div>
+      {/* Header Section */}
+      <div className="p-8 border-b border-zinc-200 bg-white">
+        <h2 className="text-xl font-bold text-zinc-900 mb-6">ENTRY FORM (Final)</h2>
       </div>
 
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full border-collapse">
           <thead>
-            <tr className="bg-zinc-50 border-b border-zinc-200">
-              <th className="px-6 py-4 text-left text-sm font-semibold text-zinc-900 border-r border-zinc-200 w-12">No.</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-zinc-900 border-r border-zinc-200">Weight Category</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-zinc-900 border-r border-zinc-200">Name</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-zinc-900 border-r border-zinc-200">Registration Number</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-zinc-900 border-r border-zinc-200">Best Total</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-zinc-900 border-r border-zinc-200">Snatch Opener</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-zinc-900 border-r border-zinc-200">C&J Opener</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-zinc-900">Signature</th>
+            <tr className="bg-zinc-50 border-b-2 border-zinc-900">
+              <th className="px-4 py-3 text-left text-xs font-bold text-zinc-900 border-r border-zinc-300 w-12">C/NO.</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-zinc-900 border-r border-zinc-300 w-24">CATEGORY</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-zinc-900 border-r border-zinc-300 flex-1">NAME OF THE COMPETITOR</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-zinc-900 border-r border-zinc-300 w-32">DATE OF BIRTH</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-zinc-900 border-r border-zinc-300 w-28">ID NUMBER</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-zinc-900 border-r border-zinc-300 w-24">BEST TOTAL</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-zinc-900 w-32">NAME OF THE COACH</th>
             </tr>
           </thead>
           <tbody>
-            {sortedEntries.map((entry, index) => (
+            {entries.map((entry, index) => (
               <tr
                 key={entry.id}
-                className={`border-b border-zinc-200 hover:bg-zinc-50 transition-colors ${
-                  index % 2 === 0 ? 'bg-white' : 'bg-zinc-50'
-                }`}
+                className="border-b border-zinc-300 hover:bg-zinc-50 transition-colors"
               >
-                <td className="px-6 py-4 text-sm text-zinc-900 font-medium border-r border-zinc-200">{String(index + 1).padStart(2, '0')}</td>
-                <td className="px-6 py-4 text-sm text-zinc-900 border-r border-zinc-200 font-semibold">{entry.weightCategory}</td>
-                <td className="px-6 py-4 text-sm text-zinc-900 border-r border-zinc-200">{entry.athleteName}</td>
-                <td className="px-6 py-4 text-sm text-zinc-700 border-r border-zinc-200">{entry.registrationNumber || '-'}</td>
-                <td className="px-6 py-4 text-sm text-zinc-900 border-r border-zinc-200 font-semibold">{entry.bestTotal ? `${entry.bestTotal}kg` : '-'}</td>
-                <td className="px-6 py-4 text-sm text-zinc-900 border-r border-zinc-200 font-semibold">{entry.snatchOpener}kg</td>
-                <td className="px-6 py-4 text-sm text-zinc-900 border-r border-zinc-200 font-semibold">{entry.cnjOpener}kg</td>
-                <td className="px-6 py-4 text-sm text-zinc-500">
-                  <div className="w-20 h-8 border border-zinc-300 rounded bg-zinc-50"></div>
-                </td>
+                <td className="px-4 py-3 text-sm font-semibold text-zinc-900 border-r border-zinc-300">{String(index + 1).padStart(2, '0')}</td>
+                <td className="px-4 py-3 text-sm font-semibold text-zinc-900 border-r border-zinc-300">{entry.weightCategory}</td>
+                <td className="px-4 py-3 text-sm text-zinc-900 border-r border-zinc-300 font-medium">{entry.athleteName}</td>
+                <td className="px-4 py-3 text-sm text-zinc-900 border-r border-zinc-300">{entry.dateOfBirth || '-'}</td>
+                <td className="px-4 py-3 text-sm text-zinc-900 border-r border-zinc-300">{entry.registrationNumber || '-'}</td>
+                <td className="px-4 py-3 text-sm font-semibold text-zinc-900 border-r border-zinc-300">{entry.bestTotal ? `${entry.bestTotal}kg` : '-'}</td>
+                <td className="px-4 py-3 text-sm text-zinc-900">{entry.coachName || '-'}</td>
               </tr>
             ))}
+            
+            {/* Reserve rows */}
+            {entries.length < 12 && (
+              <>
+                {Array.from({ length: Math.min(2, 12 - entries.length) }).map((_, idx) => (
+                  <tr key={`reserve-${idx}`} className="border-b border-zinc-300 hover:bg-zinc-50">
+                    <td className="px-4 py-3 text-sm font-semibold text-zinc-900 border-r border-zinc-300">{String(entries.length + idx + 1).padStart(2, '0')}</td>
+                    <td className="px-4 py-3 text-sm text-zinc-500 border-r border-zinc-300">Reserve</td>
+                    <td className="px-4 py-3 border-r border-zinc-300"></td>
+                    <td className="px-4 py-3 border-r border-zinc-300"></td>
+                    <td className="px-4 py-3 border-r border-zinc-300"></td>
+                    <td className="px-4 py-3 border-r border-zinc-300"></td>
+                    <td className="px-4 py-3"></td>
+                  </tr>
+                ))}
+              </>
+            )}
           </tbody>
         </table>
-      </div>
-
-      {/* Summary */}
-      <div className="p-6 bg-zinc-50 border-t border-zinc-200">
-        <div className="grid grid-cols-3 gap-6 text-center">
-          <div>
-            <p className="text-xs uppercase tracking-wider text-zinc-500 mb-1">Total Athletes</p>
-            <p className="text-2xl font-bold text-zinc-900">{entries.length}</p>
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-wider text-zinc-500 mb-1">Weight Categories</p>
-            <p className="text-2xl font-bold text-zinc-900">{new Set(entries.map(e => e.weightCategory)).size}</p>
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-wider text-zinc-500 mb-1">Avg Best Total</p>
-            <p className="text-2xl font-bold text-zinc-900">
-              {Math.round(entries.reduce((sum, e) => sum + (e.bestTotal || 0), 0) / entries.length)}kg
-            </p>
-          </div>
-        </div>
       </div>
     </motion.div>
   )
