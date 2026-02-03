@@ -283,8 +283,27 @@ export default function UserDashboard() {
       }
     }
     
-    // Status: preliminary_pending or preliminary_submitted - admin needs to approve
-    if (['preliminary_pending', 'preliminary_submitted'].includes(reg.status)) {
+    // Status: preliminary_pending - athlete can edit their entry while waiting for approval
+    if (reg.status === 'preliminary_pending') {
+      if (eventData.preliminaryEntryOpen) {
+        return { 
+          action: 'action', 
+          actionType: 'preliminary',
+          message: 'Edit your preliminary entry (pending review)',
+          phase: 'preliminary-pending',
+          color: 'bg-yellow-100 text-yellow-700'
+        }
+      }
+      return { 
+        action: 'wait', 
+        message: 'Your preliminary entry is pending admin review',
+        phase: 'admin-review',
+        color: 'bg-yellow-100 text-yellow-700'
+      }
+    }
+
+    // Status: preliminary_submitted - admin needs to approve
+    if (reg.status === 'preliminary_submitted') {
       return { 
         action: 'wait', 
         message: 'Admin reviewing your preliminary entry',
@@ -788,7 +807,7 @@ export default function UserDashboard() {
           registrationData={{
             clubName: (selectedRegistration as any).club_name || (selectedRegistration as any).team_name || '',
             phone: (selectedRegistration as any).team_manager_phone || (selectedRegistration as any).coach_phone || '',
-            gender: selectedRegistration.gender || 'Men',
+            gender: (selectedRegistration as any).gender || 'Men',
             ageCategory: (selectedRegistration as any).age_category || 'Not specified'
           }}
           onClose={() => {
@@ -807,9 +826,9 @@ export default function UserDashboard() {
       {showFinalModal && selectedRegistration && (
         <DashboardFinalForm
           registrationId={selectedRegistration.id}
-          clubName={selectedRegistration.club_name || ''}
-          gender={selectedRegistration.gender || 'male'}
-          ageCategory={selectedRegistration.age_category || ''}
+          clubName={(selectedRegistration as any).club_name || ''}
+          gender={(selectedRegistration as any).gender || 'male'}
+          ageCategory={(selectedRegistration as any).age_category || ''}
           onClose={() => {
             setShowFinalModal(false)
             setSelectedRegistration(null)
