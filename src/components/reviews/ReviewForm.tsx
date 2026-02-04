@@ -50,10 +50,14 @@ export default function ReviewForm({
     setError('')
 
     try {
+      // Generate a default title based on rating
+      const defaultTitle = `${rating} star${rating !== 1 ? 's' : ''} - ${productName}`
+      
       if (existingReview) {
         // Update existing review
         await api.put(`/reviews/${existingReview.id}`, {
           rating,
+          title: defaultTitle,
           comment
         })
       } else {
@@ -61,6 +65,7 @@ export default function ReviewForm({
         await api.post('/reviews', {
           productId,
           rating,
+          title: defaultTitle,
           comment
         })
       }

@@ -126,7 +126,7 @@ export default function Navbar() {
             </Link>
 
             {/* Main Navigation - Desktop - Centered */}
-            <div className="hidden xl:flex items-center space-x-0.5 sm:space-x-1 absolute left-1/2 transform -translate-x-1/2">
+            <div className="hidden lg:flex items-center space-x-0.5 sm:space-x-1 absolute left-1/2 transform -translate-x-1/2">
               {mainNavLinks.map((link) => (
                 <Link
                   key={link.name}
@@ -370,7 +370,8 @@ export default function Navbar() {
               {/* Mobile Menu Toggle */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="xl:hidden p-2 sm:p-2.5 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-[8px] sm:rounded-[10px] transition-all duration-200"
+                className="lg:hidden p-2 sm:p-2.5 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-[8px] sm:rounded-[10px] transition-all duration-200"
+                aria-label="Toggle menu"
               >
                 {isMobileMenuOpen ? (
                   <X className="w-5 h-5" />
@@ -402,7 +403,7 @@ export default function Navbar() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed top-0 right-0 bottom-0 w-80 sm:w-96 bg-white z-50 xl:hidden shadow-2xl"
+              className="fixed top-0 right-0 bottom-0 w-80 sm:w-96 bg-white z-50 lg:hidden shadow-2xl"
             >
               <div className="p-5 sm:p-6">
                 {/* Header */}
