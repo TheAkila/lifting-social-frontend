@@ -76,7 +76,7 @@ export default function ShopCategoryNav() {
   const isAccessoriesActive = pathname.includes('/shop/accessories')
 
   return (
-    <nav className="bg-white border-t border-b border-zinc-200 sticky top-[72px] z-40">
+    <nav className="bg-white border-t border-b border-zinc-200 sticky top-[72px] z-50">
       <div className="container mx-auto px-2 sm:px-4 lg:px-8">
         <div ref={containerRef} className="flex items-center justify-center py-2 sm:py-3 gap-0.5 sm:gap-1 overflow-x-auto">
           {/* All Products Link */}
