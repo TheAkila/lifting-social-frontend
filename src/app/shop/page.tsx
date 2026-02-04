@@ -6,6 +6,8 @@ import { motion } from 'framer-motion'
 import ShopHeader from '@/components/shop/ShopHeader'
 import ShopCategoryNav from '@/components/shop/ShopCategoryNav'
 import ProductGrid from '@/components/shop/ProductGrid'
+import FeaturedProducts from '@/components/shop/FeaturedProducts'
+import OffersDeals from '@/components/shop/OffersDeals'
 
 const categories = [
   {
@@ -101,6 +103,12 @@ function ShopContent() {
           </div>
         </div>
       </div>
+
+      {/* Featured Products Section */}
+      <FeaturedProducts />
+
+      {/* Offers & Deals Section */}
+      <OffersDeals />
 
       {/* All Products Section */}
       <div className="bg-white">

@@ -105,7 +105,7 @@ export default function Footer() {
                   { name: 'Apparel', href: '/shop/apparel' },
                   { name: 'Accessories', href: '/shop/accessories' },
                   { name: 'Supplements', href: '/shop/supplements' },
-                  { name: 'Shopping Cart', href: '/cart' },
+                 
                 ].map((link) => (
                   <li key={link.name}>
                     <Link

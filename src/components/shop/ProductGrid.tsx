@@ -1,10 +1,11 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { ShoppingCart, Heart, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
+import { ShoppingCart, Heart, ChevronLeft, ChevronRight, ArrowRight, X } from 'lucide-react'
 import { useState, useEffect, useMemo } from 'react'
 import api from '@/lib/api'
+import { useCart } from '@/contexts/CartContext'
 
 interface ProductGridProps {
   filters: {
@@ -22,6 +23,20 @@ export default function ProductGrid({ filters }: ProductGridProps) {
   const [loading, setLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
   const productsPerPage = 9
+  const { addItem } = useCart()
+  
+  // Quick add modal state
+  const [quickAddModal, setQuickAddModal] = useState<{
+    isOpen: boolean
+    product: any | null
+    selectedSize: string
+    selectedColor: string
+  }>({
+    isOpen: false,
+    product: null,
+    selectedSize: '',
+    selectedColor: ''
+  })
 
   useEffect(() => {
     let mounted = true
@@ -131,6 +146,45 @@ export default function ProductGrid({ filters }: ProductGridProps) {
       setCurrentPage(page)
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
+  }
+
+  const handleQuickAdd = (product: any) => {
+    // If product has sizes, show modal
+    if (product.sizes && product.sizes.length > 0) {
+      setQuickAddModal({
+        isOpen: true,
+        product,
+        selectedSize: product.sizes[0],
+        selectedColor: product.colors?.[0] || ''
+      })
+    } else {
+      // Add directly to cart without size
+      addItem({
+        id: product._id || product.id,
+        name: product.name,
+        price: product.price,
+        quantity: 1,
+        size: '',
+        color: product.colors?.[0] || '',
+        image: product.image
+      })
+    }
+  }
+
+  const handleQuickAddConfirm = () => {
+    if (!quickAddModal.product) return
+
+    addItem({
+      id: quickAddModal.product._id || quickAddModal.product.id,
+      name: quickAddModal.product.name,
+      price: quickAddModal.product.price,
+      quantity: 1,
+      size: quickAddModal.selectedSize,
+      color: quickAddModal.selectedColor,
+      image: quickAddModal.product.image
+    })
+
+    setQuickAddModal({ isOpen: false, product: null, selectedSize: '', selectedColor: '' })
   }
 
   const renderPageNumbers = () => {
@@ -262,11 +316,17 @@ export default function ProductGrid({ filters }: ProductGridProps) {
                     {/* Quick Add */}
                     <div className="absolute inset-x-0 bottom-0 p-4 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
                       <button 
-                        className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-2.5 rounded-[8px] text-sm font-medium flex items-center justify-center gap-2 shadow-lg transition-colors"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          handleQuickAdd(product)
+                        }}
+                        disabled={product.inStock === false}
+                        className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-2.5 rounded-[8px] text-sm font-medium flex items-center justify-center gap-2 shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         aria-label="Add to cart"
                       >
                         <ShoppingCart className="w-4 h-4" />
-                        <span>Add to Cart</span>
+                        <span>Quick Add</span>
                       </button>
                     </div>
 
@@ -338,6 +398,133 @@ export default function ProductGrid({ filters }: ProductGridProps) {
           </button>
         </div>
       )}
+
+      {/* Quick Add Modal */}
+      <AnimatePresence>
+        {quickAddModal.isOpen && quickAddModal.product && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setQuickAddModal({ ...quickAddModal, isOpen: false })}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+            />
+
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-[16px] shadow-2xl z-50 w-[90%] max-w-md overflow-hidden"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b border-zinc-200">
+                <h3 className="text-xl font-display font-bold text-zinc-900">Quick Add to Cart</h3>
+                <button
+                  onClick={() => setQuickAddModal({ ...quickAddModal, isOpen: false })}
+                  className="w-8 h-8 rounded-[8px] flex items-center justify-center hover:bg-zinc-100 transition-colors"
+                >
+                  <X className="w-5 h-5 text-zinc-600" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="p-6">
+                {/* Product Info */}
+                <div className="flex gap-4 mb-6">
+                  <div className="w-20 h-20 rounded-[8px] overflow-hidden bg-zinc-100 flex-shrink-0">
+                    {quickAddModal.product.image ? (
+                      <img src={quickAddModal.product.image} alt={quickAddModal.product.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-display font-semibold text-zinc-900 mb-1">{quickAddModal.product.name}</h4>
+                    <div className="flex items-center gap-2">
+                      <span className="font-display font-bold text-lg text-zinc-900">
+                        LKR {quickAddModal.product.price?.toLocaleString()}
+                      </span>
+                      {quickAddModal.product.comparePrice && (
+                        <span className="text-zinc-400 text-sm line-through">
+                          LKR {quickAddModal.product.comparePrice.toLocaleString()}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Size Selection */}
+                {quickAddModal.product.sizes && quickAddModal.product.sizes.length > 0 && (
+                  <div className="mb-4">
+                    <label className="block text-sm font-semibold text-zinc-900 mb-2">
+                      Select Size
+                    </label>
+                    <div className="grid grid-cols-4 gap-2">
+                      {quickAddModal.product.sizes.map((size: string) => (
+                        <button
+                          key={size}
+                          onClick={() => setQuickAddModal({ ...quickAddModal, selectedSize: size })}
+                          className={`py-2 rounded-[8px] text-sm font-medium transition-all ${
+                            quickAddModal.selectedSize === size
+                              ? 'bg-zinc-900 text-white'
+                              : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'
+                          }`}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Color Selection */}
+                {quickAddModal.product.colors && quickAddModal.product.colors.length > 0 && (
+                  <div className="mb-6">
+                    <label className="block text-sm font-semibold text-zinc-900 mb-2">
+                      Select Color
+                    </label>
+                    <div className="flex gap-2 flex-wrap">
+                      {quickAddModal.product.colors.map((color: string) => (
+                        <button
+                          key={color}
+                          onClick={() => setQuickAddModal({ ...quickAddModal, selectedColor: color })}
+                          className={`px-4 py-2 rounded-[8px] text-sm font-medium transition-all ${
+                            quickAddModal.selectedColor === color
+                              ? 'bg-zinc-900 text-white'
+                              : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'
+                          }`}
+                        >
+                          {color}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setQuickAddModal({ ...quickAddModal, isOpen: false })}
+                    className="flex-1 py-3 rounded-[8px] text-sm font-semibold text-zinc-700 bg-zinc-100 hover:bg-zinc-200 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleQuickAddConfirm}
+                    className="flex-1 py-3 rounded-[8px] text-sm font-semibold text-white bg-zinc-900 hover:bg-zinc-800 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <ShoppingCart className="w-4 h-4" />
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
