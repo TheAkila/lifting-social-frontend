@@ -13,7 +13,7 @@ import {
   ArrowUp,
   ArrowRight,
 } from 'lucide-react'
-import Logo from '@/components/layout/Logo'
+
 
 export default function Footer() {
   const scrollToTop = () => {
@@ -31,13 +31,7 @@ export default function Footer() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12">
             {/* Brand Section */}
             <div className="lg:col-span-4 col-span-full">
-              <Logo className="mb-6" />
-              <p className="text-zinc-400 text-sm sm:text-base leading-relaxed mb-6 sm:mb-8 max-w-sm">
-                Fusing Olympic weightlifting culture,
-                and modern fitness fashion into one inspiring community.
-              </p>
-              
-              {/* Social SVG Illustration */}
+               {/* Social SVG Illustration */}
               <div className="mb-6 sm:mb-8">
                 <img 
                   src="/social.svg" 
@@ -45,6 +39,12 @@ export default function Footer() {
                   className="w-32 h-32 sm:w-40 sm:h-40 opacity-80 hover:opacity-100 transition-opacity duration-300"
                 />
               </div>
+              <p className="text-zinc-400 text-sm sm:text-base leading-relaxed mb-6 sm:mb-8 max-w-sm">
+                Fusing Olympic weightlifting culture,
+                and modern fitness fashion into one inspiring community.
+              </p>
+              
+             
               
               {/* Social Links */}
               <div className="flex space-x-3 mb-8">
