@@ -73,7 +73,10 @@ export default function ReviewForm({
       onSuccess()
     } catch (err: any) {
       console.error('Error submitting review:', err)
-      setError(err.response?.data?.error || 'Failed to submit review')
+      console.error('Error response:', err.response)
+      console.error('Error data:', err.response?.data)
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || err.message || 'Failed to submit review'
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }
