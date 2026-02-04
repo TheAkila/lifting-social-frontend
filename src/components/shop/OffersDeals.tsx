@@ -131,7 +131,7 @@ export default function OffersDeals() {
                             handleQuickAdd(product)
                           }}
                           disabled={product.inStock === false}
-                          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-[8px] text-sm font-bold shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-2.5 rounded-[8px] text-sm font-bold shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           Quick Add
                         </button>
