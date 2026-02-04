@@ -27,8 +27,8 @@ export default function Footer() {
       
       <div className="container mx-auto px-4">
         {/* Main Footer Content */}
-        <div className="py-10 sm:py-16">
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-12 gap-8 sm:gap-12">
+        <div className="py-8 sm:py-12 lg:py-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12">
             {/* Brand Section */}
             <div className="lg:col-span-4 col-span-full">
               <Logo className="mb-6" />
@@ -78,18 +78,18 @@ export default function Footer() {
               </div>
 
               {/* Newsletter Signup */}
-              <div className="bg-zinc-900 border border-zinc-800 rounded-[12px] p-5">
-                <h4 className="font-display font-semibold text-lg mb-2 text-white">Stay Connected</h4>
-                <p className="text-zinc-400 text-sm mb-4">
+              <div className="bg-zinc-900 border border-zinc-800 rounded-[12px] p-4 sm:p-5">
+                <h4 className="font-display font-semibold text-base sm:text-lg mb-2 text-white">Stay Connected</h4>
+                <p className="text-zinc-400 text-xs sm:text-sm mb-3 sm:mb-4">
                   Get the latest updates on athletes, events, and products.
                 </p>
-                <div className="flex">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-0">
                   <input
                     type="email"
                     placeholder="Enter your email"
-                    className="flex-1 bg-zinc-800 border border-zinc-700 rounded-l-[8px] px-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors"
+                    className="flex-1 bg-zinc-800 border border-zinc-700 rounded-[8px] sm:rounded-l-[8px] sm:rounded-r-none px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors"
                   />
-                  <button className="bg-blue-600 hover:bg-blue-700 px-5 py-2.5 rounded-r-[8px] text-sm font-medium transition-colors duration-250">
+                  <button className="bg-blue-600 hover:bg-blue-700 px-4 sm:px-5 py-2 sm:py-2.5 rounded-[8px] sm:rounded-l-none sm:rounded-r-[8px] text-xs sm:text-sm font-medium transition-colors duration-250 whitespace-nowrap">
                     Subscribe
                   </button>
                 </div>
@@ -98,8 +98,8 @@ export default function Footer() {
 
             {/* Shop Links */}
             <div className="lg:col-span-2">
-              <h3 className="font-display font-semibold text-base mb-5 text-white">Shop</h3>
-              <ul className="space-y-3">
+              <h3 className="font-display font-semibold text-sm sm:text-base mb-3 sm:mb-5 text-white">Shop</h3>
+              <ul className="space-y-2 sm:space-y-3">
                 {[
                   { name: 'All Products', href: '/shop' },
                   { name: 'Apparel', href: '/shop/apparel' },
@@ -122,8 +122,8 @@ export default function Footer() {
 
             {/* Community Links */}
             <div className="lg:col-span-2">
-              <h3 className="font-display font-semibold text-base mb-5 text-white">Community</h3>
-              <ul className="space-y-3">
+              <h3 className="font-display font-semibold text-sm sm:text-base mb-3 sm:mb-5 text-white">Community</h3>
+              <ul className="space-y-2 sm:space-y-3">
                 {[
                   { name: 'Lifting Stories', href: '/stories' },
                   { name: 'Athletes', href: '/athletes' },
@@ -146,8 +146,8 @@ export default function Footer() {
 
             {/* Company Links */}
             <div className="lg:col-span-2">
-              <h3 className="font-display font-semibold text-base mb-5 text-white">Company</h3>
-              <ul className="space-y-3">
+              <h3 className="font-display font-semibold text-sm sm:text-base mb-3 sm:mb-5 text-white">Company</h3>
+              <ul className="space-y-2 sm:space-y-3">
                 {[
                   { name: 'About Us', href: '/about' },
                   { name: 'Contact', href: '/contact' },
@@ -171,8 +171,8 @@ export default function Footer() {
 
             {/* Contact Info */}
             <div className="lg:col-span-2">
-              <h3 className="font-display font-semibold text-base mb-5 text-white">Contact</h3>
-              <div className="space-y-4">
+              <h3 className="font-display font-semibold text-sm sm:text-base mb-3 sm:mb-5 text-white">Contact</h3>
+              <div className="space-y-3 sm:space-y-4">
                 <div className="flex items-start space-x-3">
                   <div className="w-8 h-8 bg-zinc-800 rounded-[8px] flex items-center justify-center flex-shrink-0">
                     <MapPin className="w-4 h-4 text-blue-600" />
@@ -203,25 +203,24 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-zinc-800 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-zinc-500 text-sm text-center md:text-left">
-              © {new Date().getFullYear()} Lifting Social. All rights reserved. 
-              
+        <div className="border-t border-zinc-800 py-4 sm:py-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4">
+            <p className="text-zinc-500 text-xs sm:text-sm text-center md:text-left">
+              © {new Date().getFullYear()} Lifting Social. All rights reserved.
             </p>
             
-            <div className="flex items-center space-x-4">
-              <span className="text-zinc-500 text-sm hidden sm:inline">
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <span className="text-zinc-500 text-xs sm:text-sm hidden md:inline">
                 Strength • Community • Excellence
               </span>
               
               <button
                 onClick={scrollToTop}
-                className="w-9 h-9 bg-zinc-800 hover:bg-blue-600 rounded-[8px] flex items-center justify-center transition-all duration-250 group"
+                className="w-8 h-8 sm:w-9 sm:h-9 bg-zinc-800 hover:bg-blue-600 rounded-[8px] flex items-center justify-center transition-all duration-250 group"
                 title="Scroll to top"
                 aria-label="Scroll to top"
               >
-                <ArrowUp className="w-4 h-4 text-zinc-400 group-hover:text-white" />
+                <ArrowUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-zinc-400 group-hover:text-white" />
               </button>
             </div>
           </div>

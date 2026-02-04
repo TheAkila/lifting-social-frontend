@@ -112,7 +112,7 @@ export default function Navbar() {
     <>
       {/* Main Navigation - Single Clean Bar */}
       <nav
-        className={`fixed top-[36px] left-0 right-0 z-40 transition-all duration-300 ${
+        className={`fixed top-[32px] left-0 right-0 z-40 transition-all duration-300 ${
           isScrolled
             ? 'bg-white/95 backdrop-blur-xl shadow-soft border-b border-zinc-100'
             : 'bg-white border-b border-zinc-100'
