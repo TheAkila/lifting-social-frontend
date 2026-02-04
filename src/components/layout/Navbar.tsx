@@ -379,7 +379,7 @@ export default function Navbar() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed top-0 right-0 bottom-0 w-80 sm:w-96 bg-white z-50 md:hidden shadow-2xl"
+              className="fixed top-0 right-0 bottom-0 w-80 sm:w-96 bg-white z-50 md:hidden shadow-2xl h-full overflow-y-auto"
             >
               <div className="p-5 sm:p-6">
                 {/* Header */}
