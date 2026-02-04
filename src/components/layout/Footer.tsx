@@ -37,6 +37,15 @@ export default function Footer() {
                 and modern fitness fashion into one inspiring community.
               </p>
               
+              {/* Social SVG Illustration */}
+              <div className="mb-6 sm:mb-8">
+                <img 
+                  src="/social.svg" 
+                  alt="Social Media Connect" 
+                  className="w-32 h-32 sm:w-40 sm:h-40 opacity-80 hover:opacity-100 transition-opacity duration-300"
+                />
+              </div>
+              
               {/* Social Links */}
               <div className="flex space-x-3 mb-8">
                 <a
