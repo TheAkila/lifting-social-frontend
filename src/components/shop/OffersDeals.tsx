@@ -61,7 +61,7 @@ export default function OffersDeals() {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8 md:mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6 md:mb-8">
           {products.map((product, index) => {
             const discount = Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)
             
@@ -91,15 +91,15 @@ export default function OffersDeals() {
 
                       {/* Large Discount Badge */}
                       <div className="absolute top-0 right-0">
-                        <div className="text-white px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-bl-lg sm:rounded-bl-[12px] shadow-xl" style={{ backgroundColor: '#D00000' }}>
-                          <div className="text-lg sm:text-2xl font-black leading-none mb-0.5 sm:mb-1">{discount}%</div>
-                          <div className="text-[10px] sm:text-xs font-bold uppercase tracking-wide">OFF</div>
+                        <div className="text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded-bl-lg sm:rounded-bl-[8px] shadow-xl" style={{ backgroundColor: '#D00000' }}>
+                          <div className="text-base sm:text-xl font-black leading-none mb-0.5">{discount}%</div>
+                          <div className="text-[9px] sm:text-xs font-bold uppercase tracking-wide">OFF</div>
                         </div>
                       </div>
 
                       {/* Sale Badge */}
-                      <div className="absolute top-3 left-3">
-                        <span className="bg-yellow-400 text-zinc-900 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-lg">
+                      <div className="absolute top-2 sm:top-3 left-2 sm:left-3">
+                        <span className="bg-yellow-400 text-zinc-900 px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-lg">
                           Sale
                         </span>
                       </div>
@@ -116,14 +116,14 @@ export default function OffersDeals() {
                             await addToWishlist(productId)
                           }
                         }}
-                        className="absolute bottom-3 right-3 w-9 h-9 rounded-[8px] bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100 text-sm font-bold"
+                        className="absolute bottom-2 sm:bottom-3 right-2 sm:right-3 w-7 h-7 rounded-[6px] bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100 text-xs sm:text-sm font-bold"
                         aria-label={isInWishlist(product._id || product.id) ? "Remove from wishlist" : "Add to wishlist"}
                       >
                         {isInWishlist(product._id || product.id) ? '❤️' : '🤍'}
                       </button>
 
                       {/* Quick Add */}
-                      <div className="absolute inset-x-0 bottom-0 p-4 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                      <div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
                         <button 
                           onClick={(e) => {
                             e.preventDefault()
@@ -131,7 +131,7 @@ export default function OffersDeals() {
                             handleQuickAdd(product)
                           }}
                           disabled={product.inStock === false}
-                          className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-2.5 rounded-[8px] text-sm font-bold shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-1.5 sm:py-2 rounded-[6px] text-xs sm:text-sm font-bold shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           Quick Add
                         </button>
@@ -149,22 +149,22 @@ export default function OffersDeals() {
                   </Link>
 
                   {/* Product Info */}
-                  <Link href={`/shop/product/${product._id || product.id}`} className="block p-3 sm:p-4 bg-gradient-to-b from-white to-blue-50/30">
-                    <span className="text-[10px] sm:text-xs font-medium text-blue-600 uppercase tracking-wider">
+                  <Link href={`/shop/product/${product._id || product.id}`} className="block p-2.5 sm:p-3 bg-white">
+                    <span className="text-[10px] sm:text-xs font-medium text-zinc-400 uppercase tracking-wider">
                       {product.category}
                     </span>
-                    <h3 className="font-display font-semibold text-sm sm:text-base text-zinc-900 mt-1 sm:mt-1.5 mb-1.5 sm:mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                    <h3 className="font-display font-semibold text-xs sm:text-sm text-zinc-900 mt-0.5 sm:mt-1 mb-1 sm:mb-1.5 line-clamp-2 group-hover:text-zinc-700 transition-colors">
                       {product.name}
                     </h3>
-                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                      <span className="font-display font-bold text-base sm:text-lg text-blue-600">
+                    <div className="flex items-center gap-1 sm:gap-1.5 mb-0.5 sm:mb-1">
+                      <span className="font-display font-bold text-xs sm:text-sm text-zinc-900">
                         LKR {product.price?.toLocaleString()}
                       </span>
-                      <span className="text-zinc-400 text-xs sm:text-sm line-through">
+                      <span className="text-zinc-400 text-[10px] sm:text-xs line-through">
                         LKR {product.comparePrice.toLocaleString()}
                       </span>
                     </div>
-                    <div className="text-[10px] sm:text-xs text-green-600 font-semibold">
+                    <div className="text-[9px] sm:text-xs text-green-600 font-semibold">
                       Save LKR {(product.comparePrice - product.price).toLocaleString()}
                     </div>
                   </Link>

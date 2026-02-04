@@ -221,8 +221,8 @@ export default function ProductGrid({ filters }: ProductGridProps) {
   return (
     <div>
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-8 pb-4 sm:pb-6 border-b border-zinc-200">
-        <p className="text-sm text-zinc-500">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-zinc-200">
+        <p className="text-xs sm:text-sm text-zinc-500">
           {loading ? (
             'Loading...'
           ) : (
@@ -249,7 +249,7 @@ export default function ProductGrid({ filters }: ProductGridProps) {
       </div>
 
       {/* Product Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-5">
         {loading ? (
           // Loading skeleton
           Array.from({ length: 6 }).map((_, i) => (
@@ -294,14 +294,14 @@ export default function ProductGrid({ filters }: ProductGridProps) {
                     )}
 
                     {/* Badges */}
-                    <div className="absolute top-3 left-3 flex flex-col gap-2">
+                    <div className="absolute top-2 left-2 flex flex-col gap-1">
                       {product.comparePrice && (
-                        <span className="bg-brand-accent text-white px-2.5 py-1 rounded-full text-xs font-medium">
+                        <span className="bg-brand-accent text-white px-2 py-0.5 rounded-full text-[10px] font-medium">
                           {Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)}% OFF
                         </span>
                       )}
                       {product.featured && !product.comparePrice && (
-                        <span className="bg-zinc-900 text-white px-2.5 py-1 rounded-full text-xs font-medium">
+                        <span className="bg-zinc-900 text-white px-2 py-0.5 rounded-full text-[10px] font-medium">
                           Featured
                         </span>
                       )}
@@ -319,14 +319,14 @@ export default function ProductGrid({ filters }: ProductGridProps) {
                           await addToWishlist(productId)
                         }
                       }}
-                      className="absolute top-3 right-3 w-9 h-9 rounded-[8px] bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100"
+                      className="absolute top-2 right-2 w-7 h-7 rounded-[6px] bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100"
                       aria-label={isInWishlist(product._id || product.id) ? "Remove from wishlist" : "Add to wishlist"}
                     >
-                      <span className="text-lg">{isInWishlist(product._id || product.id) ? '❤️' : '🤍'}</span>
+                      <span className="text-sm">{isInWishlist(product._id || product.id) ? '❤️' : '🤍'}</span>
                     </button>
 
                     {/* Quick Add */}
-                    <div className="absolute inset-x-0 bottom-0 p-4 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                    <div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
                       <button 
                         onClick={(e) => {
                           e.preventDefault()
@@ -334,7 +334,7 @@ export default function ProductGrid({ filters }: ProductGridProps) {
                           handleQuickAdd(product)
                         }}
                         disabled={product.inStock === false}
-                        className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-2.5 rounded-[8px] text-sm font-medium flex items-center justify-center gap-2 shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-1.5 sm:py-2 rounded-[6px] text-xs sm:text-sm font-medium flex items-center justify-center gap-2 shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         aria-label="Add to cart"
                       >
                         <span>Quick Add</span>
@@ -353,19 +353,19 @@ export default function ProductGrid({ filters }: ProductGridProps) {
                 </Link>
 
                 {/* Product Info */}
-                <Link href={`/shop/product/${product._id || product.id}`} className="block p-4">
-                  <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                <Link href={`/shop/product/${product._id || product.id}`} className="block p-2.5 sm:p-3">
+                  <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">
                     {product.category}
                   </span>
-                  <h3 className="font-display font-semibold text-base text-zinc-900 mt-1 mb-2 line-clamp-2 group-hover:text-brand-accent transition-colors">
+                  <h3 className="font-display font-semibold text-xs sm:text-sm text-zinc-900 mt-0.5 mb-1 line-clamp-2 group-hover:text-brand-accent transition-colors">
                     {product.name}
                   </h3>
-                  <div className="flex items-center gap-2">
-                    <span className="font-display font-bold text-lg text-zinc-900">
+                  <div className="flex items-center gap-1.5 text-xs sm:text-sm">
+                    <span className="font-display font-bold text-sm sm:text-base text-zinc-900">
                       LKR {product.price?.toLocaleString()}
                     </span>
                     {product.comparePrice && (
-                      <span className="text-zinc-400 text-sm line-through">
+                      <span className="text-zinc-400 text-xs line-through">
                         LKR {product.comparePrice.toLocaleString()}
                       </span>
                     )}

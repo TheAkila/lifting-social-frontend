@@ -153,7 +153,7 @@ export default function RecentlyViewed() {
         {/* Products Carousel */}
         <div
           ref={scrollContainerRef}
-          className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4"
+          className="flex gap-3 sm:gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {products.map((product, index) => {
@@ -168,7 +168,7 @@ export default function RecentlyViewed() {
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
-                className="flex-shrink-0 w-[280px] sm:w-[300px] snap-start"
+                className="flex-shrink-0 w-[220px] sm:w-[240px] md:w-[260px] snap-start"
               >
                 <div className="group bg-white rounded-[12px] overflow-hidden border border-zinc-200 shadow-soft hover:shadow-card-hover transition-all duration-350 hover:-translate-y-1 h-full">
                   {/* Product Image */}
@@ -214,7 +214,7 @@ export default function RecentlyViewed() {
                       </button>
 
                       {/* Quick Add */}
-                      <div className="absolute inset-x-0 bottom-0 p-4 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                      <div className="absolute inset-x-0 bottom-0 p-2.5 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
                         <button 
                           onClick={(e) => {
                             e.preventDefault()
@@ -222,7 +222,7 @@ export default function RecentlyViewed() {
                             handleQuickAdd(product)
                           }}
                           disabled={!product.in_stock}
-                          className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-2.5 rounded-[8px] text-sm font-medium flex items-center justify-center gap-2 shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-1.5 rounded-[6px] text-xs font-medium flex items-center justify-center gap-2 shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <span>{product.in_stock ? 'Quick Add' : 'Out of Stock'}</span>
                         </button>
@@ -240,19 +240,19 @@ export default function RecentlyViewed() {
                   </Link>
 
                   {/* Product Info */}
-                  <Link href={`/shop/product/${product.id}`} className="block p-4">
-                    <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                  <Link href={`/shop/product/${product.id}`} className="block p-2.5 bg-white">
+                    <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">
                       {product.category}
                     </span>
-                    <h3 className="font-display font-semibold text-base text-zinc-900 mt-1 mb-2 line-clamp-2 group-hover:text-brand-accent transition-colors">
+                    <h3 className="font-display font-semibold text-xs text-zinc-900 mt-0.5 mb-1 line-clamp-2 group-hover:text-brand-accent transition-colors">
                       {product.name}
                     </h3>
-                    <div className="flex items-center gap-2">
-                      <span className="font-display font-bold text-lg text-zinc-900">
+                    <div className="flex items-center gap-1">
+                      <span className="font-display font-bold text-xs text-zinc-900">
                         LKR {product.price?.toLocaleString()}
                       </span>
                       {hasDiscount && (
-                        <span className="text-zinc-400 text-sm line-through">
+                        <span className="text-zinc-400 text-[10px] line-through">
                           LKR {product.compare_price!.toLocaleString()}
                         </span>
                       )}
