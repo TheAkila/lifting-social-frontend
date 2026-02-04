@@ -244,25 +244,6 @@ export default function Navbar() {
                 </AnimatePresence>
               </div>
 
-              {/* Wishlist */}
-              {isHydrated && user && (
-                <Link
-                  href="/wishlist"
-                  className="relative p-2 sm:p-2.5 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-[8px] sm:rounded-[10px] transition-all duration-200"
-                >
-                  <Heart className="w-5 h-5 sm:w-5 sm:h-5" />
-                  {wishlistItems.length > 0 && (
-                    <motion.span
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center"
-                    >
-                      {wishlistItems.length > 9 ? '9+' : wishlistItems.length}
-                    </motion.span>
-                  )}
-                </Link>
-              )}
-
               {/* Cart */}
               <Link
                 href="/cart"
@@ -283,7 +264,7 @@ export default function Navbar() {
               {/* Mobile Menu Toggle - Always visible on mobile */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-2.5 text-zinc-800 hover:text-zinc-900 hover:bg-zinc-100 rounded-[10px] transition-all duration-200 flex-shrink-0 border border-zinc-200"
+                className="md:hidden p-2.5 text-zinc-800 hover:text-zinc-900 hover:bg-zinc-100 rounded-[10px] transition-all duration-200 flex-shrink-0"
                 aria-label="Toggle menu"
               >
                 {isMobileMenuOpen ? (
