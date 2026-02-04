@@ -1,24 +1,24 @@
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-white pt-20 sm:pt-28 pb-12">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <h1 className="text-3xl sm:text-4xl font-display font-bold mb-8 text-black">
+    <div className="min-h-screen bg-white pt-20 sm:pt-28 pb-8 sm:pb-12">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold mb-6 sm:mb-8 text-black">
           Terms and Conditions
         </h1>
 
-        <div className="prose prose-lg max-w-none">
-          <p className="text-gray-700 mb-6">
+        <div className="prose prose-sm sm:prose-base lg:prose-lg max-w-none">
+          <p className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6">
             Welcome to <strong>Lifting Social</strong>. These Terms and Conditions govern your use of our website and the purchase and
             sale of products from our platform. By accessing and using our website, you
             agree to comply with these terms. Please read them carefully before proceeding with
             any transactions.
           </p>
 
-          <h2 className="text-2xl font-bold text-black mt-8 mb-4">1. Use of the Website</h2>
-          <p className="text-gray-700 mb-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">1. Use of the Website</h2>
+          <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">
             By using our website, you agree to the following:
           </p>
-          <ul className="list-disc list-inside text-gray-700 mb-6 space-y-2">
+          <ul className="list-disc list-outside ml-5 sm:ml-6 text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 space-y-1.5 sm:space-y-2">
             <li>You must be at least <strong>18 years old</strong> to use our website or make purchases. Users under 18 must have parental consent.</li>
             <li>
               You are responsible for maintaining the confidentiality of your account
@@ -32,8 +32,8 @@ export default function TermsPage() {
             <li>You may not attempt to interfere with the proper functioning of our website.</li>
           </ul>
 
-          <h2 className="text-2xl font-bold text-black mt-8 mb-4">2. Product Information and Pricing</h2>
-          <ul className="list-disc list-inside text-gray-700 mb-6 space-y-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">2. Product Information and Pricing</h2>
+          <ul className="list-disc list-outside ml-5 sm:ml-6 text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 space-y-1.5 sm:space-y-2">
             <li>
               We strive to provide accurate product descriptions, images, and pricing
               information. However, we do not guarantee the accuracy or completeness of such
@@ -47,8 +47,8 @@ export default function TermsPage() {
             <li>We reserve the right to correct pricing errors on our website.</li>
           </ul>
 
-          <h2 className="text-2xl font-bold text-black mt-8 mb-4">3. Orders and Payments</h2>
-          <ul className="list-disc list-inside text-gray-700 mb-6 space-y-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">3. Orders and Payments</h2>
+          <ul className="list-disc list-outside ml-5 sm:ml-6 text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 space-y-1.5 sm:space-y-2">
             <li>
               By placing an order on our website, you are making an offer to purchase the
               selected products.
@@ -70,8 +70,8 @@ export default function TermsPage() {
             <li>Payment can be made via credit/debit card or cash on delivery (COD) where available.</li>
           </ul>
 
-          <h2 className="text-2xl font-bold text-black mt-8 mb-4">4. Shipping and Delivery</h2>
-          <ul className="list-disc list-inside text-gray-700 mb-6 space-y-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">4. Shipping and Delivery</h2>
+          <ul className="list-disc list-outside ml-5 sm:ml-6 text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 space-y-1.5 sm:space-y-2">
             <li>
               We will make reasonable efforts to ensure timely shipping and delivery of
               your orders.
@@ -84,14 +84,14 @@ export default function TermsPage() {
             <li>You must provide accurate shipping information. We are not responsible for orders shipped to incorrect addresses provided by you.</li>
           </ul>
 
-          <h2 className="text-2xl font-bold text-black mt-8 mb-4">5. Returns and Refunds</h2>
-          <p className="text-gray-700 mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">5. Returns and Refunds</h2>
+          <p className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6">
             Our Returns and Refund Policy governs the process and conditions for
             returning products and seeking refunds. Please refer to our <a href="/refund-policy" className="text-blue-600 hover:underline">Refund Policy</a> page for more information.
           </p>
 
-          <h2 className="text-2xl font-bold text-black mt-8 mb-4">6. Competition Registrations</h2>
-          <ul className="list-disc list-inside text-gray-700 mb-6 space-y-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">6. Competition Registrations</h2>
+          <ul className="list-disc list-outside ml-5 sm:ml-6 text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 space-y-1.5 sm:space-y-2">
             <li>Competition registrations are subject to approval by event organizers.</li>
             <li>Registration fees are non-refundable unless the event is canceled.</li>
             <li>You must provide accurate athlete information and meet eligibility requirements.</li>
@@ -99,8 +99,8 @@ export default function TermsPage() {
             <li>We reserve the right to reject registrations that do not meet requirements.</li>
           </ul>
 
-          <h2 className="text-2xl font-bold text-black mt-8 mb-4">7. Intellectual Property</h2>
-          <ul className="list-disc list-inside text-gray-700 mb-6 space-y-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">7. Intellectual Property</h2>
+          <ul className="list-disc list-outside ml-5 sm:ml-6 text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 space-y-1.5 sm:space-y-2">
             <li>
               All content and materials on our website, including but not limited to text,
               images, logos, graphics, videos, and training content are protected by intellectual property rights and
@@ -113,16 +113,16 @@ export default function TermsPage() {
             <li>User-generated content (reviews, comments) remains your property but you grant us a license to use it.</li>
           </ul>
 
-          <h2 className="text-2xl font-bold text-black mt-8 mb-4">8. User Accounts</h2>
-          <ul className="list-disc list-inside text-gray-700 mb-6 space-y-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">8. User Accounts</h2>
+          <ul className="list-disc list-outside ml-5 sm:ml-6 text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 space-y-1.5 sm:space-y-2">
             <li>You are responsible for maintaining the security of your account.</li>
             <li>You must not share your account credentials with others.</li>
             <li>You must notify us immediately of any unauthorized use of your account.</li>
             <li>We reserve the right to suspend or terminate accounts that violate these terms.</li>
           </ul>
 
-          <h2 className="text-2xl font-bold text-black mt-8 mb-4">9. Limitation of Liability</h2>
-          <ul className="list-disc list-inside text-gray-700 mb-6 space-y-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">9. Limitation of Liability</h2>
+          <ul className="list-disc list-outside ml-5 sm:ml-6 text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 space-y-1.5 sm:space-y-2">
             <li>
               In no event shall <strong>Lifting Social</strong>, its directors, employees, or affiliates be liable for any direct, indirect,
               incidental, special, or consequential damages arising out of or in connection with
@@ -136,35 +136,35 @@ export default function TermsPage() {
             <li>We are not responsible for injuries resulting from improper use of weightlifting equipment or nutritional supplements.</li>
           </ul>
 
-          <h2 className="text-2xl font-bold text-black mt-8 mb-4">10. Indemnification</h2>
-          <p className="text-gray-700 mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">10. Indemnification</h2>
+          <p className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6">
             You agree to indemnify and hold harmless Lifting Social and its affiliates from any claims, damages, losses, or expenses arising from your violation of these Terms and Conditions or your use of our website.
           </p>
 
-          <h2 className="text-2xl font-bold text-black mt-8 mb-4">11. Third-Party Links</h2>
-          <p className="text-gray-700 mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">11. Third-Party Links</h2>
+          <p className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6">
             Our website may contain links to third-party websites. We are not responsible for the content, privacy practices, or terms of these external sites. Your use of third-party websites is at your own risk.
           </p>
 
-          <h2 className="text-2xl font-bold text-black mt-8 mb-4">12. Governing Law</h2>
-          <p className="text-gray-700 mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">12. Governing Law</h2>
+          <p className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6">
             These Terms and Conditions shall be governed by and construed in accordance with the laws of Sri Lanka. Any disputes arising from these terms shall be subject to the exclusive jurisdiction of the courts of Sri Lanka.
           </p>
 
-          <h2 className="text-2xl font-bold text-black mt-8 mb-4">13. Amendments and Termination</h2>
-          <p className="text-gray-700 mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">13. Amendments and Termination</h2>
+          <p className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6">
             We reserve the right to modify, update, or terminate these Terms and Conditions
             at any time without prior notice. It is your responsibility to review these
             terms periodically for any changes. Continued use of our website after changes constitutes acceptance of the modified terms.
           </p>
 
-          <h2 className="text-2xl font-bold text-black mt-8 mb-4">14. Contact Information</h2>
-          <p className="text-gray-700 mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">14. Contact Information</h2>
+          <p className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6">
             If you have any questions or concerns regarding these Terms and Conditions, please contact us at:
           </p>
-          <ul className="list-none text-gray-700 mb-8 space-y-2">
-            <li><strong>Email:</strong> support@liftingsocial.lk</li>
-            <li><strong>Phone:</strong> +94 77 123 4567</li>
+          <ul className="list-none text-sm sm:text-base text-gray-700 mb-6 sm:mb-8 space-y-1.5 sm:space-y-2">
+            <li><strong>Email:</strong> theliftingsocial@gmail.com</li>
+            <li><strong>Phone:</strong> +94 76 482 9645</li>
             <li><strong>Address:</strong> Lifting Social, Colombo, Sri Lanka</li>
           </ul>
 

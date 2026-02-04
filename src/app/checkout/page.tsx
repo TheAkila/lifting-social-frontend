@@ -199,9 +199,9 @@ export default function CheckoutPage() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white border-2 border-black rounded-lg p-6"
+                className="bg-white border-2 border-black rounded-lg p-4 sm:p-6"
               >
-                <h2 className="text-xl font-bold mb-4 text-black">Shipping Information</h2>
+                <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-black">Shipping Information</h2>
                 
                 <div className="space-y-4">
                   <div>
@@ -317,33 +317,33 @@ export default function CheckoutPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-white border-2 border-black rounded-lg p-6"
+                className="bg-white border-2 border-black rounded-lg p-4 sm:p-6"
               >
-                <h2 className="text-xl font-bold mb-4 text-black">Payment Method</h2>
+                <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-black">Payment Method</h2>
                 
-                <div className="space-y-3">
-                  <label className="flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-black transition-colors">
+                <div className="space-y-2 sm:space-y-3">
+                  <label className="flex items-center p-3 sm:p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-black transition-colors">
                     <input
                       type="radio"
                       name="paymentMethod"
                       value="card"
                       checked={formData.paymentMethod === 'card'}
                       onChange={handleChange}
-                      className="mr-3"
+                      className="mr-2 sm:mr-3"
                     />
-                    <span className="font-semibold">Credit/Debit Card</span>
+                    <span className="text-sm sm:text-base font-semibold">Credit/Debit Card</span>
                   </label>
 
-                  <label className="flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-black transition-colors">
+                  <label className="flex items-center p-3 sm:p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-black transition-colors">
                     <input
                       type="radio"
                       name="paymentMethod"
                       value="cod"
                       checked={formData.paymentMethod === 'cod'}
                       onChange={handleChange}
-                      className="mr-3"
+                      className="mr-2 sm:mr-3"
                     />
-                    <span className="font-semibold">Cash on Delivery</span>
+                    <span className="text-sm sm:text-base font-semibold">Cash on Delivery</span>
                   </label>
                 </div>
               </motion.div>
@@ -353,15 +353,15 @@ export default function CheckoutPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-white border-2 border-black rounded-lg p-6"
+                className="bg-white border-2 border-black rounded-lg p-4 sm:p-6"
               >
-                <h2 className="text-xl font-bold mb-4 text-black">Order Notes (Optional)</h2>
+                <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-black">Order Notes (Optional)</h2>
                 <textarea
                   name="notes"
                   value={formData.notes}
                   onChange={handleChange}
                   rows={4}
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
+                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border-2 border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
                   placeholder="Any special instructions for your order..."
                 />
               </motion.div>
@@ -373,36 +373,36 @@ export default function CheckoutPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="bg-white border-2 border-black rounded-lg p-6 sticky top-24"
+                className="bg-white border-2 border-black rounded-lg p-4 sm:p-6 lg:sticky lg:top-24"
               >
-                <h2 className="text-xl font-bold mb-4 text-black">Order Summary</h2>
+                <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-black">Order Summary</h2>
                 
                 {/* Items */}
-                <div className="space-y-3 mb-4 pb-4 border-b-2 border-gray-200">
+                <div className="space-y-2 sm:space-y-3 mb-3 sm:mb-4 pb-3 sm:pb-4 border-b-2 border-gray-200">
                   {items.map((item) => (
-                    <div key={`${item.id}-${item.size}`} className="flex items-center gap-3">
+                    <div key={`${item.id}-${item.size}`} className="flex items-center gap-2 sm:gap-3">
                       <img 
                         src={item.image} 
                         alt={item.name} 
-                        className="w-16 h-16 object-cover rounded border-2 border-gray-200"
+                        className="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded border-2 border-gray-200"
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-sm text-black truncate">{item.name}</p>
-                        <p className="text-xs text-gray-600">Size: {item.size}</p>
-                        <p className="text-xs text-gray-600">Qty: {item.quantity}</p>
+                        <p className="text-xs sm:text-sm font-semibold text-black truncate">{item.name}</p>
+                        <p className="text-[10px] sm:text-xs text-gray-600">Size: {item.size}</p>
+                        <p className="text-[10px] sm:text-xs text-gray-600">Qty: {item.quantity}</p>
                       </div>
-                      <p className="font-bold text-black">LKR {(item.price * item.quantity).toFixed(2)}</p>
+                      <p className="text-sm sm:text-base font-bold text-black">LKR {(item.price * item.quantity).toFixed(2)}</p>
                     </div>
                   ))}
                 </div>
 
                 {/* Totals */}
-                <div className="space-y-2 mb-6">
-                  <div className="flex justify-between text-gray-700">
+                <div className="space-y-2 mb-4 sm:mb-6">
+                  <div className="flex justify-between text-sm sm:text-base text-gray-700">
                     <span>Subtotal</span>
                     <span>LKR {subtotal.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-gray-700">
+                  <div className="flex justify-between text-sm sm:text-base text-gray-700">
                     <span>Tax (8%)</span>
                     <span>LKR {tax.toFixed(2)}</span>
                   </div>
@@ -415,7 +415,7 @@ export default function CheckoutPage() {
                       Free shipping on orders over LKR 5,000
                     </p>
                   )}
-                  <div className="flex justify-between text-xl font-bold text-black pt-3 border-t-2 border-black">
+                  <div className="flex justify-between text-lg sm:text-xl font-bold text-black pt-2 sm:pt-3 border-t-2 border-black">
                     <span>Total</span>
                     <span>LKR {total.toFixed(2)}</span>
                   </div>
@@ -425,7 +425,7 @@ export default function CheckoutPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 bg-black text-white rounded-lg font-bold hover:bg-gray-900 transition-colors flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  className="w-full py-2.5 sm:py-3 text-sm sm:text-base bg-black text-white rounded-lg font-bold hover:bg-gray-900 transition-colors flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
                   {loading ? (
                     'Processing...'

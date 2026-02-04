@@ -82,7 +82,7 @@ export default function OrderConfirmationPage() {
       <div className="min-h-screen bg-white pt-20 sm:pt-28 pb-8 sm:pb-12 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading order details...</p>
+          <p className="text-sm sm:text-base text-gray-600">Loading order details...</p>
         </div>
       </div>
     )
@@ -93,11 +93,11 @@ export default function OrderConfirmationPage() {
       <div className="min-h-screen bg-white pt-20 sm:pt-28 pb-8 sm:pb-12">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center">
-            <h1 className="text-2xl font-bold text-black mb-4">Order Not Found</h1>
-            <p className="text-gray-600 mb-6">{error || 'Unable to load order details'}</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-black mb-3 sm:mb-4">Order Not Found</h1>
+            <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">{error || 'Unable to load order details'}</p>
             <Link 
               href="/shop" 
-              className="inline-block px-6 py-3 bg-black text-white rounded-lg font-semibold hover:bg-gray-900 transition-colors"
+              className="inline-block px-5 sm:px-6 py-2.5 sm:py-3 bg-black text-white rounded-lg text-sm sm:text-base font-semibold hover:bg-gray-900 transition-colors"
             >
               Continue Shopping
             </Link>
@@ -115,16 +115,16 @@ export default function OrderConfirmationPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-8"
+            className="text-center mb-6 sm:mb-8"
           >
-            <FaCheckCircle className="w-16 h-16 sm:w-20 sm:h-20 text-green-500 mx-auto mb-4" />
-            <h1 className="text-3xl sm:text-4xl font-display font-bold mb-2 text-black">
+            <FaCheckCircle className="w-16 h-16 sm:w-20 sm:h-20 text-green-500 mx-auto mb-3 sm:mb-4" />
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold mb-2 text-black">
               Order Confirmed!
             </h1>
-            <p className="text-gray-600 mb-2">
+            <p className="text-sm sm:text-base text-gray-600 mb-2">
               Thank you for your order. We'll send you an email confirmation shortly.
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-xs sm:text-sm text-gray-500">
               Order Number: <span className="font-mono font-semibold text-black">{order.order_number}</span>
             </p>
           </motion.div>
@@ -134,10 +134,10 @@ export default function OrderConfirmationPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white border-2 border-black rounded-lg p-6 mb-6"
+            className="bg-white border-2 border-black rounded-lg p-4 sm:p-6 mb-4 sm:mb-6"
           >
-            <h2 className="text-xl font-bold mb-4 text-black">Order Status</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-black">Order Status</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
               <div className="flex items-center gap-3">
                 <FaBox className="w-8 h-8 text-blue-500" />
                 <div>
@@ -171,22 +171,22 @@ export default function OrderConfirmationPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-white border-2 border-black rounded-lg p-6"
+                className="bg-white border-2 border-black rounded-lg p-4 sm:p-6"
               >
-                <h2 className="text-xl font-bold mb-4 text-black">Order Items</h2>
+                <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-black">Order Items</h2>
                 <div className="space-y-4">
                   {order.items.map((item, index) => (
                     <div 
                       key={index} 
-                      className="flex items-center gap-4 pb-4 border-b-2 border-gray-200 last:border-0"
+                      className="flex items-center gap-3 sm:gap-4 pb-3 sm:pb-4 border-b-2 border-gray-200 last:border-0"
                     >
                       <img
                         src={item.image}
                         alt={item.name}
-                        className="w-20 h-20 object-cover rounded border-2 border-gray-200"
+                        className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded border-2 border-gray-200"
                       />
                       <div className="flex-1">
-                        <h3 className="font-semibold text-black">{item.name}</h3>
+                        <h3 className="text-sm sm:text-base font-semibold text-black">{item.name}</h3>
                         {item.size && (
                           <p className="text-sm text-gray-600">Size: {item.size}</p>
                         )}
@@ -213,10 +213,10 @@ export default function OrderConfirmationPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="bg-white border-2 border-black rounded-lg p-6 mt-6"
+                className="bg-white border-2 border-black rounded-lg p-4 sm:p-6 mt-4 sm:mt-6"
               >
-                <h2 className="text-xl font-bold mb-4 text-black">Shipping Address</h2>
-                <div className="text-gray-700">
+                <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-black">Shipping Address</h2>
+                <div className="text-sm sm:text-base text-gray-700">
                   <p className="font-semibold text-black">{order.shipping_address.fullName}</p>
                   <p>{order.shipping_address.address}</p>
                   <p>{order.shipping_address.city}, {order.shipping_address.postalCode}</p>
@@ -231,48 +231,48 @@ export default function OrderConfirmationPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="bg-white border-2 border-black rounded-lg p-6 sticky top-24"
+                className="bg-white border-2 border-black rounded-lg p-4 sm:p-6 lg:sticky lg:top-24"
               >
-                <h2 className="text-xl font-bold mb-4 text-black">Order Summary</h2>
+                <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-black">Order Summary</h2>
                 
-                <div className="space-y-2 mb-6">
-                  <div className="flex justify-between text-gray-700">
+                <div className="space-y-2 mb-4 sm:mb-6">
+                  <div className="flex justify-between text-sm sm:text-base text-gray-700">
                     <span>Subtotal</span>
                     <span>LKR {order.subtotal.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-gray-700">
+                  <div className="flex justify-between text-sm sm:text-base text-gray-700">
                     <span>Tax</span>
                     <span>LKR {order.tax.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-gray-700">
+                  <div className="flex justify-between text-sm sm:text-base text-gray-700">
                     <span>Shipping</span>
                     <span>
                       {order.shipping_fee === 0 ? 'FREE' : `LKR ${order.shipping_fee.toFixed(2)}`}
                     </span>
                   </div>
-                  <div className="flex justify-between text-xl font-bold text-black pt-3 border-t-2 border-black">
+                  <div className="flex justify-between text-lg sm:text-xl font-bold text-black pt-2 sm:pt-3 border-t-2 border-black">
                     <span>Total</span>
                     <span>LKR {order.total.toFixed(2)}</span>
                   </div>
                 </div>
 
-                <div className="mb-6 pb-6 border-b-2 border-gray-200">
-                  <p className="text-sm text-gray-600 mb-1">Payment Method</p>
-                  <p className="font-semibold text-black capitalize">
+                <div className="mb-4 sm:mb-6 pb-4 sm:pb-6 border-b-2 border-gray-200">
+                  <p className="text-xs sm:text-sm text-gray-600 mb-1">Payment Method</p>
+                  <p className="text-sm sm:text-base font-semibold text-black capitalize">
                     {order.payment_method === 'cod' ? 'Cash on Delivery' : 'Card Payment'}
                   </p>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   <Link
                     href="/profile/orders"
-                    className="block w-full py-3 bg-black text-white text-center rounded-lg font-semibold hover:bg-gray-900 transition-colors"
+                    className="block w-full py-2.5 sm:py-3 bg-black text-white text-center rounded-lg text-sm sm:text-base font-semibold hover:bg-gray-900 transition-colors"
                   >
                     View My Orders
                   </Link>
                   <Link
                     href="/shop"
-                    className="block w-full py-3 bg-white text-black text-center border-2 border-black rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                    className="block w-full py-2.5 sm:py-3 bg-white text-black text-center border-2 border-black rounded-lg text-sm sm:text-base font-semibold hover:bg-gray-50 transition-colors"
                   >
                     Continue Shopping
                   </Link>
