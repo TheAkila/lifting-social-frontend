@@ -118,13 +118,11 @@ export default function Navbar() {
             : 'bg-white border-b border-zinc-100'
         }`}
       >
-        <div className="w-full px-2 sm:px-3 md:px-6 lg:px-8 xl:px-10">
-          <div className="flex items-center justify-between h-11 sm:h-13 md:h-15">
+        <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10">
+          <div className="flex items-center justify-between h-14 sm:h-16 md:h-18">
             {/* Logo - Left Corner */}
-            <Link href="/" className="flex items-center group shrink-0 mr-1.5 sm:mr-2 md:mr-4 flex-shrink-0">
-              <div className="scale-75 sm:scale-90 md:scale-100 origin-left">
-                <Logo />
-              </div>
+            <Link href="/" className="flex items-center group shrink-0 mr-3 sm:mr-4 flex-shrink-0">
+              <Logo />
             </Link>
 
             {/* Main Navigation - Desktop - Centered */}
@@ -145,7 +143,7 @@ export default function Navbar() {
             </div>
 
             {/* Right Side Actions */}
-            <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
               {/* Secondary Links - Desktop */}
               <div className="hidden lg:flex items-center gap-0.5 md:gap-1 mr-1 md:mr-2">
                 {secondaryNavLinks.map((link) => (
@@ -166,10 +164,10 @@ export default function Navbar() {
               <div className="relative" ref={searchRef}>
                 <button
                   onClick={() => setSearchOpen(!searchOpen)}
-                  className="p-1 sm:p-1.5 md:p-2 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-md sm:rounded-[8px] transition-all duration-200"
+                  className="p-2 sm:p-2.5 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-[8px] sm:rounded-[10px] transition-all duration-200"
                   aria-label="Search products"
                 >
-                  <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
+                  <Search className="w-5 h-5 sm:w-5 sm:h-5" />
                 </button>
 
                 {/* Search Dropdown */}
@@ -266,9 +264,9 @@ export default function Navbar() {
               {isHydrated && user && (
                 <Link
                   href="/wishlist"
-                  className="relative p-1 sm:p-1.5 md:p-2 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-md sm:rounded-[8px] transition-all duration-200"
+                  className="relative p-2 sm:p-2.5 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-[8px] sm:rounded-[10px] transition-all duration-200"
                 >
-                  <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
+                  <Heart className="w-5 h-5 sm:w-5 sm:h-5" />
                   {wishlistItems.length > 0 && (
                     <motion.span
                       initial={{ scale: 0 }}
@@ -284,9 +282,9 @@ export default function Navbar() {
               {/* Cart */}
               <Link
                 href="/cart"
-                className="relative p-1 sm:p-1.5 md:p-2 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-md sm:rounded-[8px] transition-all duration-200"
+                className="relative p-2 sm:p-2.5 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-[8px] sm:rounded-[10px] transition-all duration-200"
               >
-                <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
+                <ShoppingCart className="w-5 h-5 sm:w-5 sm:h-5" />
                 {totalItems > 0 && (
                   <motion.span
                     initial={{ scale: 0 }}
@@ -303,10 +301,10 @@ export default function Navbar() {
                 <div className="hidden md:block relative" ref={userMenuRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-md sm:rounded-[8px] transition-all duration-200"
+                    className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-sm font-medium text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-[8px] sm:rounded-[10px] transition-all duration-200"
                   >
-                    <span className="hidden lg:inline text-xs">{user.name?.split(' ')[0]}</span>
-                    <ChevronDown className={`w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                    <span className="hidden lg:inline text-sm">{user.name?.split(' ')[0]}</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
 
                   {/* Dropdown Menu */}
@@ -359,10 +357,10 @@ export default function Navbar() {
                   </AnimatePresence>
                 </div>
               ) : isHydrated ? (
-                <div className="hidden md:flex items-center gap-1.5">
+                <div className="hidden md:flex items-center gap-2">
                   <Link
                     href="/login"
-                    className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-white bg-zinc-900 hover:bg-zinc-800 rounded-md sm:rounded-[8px] transition-all duration-200"
+                    className="px-4 sm:px-5 py-2 sm:py-2.5 text-sm font-medium text-white bg-zinc-900 hover:bg-zinc-800 rounded-[8px] sm:rounded-[10px] transition-all duration-200"
                   >
                     Login
                   </Link>
@@ -372,12 +370,12 @@ export default function Navbar() {
               {/* Mobile Menu Toggle */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="xl:hidden p-1 sm:p-1.5 md:p-2 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-md sm:rounded-[8px] transition-all duration-200"
+                className="xl:hidden p-2 sm:p-2.5 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-[8px] sm:rounded-[10px] transition-all duration-200"
               >
                 {isMobileMenuOpen ? (
-                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <X className="w-5 h-5" />
                 ) : (
-                  <Menu className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <Menu className="w-5 h-5" />
                 )}
               </button>
             </div>
@@ -404,34 +402,32 @@ export default function Navbar() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed top-0 right-0 bottom-0 w-72 sm:w-80 bg-white z-50 xl:hidden shadow-2xl"
+              className="fixed top-0 right-0 bottom-0 w-80 sm:w-96 bg-white z-50 xl:hidden shadow-2xl"
             >
-              <div className="p-3 sm:p-4 md:p-5">
+              <div className="p-5 sm:p-6">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-6 sm:mb-8 pb-3 sm:pb-4 border-b border-zinc-100">
-                  <div className="scale-75 sm:scale-90 origin-left">
-                    <Logo />
-                  </div>
+                <div className="flex items-center justify-between mb-8 pb-4 border-b border-zinc-100">
+                  <Logo />
                   <button
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="p-1 sm:p-1.5 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 rounded-md sm:rounded-[8px] transition-all duration-200 flex-shrink-0"
+                    className="p-2 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 rounded-[8px] sm:rounded-[10px] transition-all duration-200 flex-shrink-0"
                     title="Close menu"
                     aria-label="Close menu"
                   >
-                    <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <X className="w-5 h-5" />
                   </button>
                 </div>
 
                 {/* Navigation */}
-                <div className="space-y-4 sm:space-y-6">
+                <div className="space-y-6">
                   {/* Main Links */}
-                  <div className="space-y-0.5 sm:space-y-1">
+                  <div className="space-y-1">
                     {mainNavLinks.map((link) => (
                       <Link
                         key={link.name}
                         href={link.href}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className={`flex items-center px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-md sm:rounded-[10px] transition-all duration-200 ${
+                        className={`flex items-center px-4 py-3 text-base font-medium rounded-[10px] transition-all duration-200 ${
                           isActive(link.href)
                             ? 'text-zinc-900 bg-zinc-100'
                             : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
@@ -446,13 +442,13 @@ export default function Navbar() {
                   <div className="h-px bg-zinc-100" />
 
                   {/* Secondary Links */}
-                  <div className="space-y-0.5 sm:space-y-1">
+                  <div className="space-y-1">
                     {secondaryNavLinks.map((link) => (
                       <Link
                         key={link.name}
                         href={link.href}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="flex items-center px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 rounded-md sm:rounded-[10px] transition-all duration-200"
+                        className="flex items-center px-4 py-3 text-base text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 rounded-[10px] transition-all duration-200"
                       >
                         {link.name}
                       </Link>
@@ -460,35 +456,35 @@ export default function Navbar() {
                   </div>
 
                   {/* Account Section */}
-                  <div className="pt-3 sm:pt-4 border-t border-zinc-100">
+                  <div className="pt-4 border-t border-zinc-100">
                     {user ? (
-                      <div className="space-y-0.5 sm:space-y-1">
-                        <div className="px-3 sm:px-4 py-2 mb-2">
+                      <div className="space-y-1">
+                        <div className="px-4 py-2 mb-2">
                           <p className="text-xs text-zinc-400 uppercase tracking-wider font-medium">Account</p>
-                          <p className="text-xs sm:text-sm font-medium text-zinc-900 mt-1 truncate">{user.name}</p>
+                          <p className="text-sm font-medium text-zinc-900 mt-1 truncate">{user.name}</p>
                         </div>
                         <Link
                           href={user.role === 'admin' ? '/admin' : '/dashboard'}
                           onClick={() => setIsMobileMenuOpen(false)}
-                          className="flex items-center px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-md sm:rounded-[10px] transition-all duration-200"
+                          className="flex items-center px-4 py-3 text-base text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-[10px] transition-all duration-200"
                         >
-                          <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 sm:mr-3 flex-shrink-0" />
+                          <User className="w-4 h-4 mr-3 flex-shrink-0" />
                           Dashboard
                         </Link>
                         <button
                           onClick={handleLogout}
-                          className="flex items-center w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-md sm:rounded-[10px] transition-all duration-200"
+                          className="flex items-center w-full px-4 py-3 text-base text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-[10px] transition-all duration-200"
                         >
-                          <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 sm:mr-3 flex-shrink-0" />
+                          <LogOut className="w-4 h-4 mr-3 flex-shrink-0" />
                           Logout
                         </button>
                       </div>
                     ) : (
-                      <div className="space-y-1.5 px-3 sm:px-4">
+                      <div className="space-y-2 px-4">
                         <Link
                           href="/login"
                           onClick={() => setIsMobileMenuOpen(false)}
-                          className="block w-full py-2.5 sm:py-3 text-center text-sm sm:text-base font-medium text-white bg-zinc-900 hover:bg-zinc-800 rounded-md sm:rounded-[10px] transition-all duration-200"
+                          className="block w-full py-3 text-center text-base font-medium text-white bg-zinc-900 hover:bg-zinc-800 rounded-[10px] transition-all duration-200"
                         >
                           Login
                         </Link>
@@ -503,7 +499,7 @@ export default function Navbar() {
       </AnimatePresence>
       
       {/* Spacer for fixed navigation */}
-      <div className="h-11 sm:h-13 md:h-15" />
+      <div className="h-14 sm:h-16 md:h-18" />
     </>
   )
 }
