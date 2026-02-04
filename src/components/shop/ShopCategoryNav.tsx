@@ -46,9 +46,16 @@ export default function ShopCategoryNav() {
   // Close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setSupplementsOpen(false)
-        setAccessoriesOpen(false)
+      const target = event.target as Node
+      // Check if click is outside the nav container and not on the dropdown itself
+      if (containerRef.current && !containerRef.current.contains(target)) {
+        // Don't close if clicking on a link inside the dropdown
+        const isClickInDropdown = (target as HTMLElement).closest('[data-dropdown="supplements"]') || 
+                                  (target as HTMLElement).closest('[data-dropdown="accessories"]')
+        if (!isClickInDropdown) {
+          setSupplementsOpen(false)
+          setAccessoriesOpen(false)
+        }
       }
     }
 
@@ -187,6 +194,7 @@ export default function ShopCategoryNav() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.15 }}
+          data-dropdown="supplements"
           style={{
             position: 'fixed',
             top: supplementsRef.getBoundingClientRect().bottom - 2,
@@ -214,6 +222,7 @@ export default function ShopCategoryNav() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.15 }}
+          data-dropdown="accessories"
           style={{
             position: 'fixed',
             top: accessoriesRef.getBoundingClientRect().bottom - 2,
