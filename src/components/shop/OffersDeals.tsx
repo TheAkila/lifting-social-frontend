@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { ChevronRight, ShoppingCart, Heart, Tag } from 'lucide-react'
 import api from '@/lib/api'
 import { useCart } from '@/contexts/CartContext'
 import { useWishlist } from '@/contexts/WishlistContext'
@@ -46,12 +45,11 @@ export default function OffersDeals() {
   }
 
   return (
-    <section className="bg-gradient-to-br from-red-50 to-orange-50 py-12 sm:py-16 lg:py-20 border-y border-red-100">
+    <section className="bg-white py-12 sm:py-16 lg:py-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-8 sm:mb-12">
-          <div className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider mb-4">
-            <Tag className="w-4 h-4" />
+          <div className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider mb-4" style={{ backgroundColor: '#D00000' }}>
             Limited Time Offers
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold text-zinc-900 mb-3">
@@ -74,7 +72,7 @@ export default function OffersDeals() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
               >
-                <div className="group bg-white rounded-[12px] overflow-hidden border-2 border-red-200 shadow-lg hover:shadow-2xl transition-all duration-350 hover:-translate-y-1 h-full">
+                <div className="group bg-white rounded-[12px] overflow-hidden border-2 border-blue-200 shadow-lg hover:shadow-2xl transition-all duration-350 hover:-translate-y-1 h-full">
                   {/* Product Image */}
                   <Link href={`/shop/product/${product._id || product.id}`}>
                     <div className="relative aspect-square bg-zinc-100 overflow-hidden">
@@ -93,7 +91,7 @@ export default function OffersDeals() {
 
                       {/* Large Discount Badge */}
                       <div className="absolute top-0 right-0">
-                        <div className="bg-red-600 text-white px-4 py-2 rounded-bl-[12px] shadow-xl">
+                        <div className="text-white px-4 py-2 rounded-bl-[12px] shadow-xl" style={{ backgroundColor: '#D00000' }}>
                           <div className="text-2xl font-black leading-none mb-1">{discount}%</div>
                           <div className="text-xs font-bold uppercase tracking-wide">OFF</div>
                         </div>
@@ -118,16 +116,10 @@ export default function OffersDeals() {
                             await addToWishlist(productId)
                           }
                         }}
-                        className="absolute bottom-3 right-3 w-9 h-9 rounded-[8px] bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100"
+                        className="absolute bottom-3 right-3 w-9 h-9 rounded-[8px] bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100 text-sm font-bold"
                         aria-label={isInWishlist(product._id || product.id) ? "Remove from wishlist" : "Add to wishlist"}
                       >
-                        <Heart 
-                          className={`w-4 h-4 transition-colors ${
-                            isInWishlist(product._id || product.id) 
-                              ? 'fill-red-600 text-red-600' 
-                              : 'text-red-600'
-                          }`} 
-                        />
+                        {isInWishlist(product._id || product.id) ? '❤️' : '🤍'}
                       </button>
 
                       {/* Quick Add */}
@@ -139,10 +131,9 @@ export default function OffersDeals() {
                             handleQuickAdd(product)
                           }}
                           disabled={product.inStock === false}
-                          className="w-full bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-[8px] text-sm font-bold flex items-center justify-center gap-2 shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-[8px] text-sm font-bold shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          <ShoppingCart className="w-4 h-4" />
-                          <span>Quick Add</span>
+                          Quick Add
                         </button>
                       </div>
 
@@ -158,15 +149,15 @@ export default function OffersDeals() {
                   </Link>
 
                   {/* Product Info */}
-                  <Link href={`/shop/product/${product._id || product.id}`} className="block p-4 bg-gradient-to-b from-white to-red-50/30">
-                    <span className="text-xs font-medium text-red-600 uppercase tracking-wider">
+                  <Link href={`/shop/product/${product._id || product.id}`} className="block p-4 bg-gradient-to-b from-white to-blue-50/30">
+                    <span className="text-xs font-medium text-blue-600 uppercase tracking-wider">
                       {product.category}
                     </span>
-                    <h3 className="font-display font-semibold text-base text-zinc-900 mt-1 mb-2 line-clamp-2 group-hover:text-red-600 transition-colors">
+                    <h3 className="font-display font-semibold text-base text-zinc-900 mt-1 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
                       {product.name}
                     </h3>
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="font-display font-bold text-xl text-red-600">
+                      <span className="font-display font-bold text-xl text-blue-600">
                         LKR {product.price?.toLocaleString()}
                       </span>
                       <span className="text-zinc-400 text-sm line-through">
@@ -187,10 +178,10 @@ export default function OffersDeals() {
         <div className="text-center">
           <Link
             href="/shop?filter=deals"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-[8px] transition-colors shadow-lg hover:shadow-xl"
+            className="inline-flex items-center gap-2 px-6 py-3 text-white font-bold rounded-[8px] transition-colors shadow-lg hover:shadow-xl"
+            style={{ backgroundColor: '#D00000' }}
           >
-            View All Deals
-            <ChevronRight className="w-5 h-5" />
+            View All Deals →
           </Link>
         </div>
       </div>

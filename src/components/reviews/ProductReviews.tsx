@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Star, ThumbsUp, Edit2, Trash2, Filter } from 'lucide-react'
-import StarRating from './StarRating'
+import StarRating from '@/components/shop/StarRating'
 import ReviewForm from './ReviewForm'
 import api from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'

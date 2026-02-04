@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, ShoppingCart, Heart, Eye } from 'lucide-react'
 import api from '@/lib/api'
 import { useCart } from '@/contexts/CartContext'
 import { useWishlist } from '@/contexts/WishlistContext'
@@ -26,12 +25,14 @@ const MAX_ITEMS = 10
 export default function RecentlyViewed() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+  const [mounted, setMounted] = useState(false)
   const [scrollPosition, setScrollPosition] = useState(0)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const { addItem } = useCart()
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
 
   useEffect(() => {
+    setMounted(true)
     fetchRecentlyViewed()
   }, [])
 
@@ -39,7 +40,12 @@ export default function RecentlyViewed() {
     try {
       setLoading(true)
       
-      // Get recently viewed product IDs from localStorage
+      // Get recently viewed product IDs from localStorage (client-side only)
+      if (typeof window === 'undefined') {
+        setLoading(false)
+        return
+      }
+      
       const stored = localStorage.getItem(STORAGE_KEY)
       if (!stored) {
         setLoading(false)
@@ -95,6 +101,11 @@ export default function RecentlyViewed() {
     })
   }
 
+  // Wait for client-side mount to avoid hydration mismatch
+  if (!mounted) {
+    return null
+  }
+
   if (loading) {
     return null
   }
@@ -108,9 +119,7 @@ export default function RecentlyViewed() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-              <Eye className="w-5 h-5 text-blue-600" />
-            </div>
+            <div className="text-2xl">👁️</div>
             <div>
               <h2 className="font-display font-bold text-2xl sm:text-3xl text-zinc-900">
                 Recently Viewed
@@ -128,14 +137,14 @@ export default function RecentlyViewed() {
                 className="w-10 h-10 rounded-full bg-white border border-zinc-200 flex items-center justify-center hover:bg-zinc-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                 aria-label="Scroll left"
               >
-                <ChevronLeft className="w-5 h-5 text-zinc-700" />
+                <span className="text-lg">←</span>
               </button>
               <button
                 onClick={() => handleScroll('right')}
                 className="w-10 h-10 rounded-full bg-white border border-zinc-200 flex items-center justify-center hover:bg-zinc-50 transition-all"
                 aria-label="Scroll right"
               >
-                <ChevronRight className="w-5 h-5 text-zinc-700" />
+                <span className="text-lg">→</span>
               </button>
             </div>
           )}
@@ -181,7 +190,7 @@ export default function RecentlyViewed() {
                       {/* Discount Badge */}
                       {hasDiscount && (
                         <div className="absolute top-3 right-3">
-                          <span className="bg-red-600 text-white px-2.5 py-1 rounded-full text-xs font-medium">
+                          <span className="text-white px-2.5 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#D00000' }}>
                             {discountPercent}% OFF
                           </span>
                         </div>
@@ -201,13 +210,7 @@ export default function RecentlyViewed() {
                         className={`absolute ${hasDiscount ? 'top-14' : 'top-3'} right-3 w-9 h-9 rounded-[8px] bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100`}
                         aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
                       >
-                        <Heart 
-                          className={`w-4 h-4 transition-colors ${
-                            isInWishlist(product.id) 
-                              ? 'fill-red-500 text-red-500' 
-                              : 'text-zinc-600'
-                          }`} 
-                        />
+                        <span className="text-lg">{isInWishlist(product.id) ? '❤️' : '🤍'}</span>
                       </button>
 
                       {/* Quick Add */}
@@ -221,7 +224,6 @@ export default function RecentlyViewed() {
                           disabled={!product.in_stock}
                           className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-2.5 rounded-[8px] text-sm font-medium flex items-center justify-center gap-2 shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          <ShoppingCart className="w-4 h-4" />
                           <span>{product.in_stock ? 'Quick Add' : 'Out of Stock'}</span>
                         </button>
                       </div>
@@ -272,6 +274,9 @@ export default function RecentlyViewed() {
  */
 export function addToRecentlyViewed(productId: string) {
   try {
+    // Client-side only
+    if (typeof window === 'undefined') return
+    
     const stored = localStorage.getItem(STORAGE_KEY)
     let productIds: string[] = stored ? JSON.parse(stored) : []
 

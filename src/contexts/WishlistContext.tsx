@@ -34,6 +34,7 @@ const WishlistContext = createContext<WishlistContextType | undefined>(undefined
 export function WishlistProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<WishlistItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [mounted, setMounted] = useState(false)
   const { user } = useAuth()
 
   const fetchWishlist = async () => {
@@ -44,6 +45,13 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     }
 
     try {
+      // Client-side only
+      if (typeof window === 'undefined') {
+        setItems([])
+        setLoading(false)
+        return
+      }
+      
       const token = localStorage.getItem('token')
       if (!token) {
         setItems([])
@@ -61,7 +69,10 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    fetchWishlist()
+    setMounted(true)
+    if (typeof window !== 'undefined') {
+      fetchWishlist()
+    }
   }, [user])
 
   const addToWishlist = async (productId: string) => {

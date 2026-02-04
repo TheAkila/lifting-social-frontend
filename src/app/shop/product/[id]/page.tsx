@@ -139,27 +139,28 @@ export default function ProductDetailPage() {
     : 0
 
   return (
-    <div className="min-h-screen bg-white pt-20 sm:pt-28 pb-8 sm:pb-12">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="min-h-screen bg-zinc-50 pt-20 sm:pt-24 lg:pt-28 pb-12 lg:pb-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Button */}
         <Link 
           href="/shop"
-          className="inline-flex items-center space-x-2 text-gray-600 hover:text-black transition-colors mb-6 sm:mb-8"
+          className="inline-flex items-center space-x-2 text-zinc-600 hover:text-zinc-900 transition-colors mb-6 lg:mb-8 text-sm sm:text-base"
         >
-          <FaChevronLeft />
-          <span>Back to Shop</span>
+          <FaChevronLeft className="text-xs sm:text-sm" />
+          <span className="font-medium">Back to Shop</span>
         </Link>
 
         {/* Product Detail Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-12">
-          {/* Product Images */}
-          <div className="space-y-3 sm:space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 mb-12 lg:mb-16">
+          {/* Product Images - Left Side */}
+          <div className="lg:col-span-7 space-y-4">
             {/* Main Image */}
             <motion.div 
               key={selectedImage}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="relative h-[300px] sm:h-[400px] md:h-[500px] bg-gray-200 rounded-xl overflow-hidden"
+              transition={{ duration: 0.3 }}
+              className="relative aspect-square bg-white rounded-2xl overflow-hidden border border-zinc-200 shadow-sm"
             >
               {images[selectedImage] ? (
                 <div 
@@ -167,8 +168,8 @@ export default function ProductDetailPage() {
                   style={{ backgroundImage: `url(${images[selectedImage]})` }}
                 />
               ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-gray-700 flex items-center justify-center">
-                  <span className="text-white/50 font-bold text-2xl">
+                <div className="absolute inset-0 bg-gradient-to-br from-zinc-100 to-zinc-200 flex items-center justify-center">
+                  <span className="text-zinc-400 font-bold text-lg sm:text-xl">
                     {product.name}
                   </span>
                 </div>
@@ -176,30 +177,37 @@ export default function ProductDetailPage() {
               
               {/* Discount Badge */}
               {discount > 0 && (
-                <div className="absolute top-4 left-4 bg-blue-600 text-white px-4 py-2 rounded-full font-bold">
+                <div className="absolute top-3 sm:top-4 right-3 sm:right-4 bg-red-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-bold text-xs sm:text-sm">
                   {discount}% OFF
                 </div>
               )}
 
-              {/* Out of Stock Overlay */}
-              {!product.inStock && (
-                <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                  <span className="text-white font-bold text-2xl">OUT OF STOCK</span>
+              {/* Stock Badge */}
+              {product.inStock ? (
+                <div className="absolute top-3 sm:top-4 left-3 sm:left-4 bg-green-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-medium text-xs sm:text-sm flex items-center gap-1.5">
+                  <FaCheckCircle className="text-xs" />
+                  <span>In Stock</span>
+                </div>
+              ) : (
+                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center">
+                  <div className="bg-white px-6 py-3 rounded-full">
+                    <span className="text-zinc-900 font-bold text-base sm:text-lg">OUT OF STOCK</span>
+                  </div>
                 </div>
               )}
             </motion.div>
 
             {/* Thumbnail Images */}
             {images.length > 1 && (
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-6 gap-2 sm:gap-3">
                 {images.map((img, index) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`relative h-24 rounded-lg overflow-hidden transition-all ${
+                    className={`relative aspect-square rounded-lg sm:rounded-xl overflow-hidden transition-all border-2 ${
                       selectedImage === index 
-                        ? 'ring-2 ring-blue-600' 
-                        : 'opacity-60 hover:opacity-100'
+                        ? 'ring-2 ring-zinc-900 border-zinc-900 scale-95' 
+                        : 'border-zinc-200 opacity-70 hover:opacity-100 hover:border-zinc-400'
                     }`}
                   >
                     {img ? (
@@ -208,7 +216,7 @@ export default function ProductDetailPage() {
                         style={{ backgroundImage: `url(${img})` }}
                       />
                     ) : (
-                      <div className="absolute inset-0 bg-gray-300" />
+                      <div className="absolute inset-0 bg-zinc-100" />
                     )}
                   </button>
                 ))}
@@ -216,53 +224,57 @@ export default function ProductDetailPage() {
             )}
           </div>
 
-          {/* Product Info */}
-          <div className="space-y-6">
-            {/* Category */}
-            <p className="text-blue-600 font-semibold uppercase text-sm tracking-wider">
+          {/* Product Info - Right Side */}
+          <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-24 lg:self-start">
+            {/* Category Badge */}
+            <div className="inline-flex items-center px-3 py-1.5 bg-zinc-900 text-white text-xs sm:text-sm font-semibold rounded-full uppercase tracking-wider">
               {product.category}
-            </p>
+            </div>
 
             {/* Product Name */}
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-gray-900">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold text-zinc-900 leading-tight">
               {product.name}
             </h1>
 
             {/* Rating */}
-            <RatingSummary productId={product._id || product.id || params.id as string} />
+            <div className="pb-4 border-b border-zinc-200">
+              <RatingSummary productId={product._id || product.id || params.id as string} />
+            </div>
 
             {/* Price */}
-            <div className="flex items-baseline flex-wrap gap-2 sm:space-x-3">
-              <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-600">
-                LKR {product.price.toLocaleString()}
-              </span>
-              {product.comparePrice && (
-                <span className="text-lg sm:text-xl text-gray-500 line-through">
-                  LKR {product.comparePrice.toLocaleString()}
+            <div className="space-y-2">
+              <div className="flex items-baseline flex-wrap gap-3">
+                <span className="text-3xl sm:text-4xl lg:text-5xl font-bold text-zinc-900">
+                  LKR {product.price.toLocaleString()}
                 </span>
+                {product.comparePrice && (
+                  <span className="text-xl sm:text-2xl text-zinc-400 line-through">
+                    LKR {product.comparePrice.toLocaleString()}
+                  </span>
+                )}
+              </div>
+              {discount > 0 && (
+                <p className="text-sm text-green-600 font-medium">
+                  You save LKR {(product.comparePrice! - product.price).toLocaleString()} ({discount}% off)
+                </p>
               )}
             </div>
 
-            {/* Short Description */}
-            <p className="text-gray-700 leading-relaxed">
-              {product.description}
-            </p>
-
             {/* Size Selection */}
             {product.sizes && product.sizes.length > 0 && (
-              <div>
-                <label className="block text-gray-900 font-semibold mb-3">
-                  Size
+              <div className="space-y-3">
+                <label className="block text-zinc-900 font-semibold text-sm uppercase tracking-wide">
+                  Select Size
                 </label>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2 sm:gap-3">
                   {product.sizes.map((size) => (
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}
-                      className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+                      className={`px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all border-2 ${
                         selectedSize === size
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                          ? 'bg-zinc-900 text-white border-zinc-900'
+                          : 'bg-white text-zinc-900 border-zinc-200 hover:border-zinc-900'
                       }`}
                     >
                       {size}
@@ -274,19 +286,19 @@ export default function ProductDetailPage() {
 
             {/* Color Selection */}
             {product.colors && product.colors.length > 0 && (
-              <div>
-                <label className="block text-gray-900 font-semibold mb-3">
-                  Color
+              <div className="space-y-3">
+                <label className="block text-zinc-900 font-semibold text-sm uppercase tracking-wide">
+                  Select Color
                 </label>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2 sm:gap-3">
                   {product.colors.map((color) => (
                     <button
                       key={color}
                       onClick={() => setSelectedColor(color)}
-                      className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+                      className={`px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all border-2 capitalize ${
                         selectedColor === color
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                          ? 'bg-zinc-900 text-white border-zinc-900'
+                          : 'bg-white text-zinc-900 border-zinc-200 hover:border-zinc-900'
                       }`}
                     >
                       {color}
@@ -297,124 +309,110 @@ export default function ProductDetailPage() {
             )}
 
             {/* Quantity */}
-            <div>
-              <label className="block text-gray-900 font-semibold mb-3">
+            <div className="space-y-3">
+              <label className="block text-zinc-900 font-semibold text-sm uppercase tracking-wide">
                 Quantity
               </label>
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center bg-gray-100 rounded-lg">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center bg-white border-2 border-zinc-200 rounded-lg">
                   <button
                     onClick={() => handleQuantityChange(-1)}
-                    className="p-3 hover:bg-gray-200 transition-colors rounded-l-lg"
+                    className="p-3 sm:p-4 hover:bg-zinc-50 transition-colors rounded-l-lg"
+                    disabled={quantity <= 1}
                   >
-                    <FaMinus className="text-gray-900" />
+                    <FaMinus className="text-zinc-900 text-xs sm:text-sm" />
                   </button>
-                  <span className="px-6 text-gray-900 font-bold text-lg">
+                  <span className="px-6 sm:px-8 text-zinc-900 font-bold text-lg sm:text-xl min-w-[60px] text-center">
                     {quantity}
                   </span>
                   <button
                     onClick={() => handleQuantityChange(1)}
-                    className="p-3 hover:bg-gray-200 transition-colors rounded-r-lg"
+                    className="p-3 sm:p-4 hover:bg-zinc-50 transition-colors rounded-r-lg"
                   >
-                    <FaPlus className="text-gray-900" />
+                    <FaPlus className="text-zinc-900 text-xs sm:text-sm" />
                   </button>
                 </div>
-                {product.inStock && (
-                  <span className="flex items-center space-x-2 text-green-600">
-                    <FaCheckCircle />
-                    <span>In Stock</span>
-                  </span>
-                )}
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex space-x-4 pt-4">
+            <div className="flex flex-col sm:flex-row gap-3 pt-4">
               <button
                 onClick={handleAddToCart}
                 disabled={!product.inStock}
-                className="flex-1 flex items-center justify-center space-x-2 bg-black text-white py-3 rounded-lg hover:bg-gray-900 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 sm:gap-3 bg-zinc-900 text-white py-3.5 sm:py-4 px-6 rounded-xl hover:bg-zinc-800 font-semibold text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-zinc-900 transition-all shadow-lg shadow-zinc-900/20"
               >
-                <FaShoppingCart />
+                <FaShoppingCart className="text-base sm:text-lg" />
                 <span>Add to Cart</span>
               </button>
-              <button className="w-14 h-14 flex items-center justify-center border-2 border-gray-200 text-gray-700 hover:border-gray-400 rounded-lg transition-colors">
-                <FaHeart className="text-xl" />
+              <button className="sm:w-14 sm:h-14 h-12 flex items-center justify-center gap-2 border-2 border-zinc-200 text-zinc-700 hover:border-zinc-900 hover:text-zinc-900 rounded-xl transition-all sm:px-0 px-6 font-semibold text-sm sm:text-base">
+                <FaHeart className="text-lg sm:text-xl" />
+                <span className="sm:hidden">Add to Wishlist</span>
               </button>
-            </div>
-
-            {/* Shipping Info */}
-            <div className="border-t border-gray-200 pt-6 space-y-3">
-              <div className="flex items-center space-x-3 text-gray-700">
-                <FaShippingFast className="text-2xl text-blue-600" />
-                <span>Free shipping on orders over LKR 5,000</span>
-              </div>
-              <div className="flex items-center space-x-3 text-gray-700">
-                <FaCheckCircle className="text-2xl text-green-600" />
-                <span>Easy 30-day returns</span>
-              </div>
             </div>
           </div>
         </div>
 
         {/* Product Details Tabs */}
-        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden mb-8 sm:mb-12">
+        <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-sm">
           {/* Tab Headers */}
-          <div className="flex space-x-4 sm:space-x-8 border-b border-gray-200 mb-4 sm:mb-6 overflow-x-auto px-4 sm:px-6">
+          <div className="flex border-b border-zinc-200 overflow-x-auto">
             <button
               onClick={() => setActiveTab('description')}
-              className={`pb-4 font-semibold transition-colors relative whitespace-nowrap ${
+              className={`flex-1 min-w-[120px] py-4 sm:py-5 px-4 sm:px-6 font-semibold text-sm sm:text-base transition-colors relative ${
                 activeTab === 'description'
-                  ? 'text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'text-zinc-900 bg-zinc-50'
+                  : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50'
               }`}
             >
               Description
               {activeTab === 'description' && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-zinc-900" />
               )}
             </button>
             <button
               onClick={() => setActiveTab('details')}
-              className={`pb-4 font-semibold transition-colors relative whitespace-nowrap ${
+              className={`flex-1 min-w-[120px] py-4 sm:py-5 px-4 sm:px-6 font-semibold text-sm sm:text-base transition-colors relative ${
                 activeTab === 'details'
-                  ? 'text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'text-zinc-900 bg-zinc-50'
+                  : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50'
               }`}
             >
               Details
               {activeTab === 'details' && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-zinc-900" />
               )}
             </button>
             <button
               onClick={() => setActiveTab('reviews')}
-              className={`pb-4 font-semibold transition-colors relative whitespace-nowrap ${
+              className={`flex-1 min-w-[120px] py-4 sm:py-5 px-4 sm:px-6 font-semibold text-sm sm:text-base transition-colors relative ${
                 activeTab === 'reviews'
-                  ? 'text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'text-zinc-900 bg-zinc-50'
+                  : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50'
               }`}
             >
               Reviews
               {activeTab === 'reviews' && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-zinc-900" />
               )}
             </button>
           </div>
 
           {/* Tab Content */}
-          <div className="text-gray-700 p-4 sm:p-6">
+          <div className="p-6 sm:p-8 lg:p-10">
             {activeTab === 'description' && (
-              <div className="space-y-4">
-                <p className="leading-relaxed">{product.description}</p>
+              <div className="space-y-6 max-w-4xl">
+                <div className="prose prose-zinc max-w-none">
+                  <p className="text-zinc-700 text-base sm:text-lg leading-relaxed">{product.description}</p>
+                </div>
                 {product.features && product.features.length > 0 && (
-                  <div>
-                    <h3 className="text-gray-900 font-semibold mb-3">Key Features:</h3>
-                    <ul className="space-y-2">
+                  <div className="space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 className="text-zinc-900 font-bold text-lg sm:text-xl">Key Features & Details</h3>
+                    <ul className="space-y-4">
                       {product.features.map((feature, index) => (
-                        <li key={index} className="flex items-start space-x-2">
-                          <FaCheckCircle className="text-blue-600 mt-1 flex-shrink-0" />
-                          <span>{feature}</span>
+                        <li key={index} className="flex items-start gap-3">
+                          <FaCheckCircle className="text-green-600 mt-1 flex-shrink-0 text-sm sm:text-base" />
+                          <span className="whitespace-pre-wrap text-zinc-700 text-sm sm:text-base leading-relaxed">{feature}</span>
                         </li>
                       ))}
                     </ul>
@@ -424,28 +422,45 @@ export default function ProductDetailPage() {
             )}
 
             {activeTab === 'details' && (
-              <div className="space-y-4">
+              <div className="space-y-5 max-w-2xl">
                 {product.material && (
-                  <div>
-                    <strong className="text-gray-900">Material:</strong> {product.material}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 py-3 border-b border-zinc-100">
+                    <strong className="text-zinc-900 font-semibold min-w-[140px] text-sm sm:text-base">Material:</strong>
+                    <span className="text-zinc-700 text-sm sm:text-base">{product.material}</span>
                   </div>
                 )}
                 {product.care && (
-                  <div>
-                    <strong className="text-gray-900">Care Instructions:</strong> {product.care}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 py-3 border-b border-zinc-100">
+                    <strong className="text-zinc-900 font-semibold min-w-[140px] text-sm sm:text-base">Care Instructions:</strong>
+                    <span className="text-zinc-700 text-sm sm:text-base">{product.care}</span>
                   </div>
                 )}
-                <div>
-                  <strong className="text-gray-900">Category:</strong> {product.category}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 py-3 border-b border-zinc-100">
+                  <strong className="text-zinc-900 font-semibold min-w-[140px] text-sm sm:text-base">Category:</strong>
+                  <span className="text-zinc-700 text-sm sm:text-base capitalize">{product.category}</span>
                 </div>
-                <div>
-                  <strong className="text-gray-900">Availability:</strong>{' '}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 py-3 border-b border-zinc-100">
+                  <strong className="text-zinc-900 font-semibold min-w-[140px] text-sm sm:text-base">Availability:</strong>
                   {product.inStock ? (
-                    <span className="text-green-600">In Stock</span>
+                    <span className="flex items-center gap-2 text-green-600 font-medium text-sm sm:text-base">
+                      <FaCheckCircle /> In Stock
+                    </span>
                   ) : (
-                    <span className="text-gray-600">Out of Stock</span>
+                    <span className="text-red-600 font-medium text-sm sm:text-base">Out of Stock</span>
                   )}
                 </div>
+                {product.sizes && product.sizes.length > 0 && (
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 py-3 border-b border-zinc-100">
+                    <strong className="text-zinc-900 font-semibold min-w-[140px] text-sm sm:text-base">Available Sizes:</strong>
+                    <span className="text-zinc-700 text-sm sm:text-base">{product.sizes.join(', ')}</span>
+                  </div>
+                )}
+                {product.colors && product.colors.length > 0 && (
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 py-3">
+                    <strong className="text-zinc-900 font-semibold min-w-[140px] text-sm sm:text-base">Available Colors:</strong>
+                    <span className="text-zinc-700 text-sm sm:text-base capitalize">{product.colors.join(', ')}</span>
+                  </div>
+                )}
               </div>
             )}
 
@@ -459,7 +474,9 @@ export default function ProductDetailPage() {
         </div>
 
         {/* Related Products */}
-        <RelatedProducts productId={params.id as string} limit={6} />
+        <div className="mt-12 lg:mt-16">
+          <RelatedProducts productId={params.id as string} limit={6} />
+        </div>
       </div>
     </div>
   )

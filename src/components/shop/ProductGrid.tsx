@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { ShoppingCart, Heart, ChevronLeft, ChevronRight, ArrowRight, X } from 'lucide-react'
+import { ArrowRight, X } from 'lucide-react'
 import { useState, useEffect, useMemo } from 'react'
 import api from '@/lib/api'
 import { useCart } from '@/contexts/CartContext'
@@ -322,13 +322,7 @@ export default function ProductGrid({ filters }: ProductGridProps) {
                       className="absolute top-3 right-3 w-9 h-9 rounded-[8px] bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100"
                       aria-label={isInWishlist(product._id || product.id) ? "Remove from wishlist" : "Add to wishlist"}
                     >
-                      <Heart 
-                        className={`w-4 h-4 transition-colors ${
-                          isInWishlist(product._id || product.id) 
-                            ? 'fill-red-500 text-red-500' 
-                            : 'text-zinc-600'
-                        }`} 
-                      />
+                      <span className="text-lg">{isInWishlist(product._id || product.id) ? '❤️' : '🤍'}</span>
                     </button>
 
                     {/* Quick Add */}
@@ -343,7 +337,6 @@ export default function ProductGrid({ filters }: ProductGridProps) {
                         className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-2.5 rounded-[8px] text-sm font-medium flex items-center justify-center gap-2 shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         aria-label="Add to cart"
                       >
-                        <ShoppingCart className="w-4 h-4" />
                         <span>Quick Add</span>
                       </button>
                     </div>
@@ -397,7 +390,7 @@ export default function ProductGrid({ filters }: ProductGridProps) {
             }`}
             aria-label="Previous page"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <span className="text-lg">←</span>
           </button>
 
           {renderPageNumbers()}
@@ -412,7 +405,7 @@ export default function ProductGrid({ filters }: ProductGridProps) {
             }`}
             aria-label="Next page"
           >
-            <ChevronRight className="w-4 h-4" />
+            <span className="text-lg">→</span>
           </button>
         </div>
       )}
@@ -534,7 +527,6 @@ export default function ProductGrid({ filters }: ProductGridProps) {
                     onClick={handleQuickAddConfirm}
                     className="flex-1 py-3 rounded-[8px] text-sm font-semibold text-white bg-zinc-900 hover:bg-zinc-800 transition-colors flex items-center justify-center gap-2"
                   >
-                    <ShoppingCart className="w-4 h-4" />
                     Add to Cart
                   </button>
                 </div>

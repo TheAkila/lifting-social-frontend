@@ -31,16 +31,7 @@ export default function FeaturedProducts() {
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 sm:gap-6 mb-8 sm:mb-12">
           <div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 bg-black text-white px-3 py-1 rounded-full text-xs font-medium mb-4"
-            >
-              <Sparkles className="w-3 h-3" />
-              <span>Featured Collection</span>
-            </motion.div>
+            
             
             <motion.h2
               initial={{ opacity: 0, y: 20 }}

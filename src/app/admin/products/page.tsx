@@ -126,7 +126,7 @@ export default function AdminProducts() {
       }
 
       if (editingProduct) {
-        await api.put(`/products/${editingProduct._id}`, payload)
+        await api.put(`/products/${editingProduct.id}`, payload)
       } else {
         await api.post('/products', payload)
       }
@@ -617,35 +617,34 @@ export default function AdminProducts() {
 
               {/* Features */}
               <div className="border-t border-brand-light/10 pt-6">
-                <label className="block text-sm font-semibold mb-3">Product Features</label>
+                <label className="block text-sm font-semibold mb-3">Product Features / Details</label>
                 <ul className="space-y-2 mb-3">
                   {formData.features.map((feature, index) => (
                     <li
                       key={index}
-                      className="flex items-center justify-between bg-gray-100 px-4 py-2 rounded-lg"
+                      className="flex items-start justify-between bg-gray-100 px-4 py-3 rounded-lg"
                     >
-                      <span className="text-sm">{feature}</span>
+                      <span className="text-sm whitespace-pre-wrap flex-1 pr-4">{feature}</span>
                       <button
                         type="button"
                         onClick={() => removeFeature(index)}
-                        className="text-blue-400 hover:text-blue-300"
+                        className="text-blue-400 hover:text-blue-300 flex-shrink-0"
                       >
                         <FaTimes />
                       </button>
                     </li>
                   ))}
                 </ul>
-                <div className="flex space-x-2">
-                  <input
-                    type="text"
+                <div className="space-y-2">
+                  <textarea
                     value={newFeature}
                     onChange={(e) => setNewFeature(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addFeature())}
-                    placeholder="Add a product feature..."
-                    className="input-field flex-1"
+                    placeholder="Add a product feature or detailed paragraph...&#10;&#10;You can add multiple lines for longer descriptions."
+                    className="input-field w-full min-h-[100px] resize-y"
+                    rows={4}
                   />
-                  <button type="button" onClick={addFeature} className="btn-outline">
-                    Add Feature
+                  <button type="button" onClick={addFeature} className="btn-outline w-full">
+                    Add Feature / Paragraph
                   </button>
                 </div>
               </div>
@@ -717,7 +716,7 @@ export default function AdminProducts() {
                 </thead>
                 <tbody>
                   {products.map((product) => (
-                    <tr key={product._id} className="border-b border-gray-200 hover:bg-gray-50">
+                    <tr key={product.id} className="border-b border-gray-200 hover:bg-gray-50">
                       <td className="py-3 px-4">
                         {product.image ? (
                           <img src={product.image} alt={product.name} className="w-12 h-12 object-cover rounded" />
@@ -756,7 +755,7 @@ export default function AdminProducts() {
                             <FaEdit />
                           </button>
                           <button
-                            onClick={() => handleDelete(product._id)}
+                            onClick={() => handleDelete(product.id)}
                             className="text-blue-400 hover:text-blue-300 p-2"
                           >
                             <FaTrash />

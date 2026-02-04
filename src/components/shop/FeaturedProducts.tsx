@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, ShoppingCart, Heart } from 'lucide-react'
 import api from '@/lib/api'
 import { useCart } from '@/contexts/CartContext'
 import { useWishlist } from '@/contexts/WishlistContext'
@@ -79,14 +78,14 @@ export default function FeaturedProducts() {
               className="w-10 h-10 rounded-[8px] flex items-center justify-center bg-zinc-100 hover:bg-zinc-200 transition-colors"
               aria-label="Scroll left"
             >
-              <ChevronLeft className="w-5 h-5 text-zinc-700" />
+              ←
             </button>
             <button
               onClick={() => handleScroll('right')}
               className="w-10 h-10 rounded-[8px] flex items-center justify-center bg-zinc-100 hover:bg-zinc-200 transition-colors"
               aria-label="Scroll right"
             >
-              <ChevronRight className="w-5 h-5 text-zinc-700" />
+              →
             </button>
           </div>
         </div>
@@ -150,16 +149,10 @@ export default function FeaturedProducts() {
                           await addToWishlist(productId)
                         }
                       }}
-                      className={`absolute ${product.comparePrice ? 'top-14' : 'top-3'} right-3 w-9 h-9 rounded-[8px] bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100`}
+                      className={`absolute ${product.comparePrice ? 'top-14' : 'top-3'} right-3 w-9 h-9 rounded-[8px] bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100 text-lg`}
                       aria-label={isInWishlist(product._id || product.id) ? "Remove from wishlist" : "Add to wishlist"}
                     >
-                      <Heart 
-                        className={`w-4 h-4 transition-colors ${
-                          isInWishlist(product._id || product.id) 
-                            ? 'fill-red-500 text-red-500' 
-                            : 'text-zinc-600'
-                        }`} 
-                      />
+                      {isInWishlist(product._id || product.id) ? '❤️' : '🤍'}
                     </button>
 
                     {/* Quick Add */}
@@ -171,10 +164,9 @@ export default function FeaturedProducts() {
                           handleQuickAdd(product)
                         }}
                         disabled={product.inStock === false}
-                        className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-2.5 rounded-[8px] text-sm font-medium flex items-center justify-center gap-2 shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-2.5 rounded-[8px] text-sm font-medium shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <ShoppingCart className="w-4 h-4" />
-                        <span>Quick Add</span>
+                        Quick Add
                       </button>
                     </div>
 
@@ -219,8 +211,7 @@ export default function FeaturedProducts() {
             href="/shop"
             className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold transition-colors"
           >
-            View All Products
-            <ChevronRight className="w-4 h-4" />
+            View All Products →
           </Link>
         </div>
       </div>

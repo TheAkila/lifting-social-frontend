@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { X, AlertCircle } from 'lucide-react'
-import StarRating from './StarRating'
+import StarRating from '@/components/shop/StarRating'
 import api from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'
 

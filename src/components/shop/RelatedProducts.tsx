@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, ShoppingCart, Heart } from 'lucide-react'
 import api from '@/lib/api'
 import { useCart } from '@/contexts/CartContext'
 import { useWishlist } from '@/contexts/WishlistContext'
@@ -108,14 +107,14 @@ export default function RelatedProducts({ productId, limit = 6 }: RelatedProduct
               className="w-10 h-10 rounded-full bg-white border border-zinc-200 flex items-center justify-center hover:bg-zinc-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
               aria-label="Scroll left"
             >
-              <ChevronLeft className="w-5 h-5 text-zinc-700" />
+              <span className="text-lg">←</span>
             </button>
             <button
               onClick={() => handleScroll('right')}
               className="w-10 h-10 rounded-full bg-white border border-zinc-200 flex items-center justify-center hover:bg-zinc-50 transition-all"
               aria-label="Scroll right"
             >
-              <ChevronRight className="w-5 h-5 text-zinc-700" />
+              <span className="text-lg">→</span>
             </button>
           </div>
         )}
@@ -162,7 +161,7 @@ export default function RelatedProducts({ productId, limit = 6 }: RelatedProduct
                     {/* Discount Badge */}
                     {hasDiscount && (
                       <div className="absolute top-3 right-3">
-                        <span className="bg-red-600 text-white px-2.5 py-1 rounded-full text-xs font-medium">
+                        <span className="text-white px-2.5 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#D00000' }}>
                           {discountPercent}% OFF
                         </span>
                       </div>
@@ -182,13 +181,7 @@ export default function RelatedProducts({ productId, limit = 6 }: RelatedProduct
                       className={`absolute ${hasDiscount ? 'top-14' : 'top-3'} right-3 w-9 h-9 rounded-[8px] bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100`}
                       aria-label={isInWishlist(productId) ? "Remove from wishlist" : "Add to wishlist"}
                     >
-                      <Heart 
-                        className={`w-4 h-4 transition-colors ${
-                          isInWishlist(productId) 
-                            ? 'fill-red-500 text-red-500' 
-                            : 'text-zinc-600'
-                        }`} 
-                      />
+                      <span className="text-lg">{isInWishlist(productId) ? '❤️' : '🤍'}</span>
                     </button>
 
                     {/* Quick Add */}
@@ -202,7 +195,6 @@ export default function RelatedProducts({ productId, limit = 6 }: RelatedProduct
                         disabled={!product.in_stock}
                         className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-2.5 rounded-[8px] text-sm font-medium flex items-center justify-center gap-2 shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <ShoppingCart className="w-4 h-4" />
                         <span>{product.in_stock ? 'Quick Add' : 'Out of Stock'}</span>
                       </button>
                     </div>
@@ -250,7 +242,7 @@ export default function RelatedProducts({ productId, limit = 6 }: RelatedProduct
           className="inline-flex items-center gap-2 text-zinc-600 hover:text-zinc-900 font-medium transition-colors"
         >
           <span>View all {products[0]?.category} products</span>
-          <ChevronRight className="w-4 h-4" />
+          <span>→</span>
         </Link>
       </div>
     </section>
