@@ -143,25 +143,9 @@ export default function Navbar() {
             </div>
 
             {/* Right Side Actions */}
-            <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
-              {/* Secondary Links - Desktop */}
-              <div className="hidden md:flex items-center gap-0.5 md:gap-1 mr-1 md:mr-2">
-                {secondaryNavLinks.map((link) => (
-                  <Link
-                    key={link.name}
-                    href={link.href}
-                    className="px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-zinc-500 hover:text-zinc-900 transition-colors duration-200"
-                  >
-                    {link.name}
-                  </Link>
-                ))}
-              </div>
-
-              {/* Divider */}
-              <div className="hidden md:block w-px h-4 sm:h-5 bg-zinc-200" />
-
-              {/* Search */}
-              <div className="relative" ref={searchRef}>
+            <div className="flex items-center gap-1">
+              {/* Search - Mobile Hidden */}
+              <div className="relative hidden sm:block" ref={searchRef}>
                 <button
                   onClick={() => setSearchOpen(!searchOpen)}
                   className="p-2 sm:p-2.5 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-[8px] sm:rounded-[10px] transition-all duration-200"
@@ -296,6 +280,19 @@ export default function Navbar() {
                 )}
               </Link>
 
+              {/* Mobile Menu Toggle - Always visible on mobile */}
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="md:hidden p-2.5 text-zinc-800 hover:text-zinc-900 hover:bg-zinc-100 rounded-[10px] transition-all duration-200 flex-shrink-0 border border-zinc-200"
+                aria-label="Toggle menu"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="w-6 h-6" />
+                ) : (
+                  <Menu className="w-6 h-6" />
+                )}
+              </button>
+
               {/* User Actions */}
               {isHydrated && user ? (
                 <div className="hidden md:block relative" ref={userMenuRef}>
@@ -366,19 +363,6 @@ export default function Navbar() {
                   </Link>
                 </div>
               ) : null}
-
-              {/* Mobile Menu Toggle */}
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-2.5 text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100 rounded-[10px] transition-all duration-200 flex-shrink-0"
-                aria-label="Toggle menu"
-              >
-                {isMobileMenuOpen ? (
-                  <X className="w-6 h-6" />
-                ) : (
-                  <Menu className="w-6 h-6" />
-                )}
-              </button>
             </div>
           </div>
         </div>
