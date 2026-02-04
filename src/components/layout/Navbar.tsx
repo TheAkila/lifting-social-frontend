@@ -122,7 +122,12 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo - Left Corner */}
             <Link href="/" className="flex items-center group">
-              <Logo />
+              <div className="flex flex-col items-start">
+                <Logo />
+                <p className="text-xs text-zinc-500 mt-0.5 hidden sm:block max-w-xs leading-tight">
+                  Fusing Olympic weightlifting culture, and modern fitness fashion
+                </p>
+              </div>
             </Link>
 
             {/* Main Navigation - Desktop - Centered */}

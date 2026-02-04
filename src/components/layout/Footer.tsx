@@ -33,7 +33,7 @@ export default function Footer() {
             <div className="lg:col-span-4 col-span-full">
               <Logo className="mb-6" />
               <p className="text-zinc-400 text-sm sm:text-base leading-relaxed mb-6 sm:mb-8 max-w-sm">
-                Fusing Olympic weightlifting culture, Sri Lankan athletic pride,
+                Fusing Olympic weightlifting culture,
                 and modern fitness fashion into one inspiring community.
               </p>
               
