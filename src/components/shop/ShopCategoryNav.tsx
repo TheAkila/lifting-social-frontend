@@ -199,7 +199,7 @@ export default function ShopCategoryNav() {
               key={cat.slug}
               href={`/shop/supplements${cat.slug === 'supplements' ? '' : `/${cat.slug}`}`}
               onClick={() => setSupplementsOpen(false)}
-              className="block px-3 sm:px-4 py-1 text-xs sm:text-sm text-zinc-900 hover:bg-zinc-50 transition-colors"
+              className="block px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm text-zinc-900 hover:bg-zinc-50 transition-colors"
             >
               {cat.name}
             </Link>
@@ -226,7 +226,7 @@ export default function ShopCategoryNav() {
               key={cat.slug}
               href={`/shop/accessories${cat.slug === 'accessories' ? '' : `/${cat.slug}`}`}
               onClick={() => setAccessoriesOpen(false)}
-              className="block px-3 sm:px-4 py-1 text-xs sm:text-sm text-zinc-900 hover:bg-zinc-50 transition-colors"
+              className="block px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm text-zinc-900 hover:bg-zinc-50 transition-colors"
             >
               {cat.name}
             </Link>
