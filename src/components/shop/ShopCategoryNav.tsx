@@ -66,6 +66,21 @@ export default function ShopCategoryNav() {
       }
     }
   }, [supplementsOpen, accessoriesOpen])
+
+  // Close dropdowns when scrolling
+  useEffect(() => {
+    function handleScroll() {
+      if (supplementsOpen || accessoriesOpen) {
+        setSupplementsOpen(false)
+        setAccessoriesOpen(false)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [supplementsOpen, accessoriesOpen])
   
   const isActive = (href: string) => {
     return pathname === href
