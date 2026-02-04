@@ -440,6 +440,20 @@ export default function CheckoutPage() {
                 <p className="text-xs text-gray-500 text-center mt-3">
                   Your payment information is secure and encrypted
                 </p>
+                <p className="text-xs text-gray-500 text-center mt-2">
+                  By placing an order, you agree to our{' '}
+                  <Link href="/terms" className="text-blue-600 hover:underline">
+                    Terms & Conditions
+                  </Link>
+                  ,{' '}
+                  <Link href="/privacy-policy" className="text-blue-600 hover:underline">
+                    Privacy Policy
+                  </Link>
+                  , and{' '}
+                  <Link href="/refund-policy" className="text-blue-600 hover:underline">
+                    Refund Policy
+                  </Link>
+                </p>
               </motion.div>
             </div>
           </div>
