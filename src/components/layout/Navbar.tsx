@@ -108,6 +108,17 @@ export default function Navbar() {
     return pathname.startsWith(href)
   }
 
+  // Prevent background scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.classList.add('overflow-hidden')
+    } else {
+      document.body.classList.remove('overflow-hidden')
+    }
+    // Clean up on unmount
+    return () => document.body.classList.remove('overflow-hidden')
+  }, [isMobileMenuOpen])
+
   return (
     <>
       {/* Main Navigation - Single Clean Bar */}
