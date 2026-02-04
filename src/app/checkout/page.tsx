@@ -1,20 +1,32 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/contexts/CartContext'
 import Link from 'next/link'
 import { FaArrowLeft, FaLock } from 'react-icons/fa'
 import { motion } from 'framer-motion'
 
+export const dynamic = 'force-dynamic'
+
 export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
   
   // Redirect if cart is empty
-  if (items.length === 0) {
-    router.push('/cart')
+  useEffect(() => {
+    if (mounted && items.length === 0) {
+      router.push('/cart')
+    }
+  }, [mounted, items.length, router])
+
+  if (!mounted || items.length === 0) {
     return null
   }
 

@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FaCheckCircle, FaTimesCircle, FaSpinner } from 'react-icons/fa'
 import Link from 'next/link'
 
-export default function PaymentCallbackPage() {
+function PaymentCallbackContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [status, setStatus] = useState<'processing' | 'success' | 'failed'>('processing')
@@ -101,5 +101,20 @@ export default function PaymentCallbackPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function PaymentCallbackPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-white pt-20 sm:pt-28 pb-8 sm:pb-12 flex items-center justify-center px-4">
+        <div className="text-center">
+          <FaSpinner className="w-12 h-12 sm:w-16 sm:h-16 text-blue-500 mx-auto mb-4 animate-spin" />
+          <h1 className="text-xl sm:text-2xl font-bold text-black mb-2">Loading...</h1>
+        </div>
+      </div>
+    }>
+      <PaymentCallbackContent />
+    </Suspense>
   )
 }
