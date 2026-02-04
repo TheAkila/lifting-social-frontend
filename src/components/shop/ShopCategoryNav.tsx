@@ -180,7 +180,7 @@ export default function ShopCategoryNav() {
         </div>
       </div>
 
-      {/* Supplements Dropdown Menu - Outside scroll container */}
+      {/* Supplements Dropdown Menu - Fixed position, stays on screen */}
       {supplementsOpen && supplementsRef && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -189,7 +189,7 @@ export default function ShopCategoryNav() {
           transition={{ duration: 0.15 }}
           style={{
             position: 'fixed',
-            top: supplementsRef.getBoundingClientRect().bottom + window.scrollY - 2,
+            top: supplementsRef.getBoundingClientRect().bottom - 2,
             left: supplementsRef.getBoundingClientRect().left,
           }}
           className="bg-white border border-zinc-200 rounded-[8px] shadow-lg py-2 min-w-[180px] z-[9999]"
@@ -207,7 +207,7 @@ export default function ShopCategoryNav() {
         </motion.div>
       )}
 
-      {/* Accessories Dropdown Menu - Outside scroll container */}
+      {/* Accessories Dropdown Menu - Fixed position, stays on screen */}
       {accessoriesOpen && accessoriesRef && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -216,7 +216,7 @@ export default function ShopCategoryNav() {
           transition={{ duration: 0.15 }}
           style={{
             position: 'fixed',
-            top: accessoriesRef.getBoundingClientRect().bottom + window.scrollY - 2,
+            top: accessoriesRef.getBoundingClientRect().bottom - 2,
             left: accessoriesRef.getBoundingClientRect().left,
           }}
           className="bg-white border border-zinc-200 rounded-[8px] shadow-lg py-2 min-w-[180px] z-[9999]"
