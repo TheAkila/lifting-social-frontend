@@ -45,7 +45,7 @@ interface ReviewStats {
 
 export default function AdminReviewsPage() {
   const router = useRouter()
-  const { user, loading: authLoading } = useAuth()
+  const { user, isLoading: authLoading } = useAuth()
   const [reviews, setReviews] = useState<Review[]>([])
   const [filteredReviews, setFilteredReviews] = useState<Review[]>([])
   const [stats, setStats] = useState<ReviewStats | null>(null)
