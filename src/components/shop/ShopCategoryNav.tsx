@@ -189,7 +189,7 @@ export default function ShopCategoryNav() {
           transition={{ duration: 0.15 }}
           style={{
             position: 'fixed',
-            top: supplementsRef.getBoundingClientRect().bottom + window.scrollY,
+            top: supplementsRef.getBoundingClientRect().bottom + window.scrollY - 2,
             left: supplementsRef.getBoundingClientRect().left,
           }}
           className="bg-white border border-zinc-200 rounded-[8px] shadow-lg py-2 min-w-[180px] z-[9999]"
@@ -216,7 +216,7 @@ export default function ShopCategoryNav() {
           transition={{ duration: 0.15 }}
           style={{
             position: 'fixed',
-            top: accessoriesRef.getBoundingClientRect().bottom + window.scrollY,
+            top: accessoriesRef.getBoundingClientRect().bottom + window.scrollY - 2,
             left: accessoriesRef.getBoundingClientRect().left,
           }}
           className="bg-white border border-zinc-200 rounded-[8px] shadow-lg py-2 min-w-[180px] z-[9999]"
