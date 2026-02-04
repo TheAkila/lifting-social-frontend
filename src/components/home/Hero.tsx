@@ -39,17 +39,7 @@ export default function Hero() {
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-4xl mx-auto">
           {/* Pre-headline Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 bg-black text-white border border-gray-800 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 mb-6 sm:mb-8"
-          >
-            <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
-            <span className="text-xs sm:text-sm font-medium">
-              Sri Lankan Weightlifting Culture
-            </span>
-          </motion.div>
+         
 
           {/* Main Headline */}
           <motion.h1
