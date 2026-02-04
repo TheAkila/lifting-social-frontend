@@ -76,7 +76,7 @@ export default function ShopCategoryNav() {
   const isAccessoriesActive = pathname.includes('/shop/accessories')
 
   return (
-    <nav className="bg-white border-t border-b border-zinc-200 sticky top-[72px] z-50">
+    <nav className="bg-white border-t border-b border-zinc-200 sticky top-[88px] sm:top-[96px] z-30">
       <div className="container mx-auto px-2 sm:px-4 lg:px-8">
         <div ref={containerRef} className="flex items-center justify-center py-2 sm:py-3 gap-0.5 sm:gap-1 overflow-x-auto">
           {/* All Products Link */}
@@ -200,7 +200,7 @@ export default function ShopCategoryNav() {
             top: supplementsRef.getBoundingClientRect().bottom - 2,
             left: supplementsRef.getBoundingClientRect().left,
           }}
-          className="bg-white border border-zinc-200 rounded-[8px] shadow-lg py-2 min-w-[180px] z-[9999]"
+          className="bg-white border border-zinc-200 rounded-[8px] shadow-lg py-2 min-w-[180px] z-40"
         >
           {supplementCategories.map((cat) => (
             <Link
@@ -228,7 +228,7 @@ export default function ShopCategoryNav() {
             top: accessoriesRef.getBoundingClientRect().bottom - 2,
             left: accessoriesRef.getBoundingClientRect().left,
           }}
-          className="bg-white border border-zinc-200 rounded-[8px] shadow-lg py-2 min-w-[180px] z-[9999]"
+          className="bg-white border border-zinc-200 rounded-[8px] shadow-lg py-2 min-w-[180px] z-40"
         >
           {accessoriesCategories.map((cat) => (
             <Link
