@@ -129,15 +129,50 @@ export default function CheckoutPage() {
 
       const { order } = await response.json()
 
-      // Clear cart
+      // If Cash on Delivery, go directly to confirmation
+      if (formData.paymentMethod === 'cod') {
+        clearCart()
+        router.push(`/order-confirmation/${order.id}`)
+        return
+      }
+
+      // For card payment, initiate PayHere payment
+      const paymentResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/payments/create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ orderId: order.id }),
+      })
+
+      if (!paymentResponse.ok) {
+        throw new Error('Failed to initiate payment')
+      }
+
+      const { paymentData, paymentUrl } = await paymentResponse.json()
+
+      // Clear cart before redirecting to payment
       clearCart()
 
-      // Redirect to confirmation page
-      router.push(`/order-confirmation/${order.id}`)
+      // Submit payment form to PayHere
+      const form = document.createElement('form')
+      form.method = 'POST'
+      form.action = paymentUrl
+
+      Object.keys(paymentData).forEach(key => {
+        const input = document.createElement('input')
+        input.type = 'hidden'
+        input.name = key
+        input.value = paymentData[key]
+        form.appendChild(input)
+      })
+
+      document.body.appendChild(form)
+      form.submit()
     } catch (error: any) {
       console.error('Checkout error:', error)
       alert(error.message || 'Failed to complete order. Please try again.')
-    } finally {
       setLoading(false)
     }
   }
