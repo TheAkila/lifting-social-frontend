@@ -11,8 +11,7 @@ export default function CartPage() {
   const router = useRouter()
 
   const handleCheckout = () => {
-    // TODO: Implement checkout flow
-    alert('Checkout functionality coming soon!')
+    router.push('/checkout')
   }
 
   return (

@@ -9,15 +9,15 @@ import { motion } from 'framer-motion'
 import { FaBox, FaEye, FaRedo, FaTimes, FaFilter } from 'react-icons/fa'
 
 interface Order {
-  _id: string
-  orderNumber: string
+  id: string
+  order_number: string
   total: number
   subtotal: number
   tax: number
-  shippingFee: number
-  orderStatus: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
-  paymentStatus: 'pending' | 'completed' | 'failed' | 'refunded'
-  createdAt: string
+  shipping_fee: number
+  order_status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
+  payment_status: 'pending' | 'completed' | 'failed' | 'refunded'
+  created_at: string
   items: {
     productId: string
     name: string
@@ -95,7 +95,7 @@ export default function OrdersPage() {
 
   const filteredOrders = orders.filter(order => {
     if (filter === 'all') return true
-    return order.orderStatus === filter
+    return order.order_status === filter
   })
 
   if (authLoading || loading) {
@@ -143,7 +143,7 @@ export default function OrdersPage() {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              Pending ({orders.filter(o => o.orderStatus === 'pending').length})
+              Pending ({orders.filter(o => o.order_status === 'pending').length})
             </button>
             <button
               onClick={() => setFilter('processing')}
@@ -153,7 +153,7 @@ export default function OrdersPage() {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              Processing ({orders.filter(o => o.orderStatus === 'processing').length})
+              Processing ({orders.filter(o => o.order_status === 'processing').length})
             </button>
             <button
               onClick={() => setFilter('shipped')}
@@ -163,7 +163,7 @@ export default function OrdersPage() {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              Shipped ({orders.filter(o => o.orderStatus === 'shipped').length})
+              Shipped ({orders.filter(o => o.order_status === 'shipped').length})
             </button>
             <button
               onClick={() => setFilter('delivered')}
@@ -173,7 +173,7 @@ export default function OrdersPage() {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              Delivered ({orders.filter(o => o.orderStatus === 'delivered').length})
+              Delivered ({orders.filter(o => o.order_status === 'delivered').length})
             </button>
           </div>
         </div>
@@ -197,7 +197,7 @@ export default function OrdersPage() {
           <div className="space-y-6">
             {filteredOrders.map((order, index) => (
               <motion.div
-                key={order._id}
+                key={order.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
@@ -208,10 +208,10 @@ export default function OrdersPage() {
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     <div>
                       <h3 className="font-bold text-gray-900 text-lg">
-                        Order #{order.orderNumber}
+                        Order #{order.order_number || order.id.substring(0, 8)}
                       </h3>
                       <p className="text-sm text-gray-600">
-                        Placed on {new Date(order.createdAt).toLocaleDateString('en-US', {
+                        Placed on {new Date(order.created_at).toLocaleDateString('en-US', {
                           year: 'numeric',
                           month: 'long',
                           day: 'numeric'
@@ -219,11 +219,11 @@ export default function OrdersPage() {
                       </p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className={`px-3 py-1 text-sm font-semibold rounded-full border ${getStatusColor(order.orderStatus)}`}>
-                        {order.orderStatus.toUpperCase()}
+                      <span className={`px-3 py-1 text-sm font-semibold rounded-full border ${getStatusColor(order.order_status)}`}>
+                        {order.order_status.toUpperCase()}
                       </span>
-                      <span className={`px-3 py-1 text-sm font-semibold rounded-full border ${getStatusColor(order.paymentStatus)}`}>
-                        Payment: {order.paymentStatus}
+                      <span className={`px-3 py-1 text-sm font-semibold rounded-full border ${getStatusColor(order.payment_status)}`}>
+                        Payment: {order.payment_status}
                       </span>
                     </div>
                   </div>
@@ -267,7 +267,7 @@ export default function OrdersPage() {
                     <div className="flex justify-between text-sm mb-2">
                       <span className="text-gray-600">Shipping:</span>
                       <span className="text-gray-900">
-                        {order.shippingFee === 0 ? 'FREE' : `LKR ${order.shippingFee.toLocaleString()}`}
+                        {order.shipping_fee === 0 ? 'FREE' : `LKR ${order.shipping_fee.toLocaleString()}`}
                       </span>
                     </div>
                     <div className="flex justify-between text-lg font-bold border-t pt-2">
@@ -281,22 +281,22 @@ export default function OrdersPage() {
                 <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
                   <div className="flex gap-3 flex-wrap">
                     <Link
-                      href={`/dashboard/orders/${order._id}`}
+                      href={`/order-confirmation/${order.id}`}
                       className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 font-semibold transition-colors"
                     >
                       <FaEye />
                       View Details
                     </Link>
                     <button
-                      onClick={() => handleReorder(order._id)}
+                      onClick={() => handleReorder(order.id)}
                       className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition-colors"
                     >
                       <FaRedo />
                       Reorder
                     </button>
-                    {['pending', 'processing'].includes(order.orderStatus) && (
+                    {['pending', 'processing'].includes(order.order_status) && (
                       <button
-                        onClick={() => handleCancelOrder(order._id)}
+                        onClick={() => handleCancelOrder(order.id)}
                         className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition-colors"
                       >
                         <FaTimes />
