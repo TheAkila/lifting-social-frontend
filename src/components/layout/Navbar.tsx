@@ -126,7 +126,7 @@ export default function Navbar() {
             </Link>
 
             {/* Main Navigation - Desktop - Centered */}
-            <div className="hidden lg:flex items-center space-x-0.5 sm:space-x-1 absolute left-1/2 transform -translate-x-1/2">
+            <div className="hidden md:flex items-center space-x-0.5 sm:space-x-1 absolute left-1/2 transform -translate-x-1/2">
               {mainNavLinks.map((link) => (
                 <Link
                   key={link.name}
@@ -145,7 +145,7 @@ export default function Navbar() {
             {/* Right Side Actions */}
             <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
               {/* Secondary Links - Desktop */}
-              <div className="hidden lg:flex items-center gap-0.5 md:gap-1 mr-1 md:mr-2">
+              <div className="hidden md:flex items-center gap-0.5 md:gap-1 mr-1 md:mr-2">
                 {secondaryNavLinks.map((link) => (
                   <Link
                     key={link.name}
@@ -158,7 +158,7 @@ export default function Navbar() {
               </div>
 
               {/* Divider */}
-              <div className="hidden lg:block w-px h-4 sm:h-5 bg-zinc-200" />
+              <div className="hidden md:block w-px h-4 sm:h-5 bg-zinc-200" />
 
               {/* Search */}
               <div className="relative" ref={searchRef}>
@@ -370,7 +370,7 @@ export default function Navbar() {
               {/* Mobile Menu Toggle */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2.5 text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100 rounded-[10px] transition-all duration-200 flex-shrink-0"
+                className="md:hidden p-2.5 text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100 rounded-[10px] transition-all duration-200 flex-shrink-0"
                 aria-label="Toggle menu"
               >
                 {isMobileMenuOpen ? (
@@ -393,7 +393,7 @@ export default function Navbar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-zinc-900/20 backdrop-blur-sm z-40 lg:hidden"
+              className="fixed inset-0 bg-zinc-900/20 backdrop-blur-sm z-40 md:hidden"
               onClick={() => setIsMobileMenuOpen(false)}
             />
             
@@ -403,7 +403,7 @@ export default function Navbar() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed top-0 right-0 bottom-0 w-80 sm:w-96 bg-white z-50 lg:hidden shadow-2xl"
+              className="fixed top-0 right-0 bottom-0 w-80 sm:w-96 bg-white z-50 md:hidden shadow-2xl"
             >
               <div className="p-5 sm:p-6">
                 {/* Header */}
