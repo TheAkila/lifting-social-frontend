@@ -3,11 +3,12 @@
 import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { ShoppingCart, User, Menu, X, LogOut, ChevronDown } from 'lucide-react'
+import { ShoppingCart, User, Menu, X, LogOut, ChevronDown, Search } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import Logo from '@/components/layout/Logo'
+import api from '@/lib/api'
 
 const mainNavLinks = [
   { name: 'Home', href: '/' },
@@ -26,11 +27,16 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [isHydrated, setIsHydrated] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState<any[]>([])
+  const [searchLoading, setSearchLoading] = useState(false)
   const { totalItems } = useCart()
   const { user, logout } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
   const userMenuRef = useRef<HTMLDivElement>(null)
+  const searchRef = useRef<HTMLDivElement>(null)
 
   // Ensure component is hydrated before rendering user-dependent content
   useEffect(() => {
@@ -57,10 +63,37 @@ export default function Navbar() {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
         setIsUserMenuOpen(false)
       }
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setSearchOpen(false)
+      }
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  // Search functionality
+  useEffect(() => {
+    if (searchQuery.length < 2) {
+      setSearchResults([])
+      return
+    }
+
+    const timeoutId = setTimeout(() => {
+      setSearchLoading(true)
+      api
+        .get(`/products/search?q=${encodeURIComponent(searchQuery)}`)
+        .then((res) => {
+          setSearchResults(res.data)
+          setSearchLoading(false)
+        })
+        .catch((err) => {
+          console.error('Search error:', err)
+          setSearchLoading(false)
+        })
+    }, 300)
+
+    return () => clearTimeout(timeoutId)
+  }, [searchQuery])
 
   const handleLogout = () => {
     logout()
@@ -124,6 +157,106 @@ export default function Navbar() {
 
               {/* Divider */}
               <div className="hidden md:block w-px h-5 bg-zinc-200" />
+
+              {/* Search */}
+              <div className="relative" ref={searchRef}>
+                <button
+                  onClick={() => setSearchOpen(!searchOpen)}
+                  className="p-2 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-[10px] transition-all duration-200"
+                  aria-label="Search products"
+                >
+                  <Search className="w-5 h-5" />
+                </button>
+
+                {/* Search Dropdown */}
+                <AnimatePresence>
+                  {searchOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-2xl border border-zinc-200 z-50 overflow-hidden"
+                    >
+                      {/* Search Input */}
+                      <div className="p-4 border-b border-zinc-100">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                          <input
+                            type="text"
+                            placeholder="Search products..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2 text-sm border border-zinc-200 rounded-[8px] focus:outline-none focus:border-zinc-400 transition-colors"
+                            autoFocus
+                          />
+                        </div>
+                      </div>
+
+                      {/* Search Results */}
+                      <div className="max-h-[400px] overflow-y-auto">
+                        {searchLoading ? (
+                          <div className="p-8 text-center text-zinc-500 text-sm">
+                            Searching...
+                          </div>
+                        ) : searchQuery.length < 2 ? (
+                          <div className="p-8 text-center text-zinc-500 text-sm">
+                            Type at least 2 characters to search
+                          </div>
+                        ) : searchResults.length === 0 ? (
+                          <div className="p-8 text-center text-zinc-500 text-sm">
+                            No products found for "{searchQuery}"
+                          </div>
+                        ) : (
+                          <div className="py-2">
+                            {searchResults.map((product) => (
+                              <Link
+                                key={product._id || product.id}
+                                href={`/shop/product/${product._id || product.id}`}
+                                onClick={() => {
+                                  setSearchOpen(false)
+                                  setSearchQuery('')
+                                }}
+                                className="flex items-center gap-3 px-4 py-3 hover:bg-zinc-50 transition-colors"
+                              >
+                                <div className="w-12 h-12 rounded-[8px] overflow-hidden bg-zinc-100 flex-shrink-0">
+                                  {product.image ? (
+                                    <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                                  ) : (
+                                    <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900" />
+                                  )}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="text-sm font-medium text-zinc-900 truncate">{product.name}</h4>
+                                  <p className="text-xs text-zinc-500">{product.category}</p>
+                                </div>
+                                <div className="text-sm font-bold text-zinc-900">
+                                  LKR {product.price?.toLocaleString()}
+                                </div>
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* View All Link */}
+                      {searchResults.length > 0 && (
+                        <div className="p-3 border-t border-zinc-100">
+                          <Link
+                            href={`/shop?search=${encodeURIComponent(searchQuery)}`}
+                            onClick={() => {
+                              setSearchOpen(false)
+                              setSearchQuery('')
+                            }}
+                            className="block text-center text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                          >
+                            View all results
+                          </Link>
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
               {/* Cart */}
               <Link
