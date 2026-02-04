@@ -119,7 +119,7 @@ export default function RecentlyViewed() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="text-2xl">👁️</div>
+            
             <div>
               <h2 className="font-display font-bold text-2xl sm:text-3xl text-zinc-900">
                 Recently Viewed

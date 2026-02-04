@@ -72,7 +72,7 @@ export default function OffersDeals() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
               >
-                <div className="group bg-white rounded-[12px] overflow-hidden border-2 border-blue-200 shadow-lg hover:shadow-2xl transition-all duration-350 hover:-translate-y-1 h-full">
+                <div className="group bg-white rounded-[12px] overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-350 hover:-translate-y-1 h-full">
                   {/* Product Image */}
                   <Link href={`/shop/product/${product._id || product.id}`}>
                     <div className="relative aspect-square bg-zinc-100 overflow-hidden">

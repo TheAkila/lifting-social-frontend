@@ -65,36 +65,22 @@ function ShopContent() {
                   className="w-full"
                 >
                   <Link href={category.href} className="block">
-                    <div className="group relative bg-zinc-900 rounded-[12px] p-6 sm:p-8 overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer min-h-[240px] sm:min-h-[280px] flex flex-col justify-between border border-zinc-800">
-                      {/* Background Pattern */}
-                      <div className="absolute inset-0 opacity-[0.03]">
-                        <div className="absolute inset-0" style={{
-                          backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.1) 35px, rgba(255,255,255,.1) 70px)`
-                        }} />
-                      </div>
-
+                    <div className="group relative bg-white rounded-[8px] p-4 sm:p-5 overflow-hidden transition-all duration-300 hover:shadow-md cursor-pointer flex flex-col justify-between border border-zinc-200 hover:border-zinc-300">
                       <div className="relative z-10">
-                        {/* Badge */}
-                        <div className="mb-4 sm:mb-6">
-                          <div className="px-2.5 py-1 bg-zinc-800 rounded-full inline-block">
-                            <span className="text-[10px] sm:text-xs font-medium text-zinc-400 uppercase tracking-wider">{category.subtitle}</span>
-                          </div>
-                        </div>
-
                         {/* Content */}
-                        <div className="mb-4 sm:mb-6">
-                          <h3 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold text-white mb-2">
+                        <div>
+                          <h3 className="text-base sm:text-lg font-semibold text-zinc-900 mb-1">
                             {category.name}
                           </h3>
-                          <p className="text-zinc-400 text-sm sm:text-base leading-relaxed">
+                          <p className="text-zinc-600 text-xs sm:text-sm">
                             {category.description}
                           </p>
                         </div>
                       </div>
 
                       {/* CTA */}
-                      <div className="relative z-10 text-white font-semibold text-sm sm:text-base">
-                        <span>Shop Now</span>
+                      <div className="relative z-10 text-zinc-900 font-medium text-xs sm:text-sm mt-3">
+                        <span className="inline-flex items-center gap-1">Shop Now →</span>
                       </div>
                     </div>
                   </Link>

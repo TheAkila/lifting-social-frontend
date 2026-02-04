@@ -76,19 +76,19 @@ export default function ShopCategoryNav() {
   const isAccessoriesActive = pathname.includes('/shop/accessories')
 
   return (
-    <nav className="bg-white border-t border-b border-zinc-200 sticky top-[88px] sm:top-[96px] z-30">
-      <div className="container mx-auto px-2 sm:px-4 lg:px-8">
-        <div ref={containerRef} className="flex items-center justify-center py-2 sm:py-3 gap-0.5 sm:gap-1 overflow-x-auto">
+    <nav className="bg-white border-b border-zinc-100 sticky top-[88px] sm:top-[96px] z-30">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div ref={containerRef} className="flex items-center justify-center py-3 gap-1 sm:gap-2">
           {/* All Products Link */}
           <Link 
             href="/shop"
-            className={`px-1.5 sm:px-2 md:px-3 lg:px-4 py-1 sm:py-1.5 md:py-2 rounded-[6px] text-xs sm:text-sm md:text-base font-semibold transition-all whitespace-nowrap flex-shrink-0 ${
+            className={`px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
               isShopHome
-                ? 'bg-zinc-900 text-white'
-                : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+                ? 'text-zinc-900 bg-black/10'
+                : 'text-zinc-600 hover:text-zinc-900 hover:bg-black/5'
             }`}
           >
-            All Products
+            All
           </Link>
 
           {/* Category Links */}
@@ -99,22 +99,13 @@ export default function ShopCategoryNav() {
               <Link
                 key={category.value}
                 href={category.href}
-                className={`group relative px-1.5 sm:px-2 md:px-3 lg:px-4 py-1 sm:py-1.5 md:py-2 rounded-[6px] text-xs sm:text-sm md:text-base font-semibold transition-all whitespace-nowrap flex-shrink-0 ${
+                className={`px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${
                   active
-                    ? 'bg-zinc-900 text-white'
-                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+                    ? 'text-zinc-900 bg-black/10'
+                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-black/5'
                 }`}
               >
-                <span>{category.name}</span>
-                
-                {/* Active Indicator */}
-                {active && (
-                  <motion.div
-                    layoutId="activeCategory"
-                    className="absolute inset-0 bg-zinc-900 rounded-[8px] -z-10"
-                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                  />
-                )}
+                {category.name}
               </Link>
             )
           })}
@@ -126,30 +117,20 @@ export default function ShopCategoryNav() {
               setSupplementsOpen(!supplementsOpen)
               setAccessoriesOpen(false)
             }}
-            className={`group relative px-1.5 sm:px-2 md:px-3 lg:px-4 py-1 sm:py-1.5 md:py-2 rounded-[6px] text-xs sm:text-sm md:text-base font-semibold transition-all whitespace-nowrap flex items-center gap-0.5 sm:gap-1 flex-shrink-0 ${
+            className={`px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap flex items-center gap-1 ${
               isSupplementsActive
-                ? 'bg-zinc-900 text-white'
-                : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+                ? 'text-zinc-900 bg-black/10'
+                : 'text-zinc-600 hover:text-zinc-900 hover:bg-black/5'
             }`}
           >
             <span>Supplements</span>
             <motion.div
               animate={{ rotate: supplementsOpen ? 180 : 0 }}
               transition={{ duration: 0.2 }}
-              className="w-3 h-3 sm:w-4 sm:h-4"
+              className="w-4 h-4"
             >
-              <ChevronDown size={12} className="sm:block hidden" />
-              <ChevronDown size={10} className="block sm:hidden" />
+              <ChevronDown size={14} />
             </motion.div>
-            
-            {/* Active Indicator */}
-            {isSupplementsActive && (
-              <motion.div
-                layoutId="activeCategory"
-                className="absolute inset-0 bg-zinc-900 rounded-[8px] -z-10"
-                transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-              />
-            )}
           </button>
 
           {/* Accessories Dropdown */}
@@ -159,30 +140,20 @@ export default function ShopCategoryNav() {
               setAccessoriesOpen(!accessoriesOpen)
               setSupplementsOpen(false)
             }}
-            className={`group relative px-1.5 sm:px-2 md:px-3 lg:px-4 py-1 sm:py-1.5 md:py-2 rounded-[6px] text-xs sm:text-sm md:text-base font-semibold transition-all whitespace-nowrap flex items-center gap-0.5 sm:gap-1 flex-shrink-0 ${
+            className={`px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap flex items-center gap-1 ${
               isAccessoriesActive
-                ? 'bg-zinc-900 text-white'
-                : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+                ? 'text-zinc-900 bg-black/10'
+                : 'text-zinc-600 hover:text-zinc-900 hover:bg-black/5'
             }`}
           >
             <span>Accessories</span>
             <motion.div
               animate={{ rotate: accessoriesOpen ? 180 : 0 }}
               transition={{ duration: 0.2 }}
-              className="w-3 h-3 sm:w-4 sm:h-4"
+              className="w-4 h-4"
             >
-              <ChevronDown size={12} className="sm:block hidden" />
-              <ChevronDown size={10} className="block sm:hidden" />
+              <ChevronDown size={14} />
             </motion.div>
-            
-            {/* Active Indicator */}
-            {isAccessoriesActive && (
-              <motion.div
-                layoutId="activeCategory"
-                className="absolute inset-0 bg-zinc-900 rounded-[8px] -z-10"
-                transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-              />
-            )}
           </button>
         </div>
       </div>
