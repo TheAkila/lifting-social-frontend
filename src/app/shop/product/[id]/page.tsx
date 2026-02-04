@@ -16,6 +16,10 @@ import {
 } from 'react-icons/fa'
 import api from '@/lib/api'
 import { useCart } from '@/contexts/CartContext'
+import ProductReviews from '@/components/reviews/ProductReviews'
+import RatingSummary from '@/components/reviews/RatingSummary'
+import RelatedProducts from '@/components/shop/RelatedProducts'
+import { addToRecentlyViewed } from '@/components/shop/RecentlyViewed'
 
 interface Product {
   _id: string
@@ -55,6 +59,9 @@ export default function ProductDetailPage() {
         const response = await api.get(`/products/${params.id}`)
         const productData = response.data
         setProduct(productData)
+        
+        // Add to recently viewed
+        addToRecentlyViewed(params.id as string)
         
         // Set default selections
         if (productData.sizes && productData.sizes.length > 0) {
@@ -221,15 +228,8 @@ export default function ProductDetailPage() {
               {product.name}
             </h1>
 
-            {/* Rating (Placeholder) */}
-            <div className="flex items-center space-x-2">
-              <div className="flex space-x-1">
-                {[...Array(5)].map((_, i) => (
-                  <FaStar key={i} className="text-yellow-400" />
-                ))}
-              </div>
-              <span className="text-gray-600">(48 reviews)</span>
-            </div>
+            {/* Rating */}
+            <RatingSummary productId={product._id || product.id || params.id as string} />
 
             {/* Price */}
             <div className="flex items-baseline flex-wrap gap-2 sm:space-x-3">
@@ -450,25 +450,16 @@ export default function ProductDetailPage() {
             )}
 
             {activeTab === 'reviews' && (
-              <div className="text-center py-8">
-                <p>No reviews yet. Be the first to review this product!</p>
-              </div>
+              <ProductReviews 
+                productId={product._id || product.id || params.id as string} 
+                productName={product.name}
+              />
             )}
           </div>
         </div>
 
         {/* Related Products */}
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-display font-bold text-gray-900 mb-6 sm:mb-8">
-            You May Also Like
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-            {/* Placeholder for related products - you can implement this later */}
-            <div className="text-center text-gray-500 col-span-full py-8">
-              Related products coming soon
-            </div>
-          </div>
-        </div>
+        <RelatedProducts productId={params.id as string} limit={6} />
       </div>
     </div>
   )

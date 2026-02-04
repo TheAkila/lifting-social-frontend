@@ -6,11 +6,13 @@ import Link from 'next/link'
 import { ChevronRight, ShoppingCart, Heart, Tag } from 'lucide-react'
 import api from '@/lib/api'
 import { useCart } from '@/contexts/CartContext'
+import { useWishlist } from '@/contexts/WishlistContext'
 
 export default function OffersDeals() {
   const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const { addItem } = useCart()
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
 
   useEffect(() => {
     api
@@ -106,10 +108,26 @@ export default function OffersDeals() {
 
                       {/* Wishlist Button */}
                       <button 
+                        onClick={async (e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          const productId = product._id || product.id
+                          if (isInWishlist(productId)) {
+                            await removeFromWishlist(productId)
+                          } else {
+                            await addToWishlist(productId)
+                          }
+                        }}
                         className="absolute bottom-3 right-3 w-9 h-9 rounded-[8px] bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100"
-                        aria-label="Add to wishlist"
+                        aria-label={isInWishlist(product._id || product.id) ? "Remove from wishlist" : "Add to wishlist"}
                       >
-                        <Heart className="w-4 h-4 text-red-600" />
+                        <Heart 
+                          className={`w-4 h-4 transition-colors ${
+                            isInWishlist(product._id || product.id) 
+                              ? 'fill-red-600 text-red-600' 
+                              : 'text-red-600'
+                          }`} 
+                        />
                       </button>
 
                       {/* Quick Add */}

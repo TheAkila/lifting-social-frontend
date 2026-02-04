@@ -6,6 +6,7 @@ import { ShoppingCart, Heart, ChevronLeft, ChevronRight, ArrowRight, X } from 'l
 import { useState, useEffect, useMemo } from 'react'
 import api from '@/lib/api'
 import { useCart } from '@/contexts/CartContext'
+import { useWishlist } from '@/contexts/WishlistContext'
 
 interface ProductGridProps {
   filters: {
@@ -24,6 +25,7 @@ export default function ProductGrid({ filters }: ProductGridProps) {
   const [currentPage, setCurrentPage] = useState(1)
   const productsPerPage = 9
   const { addItem } = useCart()
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
   
   // Quick add modal state
   const [quickAddModal, setQuickAddModal] = useState<{
@@ -307,10 +309,26 @@ export default function ProductGrid({ filters }: ProductGridProps) {
 
                     {/* Wishlist Button */}
                     <button 
+                      onClick={async (e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        const productId = product._id || product.id
+                        if (isInWishlist(productId)) {
+                          await removeFromWishlist(productId)
+                        } else {
+                          await addToWishlist(productId)
+                        }
+                      }}
                       className="absolute top-3 right-3 w-9 h-9 rounded-[8px] bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100"
-                      aria-label="Add to wishlist"
+                      aria-label={isInWishlist(product._id || product.id) ? "Remove from wishlist" : "Add to wishlist"}
                     >
-                      <Heart className="w-4 h-4 text-zinc-600" />
+                      <Heart 
+                        className={`w-4 h-4 transition-colors ${
+                          isInWishlist(product._id || product.id) 
+                            ? 'fill-red-500 text-red-500' 
+                            : 'text-zinc-600'
+                        }`} 
+                      />
                     </button>
 
                     {/* Quick Add */}

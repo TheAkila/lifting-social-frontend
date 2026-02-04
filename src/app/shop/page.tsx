@@ -8,6 +8,7 @@ import ShopCategoryNav from '@/components/shop/ShopCategoryNav'
 import ProductGrid from '@/components/shop/ProductGrid'
 import FeaturedProducts from '@/components/shop/FeaturedProducts'
 import OffersDeals from '@/components/shop/OffersDeals'
+import RecentlyViewed from '@/components/shop/RecentlyViewed'
 
 const categories = [
   {
@@ -109,6 +110,9 @@ function ShopContent() {
 
       {/* Offers & Deals Section */}
       <OffersDeals />
+
+      {/* Recently Viewed Section */}
+      <RecentlyViewed />
 
       {/* All Products Section */}
       <div className="bg-white">
