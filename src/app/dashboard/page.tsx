@@ -963,7 +963,9 @@ function EventCard({ reg, index, getRegistrationStatusBadge, getEventData, getRe
                 }}
                 className="px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm whitespace-nowrap"
               >
-                {requiredAction.actionType === 'preliminary' ? (reg.status === 'preliminary_pending' ? 'Update Entry' : 'Submit Entry') : 'Submit Final'}
+                {requiredAction.actionType === 'preliminary' 
+                  ? (reg.status === 'preliminary_pending' ? 'Update Entry' : reg.status === 'preliminary_declined' ? 'Resubmit Entry' : 'Submit Entry') 
+                  : (reg.status === 'final_declined' ? 'Resubmit Final' : 'Submit Final')}
               </button>
             )}
           </div>
