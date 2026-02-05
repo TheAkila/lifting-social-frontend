@@ -27,7 +27,7 @@ export default function CartPage() {
 
         {items.length === 0 ? (
           /* Empty Cart */
-          <div className="bg-white border-2 border-black rounded-lg p-6 sm:p-8 text-center py-12 sm:py-16">
+          <div className="bg-white border border-gray-300 shadow-sm rounded-lg p-6 sm:p-8 text-center py-12 sm:py-16">
             <FaShoppingBag className="w-16 h-16 sm:w-20 sm:h-20 text-gray-300 mx-auto mb-4 sm:mb-6" />
             <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-black">Your cart is empty</h2>
             <p className="text-gray-600 mb-6 sm:mb-8">Add some products to get started!</p>
@@ -45,14 +45,14 @@ export default function CartPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="bg-white border-2 border-black rounded-lg p-4 sm:p-6"
+                  className="bg-white border border-gray-300 shadow-sm rounded-lg p-4 sm:p-6"
                 >
                   <div className="flex flex-col sm:flex-row gap-4">
                     {/* Product Image */}
                     <img
                       src={item.image || '/placeholder.png'}
                       alt={item.name}
-                      className="w-full sm:w-24 h-32 sm:h-24 object-cover rounded-lg border-2 border-gray-200"
+                      className="w-full sm:w-24 h-32 sm:h-24 object-cover rounded-lg border border-gray-200"
                     />
 
                     {/* Product Details */}
@@ -103,7 +103,7 @@ export default function CartPage() {
               {/* Clear Cart Button */}
               <button
                 onClick={clearCart}
-                className="w-full py-3 px-6 bg-white text-blue-600 hover:bg-blue-50 rounded-lg font-semibold transition-colors border-2 border-blue-600"
+                className="w-full py-3 px-6 bg-red-500 text-white hover:bg-red-600 rounded-lg font-semibold transition-colors border-none"
               >
                 Clear Cart
               </button>
@@ -111,7 +111,7 @@ export default function CartPage() {
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
-              <div className="bg-white border-2 border-black rounded-lg p-4 sm:p-6 sticky top-20 sm:top-28">
+              <div className="bg-white border border-gray-300 shadow-sm rounded-lg p-4 sm:p-6 sticky top-20 sm:top-28">
                 <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-black">Order Summary</h2>
 
                 <div className="space-y-3 mb-6">
@@ -127,7 +127,7 @@ export default function CartPage() {
                     <span>Shipping</span>
                     <span>{totalPrice >= 5000 ? 'FREE' : 'LKR 500'}</span>
                   </div>
-                  <div className="border-t-2 border-gray-300 pt-3">
+                  <div className="border-t border-gray-200 pt-3">
                     <div className="flex justify-between text-xl font-bold text-black">
                       <span>Total</span>
                       <span className="text-black">
@@ -154,7 +154,7 @@ export default function CartPage() {
 
                 {/* Free Shipping Notice */}
                 {totalPrice < 5000 && (
-                  <div className="mt-6 p-4 bg-gray-100 border-2 border-black rounded-lg">
+                  <div className="mt-6 p-4 bg-gray-100 border border-gray-300 rounded-lg">
                     <p className="text-sm text-black">
                       Add <strong>LKR {(5000 - totalPrice).toLocaleString()}</strong> more to get FREE shipping!
                     </p>
