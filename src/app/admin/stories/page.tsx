@@ -10,6 +10,15 @@ import { FaPlus, FaEdit, FaTrash, FaArrowLeft, FaUpload, FaTimes, FaImage } from
 export default function AdminStories() {
   const { user } = useAuth()
   const router = useRouter()
+
+  if (!user) {
+    return null
+  }
+
+  return <AdminStoriesContent user={user} router={router} />
+}
+
+function AdminStoriesContent({ user, router }: { user: any; router: any }) {
   const [stories, setStories] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -33,12 +42,8 @@ export default function AdminStories() {
   const [newTag, setNewTag] = useState('')
 
   useEffect(() => {
-    if (!user) {
-      router.push('/login?redirect=/admin/stories')
-      return
-    }
     loadStories()
-  }, [user])
+  }, [])
 
   const loadStories = async () => {
     try {
@@ -149,8 +154,6 @@ export default function AdminStories() {
       videoId: '',
     })
   }
-
-  if (!user) return null
 
   return (
     <div className="min-h-screen bg-gray-50 pt-28 pb-12">

@@ -10,6 +10,15 @@ import { FaPlus, FaEdit, FaTrash, FaArrowLeft, FaUpload, FaTimes, FaImage } from
 export default function AdminAthletes() {
   const { user } = useAuth()
   const router = useRouter()
+
+  if (!user) {
+    return null
+  }
+
+  return <AdminAthletesContent user={user} router={router} />
+}
+
+function AdminAthletesContent({ user, router }: { user: any; router: any }) {
   const [athletes, setAthletes] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -35,12 +44,8 @@ export default function AdminAthletes() {
   })
 
   useEffect(() => {
-    if (!user) {
-      router.push('/login?redirect=/admin/athletes')
-      return
-    }
     loadAthletes()
-  }, [user])
+  }, [])
 
   const loadAthletes = async () => {
     try {
@@ -170,8 +175,6 @@ export default function AdminAthletes() {
       facebook: '',
     })
   }
-
-  if (!user) return null
 
   return (
     <div className="min-h-screen bg-gray-50 pt-28 pb-12">

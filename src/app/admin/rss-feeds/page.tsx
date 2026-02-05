@@ -23,6 +23,15 @@ interface RSSFeed {
 export default function AdminRSSFeeds() {
   const { user } = useAuth()
   const router = useRouter()
+
+  if (!user) {
+    return null
+  }
+
+  return <AdminRSSFeedsContent user={user} router={router} />
+}
+
+function AdminRSSFeedsContent({ user, router }: { user: any; router: any }) {
   const [feeds, setFeeds] = useState<RSSFeed[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -39,12 +48,8 @@ export default function AdminRSSFeeds() {
   })
 
   useEffect(() => {
-    if (!user) {
-      router.push('/login?redirect=/admin/rss-feeds')
-      return
-    }
     loadFeeds()
-  }, [user])
+  }, [])
 
   const loadFeeds = async () => {
     try {
@@ -143,8 +148,6 @@ export default function AdminRSSFeeds() {
     if (!dateString) return 'Never'
     return new Date(dateString).toLocaleString()
   }
-
-  if (!user) return null
 
   return (
     <div className="min-h-screen bg-gray-50 pt-28 pb-12">

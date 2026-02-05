@@ -31,12 +31,12 @@ interface Order {
   user_id: string
   items: OrderItem[]
   subtotal: number
-  tax: number
   shipping_fee: number
   total: number
   order_status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
   payment_status: 'pending' | 'paid' | 'failed'
   payment_method: string
+  shipping_method: string
   shipping_address: any
   billing_address: any
   tracking_number?: string
@@ -508,10 +508,6 @@ export default function AdminOrdersPage() {
                   <div className="flex justify-between text-gray-700">
                     <span>Subtotal:</span>
                     <span>LKR {selectedOrder.subtotal.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-700">
-                    <span>Tax:</span>
-                    <span>LKR {selectedOrder.tax.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between text-gray-700">
                     <span>Shipping:</span>

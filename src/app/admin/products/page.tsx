@@ -10,6 +10,16 @@ import { FaPlus, FaEdit, FaTrash, FaArrowLeft, FaUpload, FaTimes, FaImage } from
 export default function AdminProducts() {
   const { user } = useAuth()
   const router = useRouter()
+
+  // Check auth early and return loading state if needed
+  if (!user) {
+    return null
+  }
+
+  return <AdminProductsContent user={user} router={router} />
+}
+
+function AdminProductsContent({ user, router }: { user: any; router: any }) {
   const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -39,12 +49,8 @@ export default function AdminProducts() {
   const [newFeature, setNewFeature] = useState('')
 
   useEffect(() => {
-    if (!user) {
-      router.push('/login?redirect=/admin/products')
-      return
-    }
     loadProducts()
-  }, [user])
+  }, [])
 
   const loadProducts = async () => {
     try {
@@ -233,8 +239,6 @@ export default function AdminProducts() {
   const removeFeature = (index: number) => {
     setFormData({ ...formData, features: formData.features.filter((_, i) => i !== index) })
   }
-
-  if (!user) return null
 
   return (
     <div className="min-h-screen bg-gray-50 pt-28 pb-12">

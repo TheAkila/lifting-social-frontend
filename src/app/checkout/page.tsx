@@ -14,6 +14,26 @@ export default function CheckoutPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [formData, setFormData] = useState({
+    // Delivery Information
+    firstName: '',
+    lastName: '',
+    phone: '',
+    address: '',
+    city: '',
+    postalCode: '',
+    saveInfo: false,
+    
+    // Shipping Method
+    shippingMethod: 'standard',
+    
+    // Payment
+    paymentMethod: 'card',
+    
+    // Notes
+    notes: '',
+  })
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   useEffect(() => {
     setMounted(true)
@@ -31,31 +51,15 @@ export default function CheckoutPage() {
   }
 
   const subtotal = totalPrice
-  const tax = subtotal * 0.08
-  const shipping = subtotal >= 5000 ? 0 : 500
-  const total = subtotal + tax + shipping
-
-  const [formData, setFormData] = useState({
-    // Shipping Address
-    fullName: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    postalCode: '',
-    
-    // Payment
-    paymentMethod: 'card',
-    
-    // Notes
-    notes: '',
-  })
-
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const shipping = 400
+  const total = subtotal + shipping
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+    const { name, value, type, checked } = e.target as HTMLInputElement
+    setFormData(prev => ({ 
+      ...prev, 
+      [name]: type === 'checkbox' ? checked : value 
+    }))
     // Clear error when user types
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }))
@@ -65,16 +69,11 @@ export default function CheckoutPage() {
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
 
-    if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required'
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required'
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Invalid email address'
-    }
+    if (!formData.firstName.trim()) newErrors.firstName = 'First name is required'
+    if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required'
     if (!formData.phone.trim()) newErrors.phone = 'Phone number is required'
     if (!formData.address.trim()) newErrors.address = 'Address is required'
     if (!formData.city.trim()) newErrors.city = 'City is required'
-    if (!formData.postalCode.trim()) newErrors.postalCode = 'Postal code is required'
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -107,19 +106,21 @@ export default function CheckoutPage() {
           color: item.color,
         })),
         shippingAddress: {
-          fullName: formData.fullName,
+          fullName: `${formData.firstName} ${formData.lastName}`,
           address: formData.address,
           city: formData.city,
-          postalCode: formData.postalCode,
+          postalCode: formData.postalCode || '',
           phone: formData.phone,
         },
         billingAddress: {
-          fullName: formData.fullName,
+          fullName: `${formData.firstName} ${formData.lastName}`,
           address: formData.address,
           city: formData.city,
-          postalCode: formData.postalCode,
+          postalCode: formData.postalCode || '',
           phone: formData.phone,
         },
+        shippingMethod: formData.shippingMethod,
+        shippingCost: shipping,
         paymentMethod: formData.paymentMethod,
         notes: formData.notes,
       }
@@ -140,13 +141,6 @@ export default function CheckoutPage() {
       }
 
       const { order } = await response.json()
-
-      // If Cash on Delivery, go directly to confirmation
-      if (formData.paymentMethod === 'cod') {
-        clearCart()
-        router.push(`/order-confirmation/${order.id}`)
-        return
-      }
 
       // For card payment, initiate PayHere payment
       const paymentResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/payments/create`, {
@@ -207,78 +201,78 @@ export default function CheckoutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             {/* Checkout Form */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Shipping Information */}
+              {/* Delivery Information */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white border-2 border-black rounded-lg p-4 sm:p-6"
+                className="bg-white border border-gray-300 shadow-sm rounded-lg p-4 sm:p-6"
               >
-                <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-black">Shipping Information</h2>
+                <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-black">Delivery Information</h2>
                 
                 <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-semibold mb-2 text-black">
-                      Full Name <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-2 border-2 ${errors.fullName ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-black transition-colors`}
-                      placeholder="John Doe"
-                    />
-                    {errors.fullName && (
-                      <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
-                    )}
-                  </div>
-
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold mb-2 text-black">
-                        Email <span className="text-red-500">*</span>
+                        First Name
                       </label>
                       <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
+                        type="text"
+                        name="firstName"
+                        value={formData.firstName}
                         onChange={handleChange}
-                        className={`w-full px-4 py-2 border-2 ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-black transition-colors`}
-                        placeholder="john@example.com"
+                        className={`w-full px-4 py-2 border ${errors.firstName ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-black transition-colors`}
+                        placeholder="John"
                       />
-                      {errors.email && (
-                        <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                      {errors.firstName && (
+                        <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>
                       )}
                     </div>
 
                     <div>
                       <label className="block text-sm font-semibold mb-2 text-black">
-                        Phone <span className="text-red-500">*</span>
+                        Last Name
                       </label>
+                      <input
+                        type="text"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-2 border ${errors.lastName ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-black transition-colors`}
+                        placeholder="Doe"
+                      />
+                      {errors.lastName && (
+                        <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-black">
+                      Phone
+                    </label>
                       <input
                         type="tel"
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
-                        className={`w-full px-4 py-2 border-2 ${errors.phone ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-black transition-colors`}
+                        className={`w-full px-4 py-2 border ${errors.phone ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-black transition-colors`}
                         placeholder="+94 77 123 4567"
                       />
                       {errors.phone && (
                         <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
                       )}
-                    </div>
                   </div>
 
                   <div>
                     <label className="block text-sm font-semibold mb-2 text-black">
-                      Address <span className="text-red-500">*</span>
+                      Address
                     </label>
                     <input
                       type="text"
                       name="address"
                       value={formData.address}
                       onChange={handleChange}
-                      className={`w-full px-4 py-2 border-2 ${errors.address ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-black transition-colors`}
+                      className={`w-full px-4 py-2 border ${errors.address ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-black transition-colors`}
                       placeholder="123 Main Street"
                     />
                     {errors.address && (
@@ -289,14 +283,14 @@ export default function CheckoutPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold mb-2 text-black">
-                        City <span className="text-red-500">*</span>
+                        City
                       </label>
                       <input
                         type="text"
                         name="city"
                         value={formData.city}
                         onChange={handleChange}
-                        className={`w-full px-4 py-2 border-2 ${errors.city ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-black transition-colors`}
+                        className={`w-full px-4 py-2 border ${errors.city ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-black transition-colors`}
                         placeholder="Colombo"
                       />
                       {errors.city && (
@@ -306,14 +300,14 @@ export default function CheckoutPage() {
 
                     <div>
                       <label className="block text-sm font-semibold mb-2 text-black">
-                        Postal Code <span className="text-red-500">*</span>
+                        Postal Code (Optional)
                       </label>
                       <input
                         type="text"
                         name="postalCode"
                         value={formData.postalCode}
                         onChange={handleChange}
-                        className={`w-full px-4 py-2 border-2 ${errors.postalCode ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-black transition-colors`}
+                        className={`w-full px-4 py-2 border ${errors.postalCode ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-black transition-colors`}
                         placeholder="10100"
                       />
                       {errors.postalCode && (
@@ -321,6 +315,50 @@ export default function CheckoutPage() {
                       )}
                     </div>
                   </div>
+
+                  {/* Save Information Checkbox */}
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="saveInfo"
+                      checked={formData.saveInfo}
+                      onChange={handleChange}
+                      className="mr-2 h-4 w-4 text-black focus:ring-black border-gray-300 rounded"
+                    />
+                    <label className="text-sm text-black">
+                      Save this information for next time
+                    </label>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Shipping Method */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="bg-white border border-gray-300 shadow-sm rounded-lg p-4 sm:p-6"
+              >
+                <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-black">Shipping Method</h2>
+                
+                <div className="space-y-2 sm:space-y-3">
+                  <label className="flex items-center justify-between p-3 sm:p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-black transition-colors">
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        name="shippingMethod"
+                        value="standard"
+                        checked={formData.shippingMethod === 'standard'}
+                        onChange={handleChange}
+                        className="mr-2 sm:mr-3"
+                      />
+                      <div>
+                        <span className="text-sm sm:text-base font-semibold">Standard Delivery</span>
+                        <p className="text-xs text-gray-600">3-5 business days</p>
+                      </div>
+                    </div>
+                    <span className="text-sm font-semibold">LKR 400</span>
+                  </label>
                 </div>
               </motion.div>
 
@@ -328,13 +366,13 @@ export default function CheckoutPage() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="bg-white border-2 border-black rounded-lg p-4 sm:p-6"
+                transition={{ delay: 0.2 }}
+                className="bg-white border border-gray-300 shadow-sm rounded-lg p-4 sm:p-6"
               >
                 <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-black">Payment Method</h2>
                 
                 <div className="space-y-2 sm:space-y-3">
-                  <label className="flex items-center p-3 sm:p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-black transition-colors">
+                  <label className="flex items-center p-3 sm:p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-black transition-colors">
                     <input
                       type="radio"
                       name="paymentMethod"
@@ -343,19 +381,10 @@ export default function CheckoutPage() {
                       onChange={handleChange}
                       className="mr-2 sm:mr-3"
                     />
-                    <span className="text-sm sm:text-base font-semibold">Credit/Debit Card</span>
-                  </label>
-
-                  <label className="flex items-center p-3 sm:p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-black transition-colors">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="cod"
-                      checked={formData.paymentMethod === 'cod'}
-                      onChange={handleChange}
-                      className="mr-2 sm:mr-3"
-                    />
-                    <span className="text-sm sm:text-base font-semibold">Cash on Delivery</span>
+                    <div>
+                      <span className="text-sm sm:text-base font-semibold">Credit / Debit Card Payments using PayHere</span>
+                      <p className="text-xs text-gray-600 mt-1">Secure payment processing via PayHere gateway</p>
+                    </div>
                   </label>
                 </div>
               </motion.div>
@@ -364,8 +393,8 @@ export default function CheckoutPage() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="bg-white border-2 border-black rounded-lg p-4 sm:p-6"
+                transition={{ delay: 0.3 }}
+                className="bg-white border border-gray-300 shadow-sm rounded-lg p-4 sm:p-6"
               >
                 <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-black">Order Notes (Optional)</h2>
                 <textarea
@@ -373,7 +402,7 @@ export default function CheckoutPage() {
                   value={formData.notes}
                   onChange={handleChange}
                   rows={4}
-                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border-2 border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
+                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
                   placeholder="Any special instructions for your order..."
                 />
               </motion.div>
@@ -384,8 +413,8 @@ export default function CheckoutPage() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="bg-white border-2 border-black rounded-lg p-4 sm:p-6 lg:sticky lg:top-24"
+                transition={{ delay: 0.4 }}
+                className="bg-white border border-gray-300 shadow-sm rounded-lg p-4 sm:p-6 lg:sticky lg:top-24"
               >
                 <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-black">Order Summary</h2>
                 
@@ -396,7 +425,7 @@ export default function CheckoutPage() {
                       <img 
                         src={item.image} 
                         alt={item.name} 
-                        className="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded border-2 border-gray-200"
+                        className="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded border border-gray-200"
                       />
                       <div className="flex-1 min-w-0">
                         <p className="text-xs sm:text-sm font-semibold text-black truncate">{item.name}</p>
@@ -409,27 +438,20 @@ export default function CheckoutPage() {
                 </div>
 
                 {/* Totals */}
-                <div className="space-y-2 mb-4 sm:mb-6">
-                  <div className="flex justify-between text-sm sm:text-base text-gray-700">
+                <div className="space-y-3 mb-6">
+                  <div className="flex justify-between text-gray-600">
                     <span>Subtotal</span>
-                    <span>LKR {subtotal.toFixed(2)}</span>
+                    <span>LKR {subtotal.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-sm sm:text-base text-gray-700">
-                    <span>Tax (8%)</span>
-                    <span>LKR {tax.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-700">
+                  <div className="flex justify-between text-gray-600">
                     <span>Shipping</span>
-                    <span>{shipping === 0 ? 'FREE' : `LKR ${shipping.toFixed(2)}`}</span>
+                    <span>LKR {shipping.toLocaleString()}</span>
                   </div>
-                  {subtotal < 5000 && (
-                    <p className="text-xs text-gray-500 italic">
-                      Free shipping on orders over LKR 5,000
-                    </p>
-                  )}
-                  <div className="flex justify-between text-lg sm:text-xl font-bold text-black pt-2 sm:pt-3 border-t-2 border-black">
-                    <span>Total</span>
-                    <span>LKR {total.toFixed(2)}</span>
+                  <div className="border-t border-gray-200 pt-3">
+                    <div className="flex justify-between text-xl font-bold text-black">
+                      <span>Total</span>
+                      <span>LKR {total.toLocaleString()}</span>
+                    </div>
                   </div>
                 </div>
 
