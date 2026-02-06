@@ -31,6 +31,32 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Don't log 404 errors as they're expected for missing resources
+    const is404 = error.response?.status === 404
+    
+    // Log all errors for debugging (except 404s)
+    if (error.response && !is404) {
+      // Server responded with error status
+      console.error('🚨 API Error:', {
+        url: error.config?.url || 'unknown',
+        method: error.config?.method || 'unknown',
+        status: error.response?.status || 'unknown',
+        statusText: error.response?.statusText || 'unknown',
+        data: error.response?.data || 'no data',
+        message: error.message || 'no message'
+      })
+    } else if (error.request && !is404) {
+      // Request made but no response
+      console.error('🚨 Network Error - No response:', {
+        url: error.config?.url,
+        method: error.config?.method,
+        message: error.message
+      })
+    } else if (!is404) {
+      // Error in request setup
+      console.error('🚨 Request Setup Error:', error.message)
+    }
+    
     if (error.response?.status === 401) {
       // Handle unauthorized access
       if (typeof window !== 'undefined') {
@@ -58,11 +84,6 @@ api.interceptors.response.use(
 // API Functions
 export const getStories = async () => {
   const response = await api.get('/stories')
-  return response.data
-}
-
-export const getAthletes = async () => {
-  const response = await api.get('/athletes')
   return response.data
 }
 

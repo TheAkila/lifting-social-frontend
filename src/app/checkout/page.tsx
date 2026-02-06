@@ -90,7 +90,7 @@ export default function CheckoutPage() {
 
     try {
       // Get auth token
-      const token = localStorage.getItem('token')
+      const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken')
       if (!token) {
         alert('Please login to complete your order')
         router.push('/login?redirect=/checkout')
@@ -126,7 +126,7 @@ export default function CheckoutPage() {
       }
 
       // Create order
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -143,7 +143,7 @@ export default function CheckoutPage() {
       const { order } = await response.json()
 
       // For card payment, initiate PayHere payment
-      const paymentResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/payments/create`, {
+      const paymentResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payments/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -178,7 +178,9 @@ export default function CheckoutPage() {
       form.submit()
     } catch (error: any) {
       console.error('Checkout error:', error)
-      alert(error.message || 'Failed to complete order. Please try again.')
+      console.error('Error response:', error.response?.data)
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to complete order. Please try again.'
+      alert(errorMessage)
       setLoading(false)
     }
   }

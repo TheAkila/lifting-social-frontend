@@ -100,8 +100,8 @@ export default function AdminOrdersPage() {
 
   const fetchOrders = async () => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/orders`, {
+      const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken')
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/orders`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -131,9 +131,9 @@ export default function AdminOrdersPage() {
 
     setUpdating(true)
     try {
-      const token = localStorage.getItem('token')
+      const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken')
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/orders/${selectedOrder.id}/status`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/orders/${selectedOrder.id}/status`,
         {
           method: 'PUT',
           headers: {

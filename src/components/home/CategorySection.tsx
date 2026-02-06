@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Store, BookOpen, Medal, Calendar, Dumbbell, Shirt, ArrowRight, Sparkles } from 'lucide-react'
+import { Store, BookOpen, Calendar, Dumbbell, Shirt, ArrowRight, Sparkles } from 'lucide-react'
 
 const categories = [
   {
@@ -19,14 +19,6 @@ const categories = [
     href: '/stories',
     description: 'Inspiring athlete journeys & updates',
     color: 'from-blue-500 to-blue-700',
-    accent: 'white'
-  },
-  {
-    name: 'Athletes',
-    icon: Medal,
-    href: '/athletes',
-    description: 'Meet our Sri Lankan champions',
-    color: 'from-amber-500 to-orange-600',
     accent: 'white'
   },
   {

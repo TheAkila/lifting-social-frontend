@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { FaBox, FaNewspaper, FaUsers, FaChartBar, FaCalendar, FaUserTie, FaRss, FaShoppingCart, FaStar, FaHeart, FaDollarSign } from 'react-icons/fa'
+import { FaBox, FaNewspaper, FaChartBar, FaCalendar, FaRss, FaShoppingCart, FaStar, FaHeart, FaDollarSign } from 'react-icons/fa'
 import api from '@/lib/api'
 
 interface ShopStats {
@@ -34,7 +34,6 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState({
     products: 0,
     rssFeeds: 0,
-    athletes: 0,
     events: 0,
   })
   const [shopStats, setShopStats] = useState<ShopStats | null>(null)
@@ -82,16 +81,14 @@ export default function AdminDashboard() {
 
   const loadStats = async () => {
     try {
-      const [productsRes, rssFeedsRes, athletesRes, eventsRes] = await Promise.all([
+      const [productsRes, rssFeedsRes, eventsRes] = await Promise.all([
         api.get('/products'),
         api.get('/rss-feeds'),
-        api.get('/athletes'),
         api.get('/events'),
       ])
       setStats({
         products: productsRes.data.length,
         rssFeeds: rssFeedsRes.data.length,
-        athletes: athletesRes.data.length,
         events: eventsRes.data.length,
       })
       setLoading(false)
@@ -154,36 +151,6 @@ export default function AdminDashboard() {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">Blog Feeds</h3>
                   <p className="text-gray-600 text-sm">RSS aggregation</p>
-                </div>
-              </div>
-            </div>
-          </Link>
-
-          {/* Athletes Card */}
-          <Link href="/admin/athletes">
-            <div className="bg-white rounded-[12px] p-6 hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200 shadow-sm">
-              <div className="flex items-center space-x-4">
-                <div className="w-14 h-14 rounded-[10px] bg-purple-500/10 flex items-center justify-center">
-                  <FaUsers className="text-xl text-purple-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Athletes</h3>
-                  <p className="text-gray-600 text-sm">Manage profiles</p>
-                </div>
-              </div>
-            </div>
-          </Link>
-
-          {/* Coaches Card */}
-          <Link href="/admin/coaches">
-            <div className="bg-white rounded-[12px] p-6 hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200 shadow-sm">
-              <div className="flex items-center space-x-4">
-                <div className="w-14 h-14 rounded-[10px] bg-green-500/10 flex items-center justify-center">
-                  <FaUserTie className="text-xl text-green-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Coaches</h3>
-                  <p className="text-gray-600 text-sm">Manage coaches</p>
                 </div>
               </div>
             </div>
@@ -339,10 +306,6 @@ export default function AdminDashboard() {
               <div className="text-center p-4 bg-orange-50 rounded-[10px]">
                 <div className="text-2xl font-bold text-orange-600 mb-1">{stats.rssFeeds}</div>
                 <div className="text-gray-600 text-xs">RSS Feeds</div>
-              </div>
-              <div className="text-center p-4 bg-purple-50 rounded-[10px]">
-                <div className="text-2xl font-bold text-purple-600 mb-1">{stats.athletes}</div>
-                <div className="text-gray-600 text-xs">Active Athletes</div>
               </div>
               <div className="text-center p-4 bg-indigo-50 rounded-[10px]">
                 <div className="text-2xl font-bold text-indigo-600 mb-1">{stats.events}</div>
