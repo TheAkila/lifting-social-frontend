@@ -23,6 +23,7 @@ const accessoriesCategories = [
   { name: 'Knee Sleeves', slug: 'knee-sleeves' },
   { name: 'Grips', slug: 'grips' },
   { name: 'Bags', slug: 'bags' },
+  { name: 'Shakers/Bottles', slug: 'shakers-bottles' },
 ]
 
 const supplementCategories = [

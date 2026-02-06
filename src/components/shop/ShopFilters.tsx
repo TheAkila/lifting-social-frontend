@@ -7,7 +7,7 @@ import { SlidersHorizontal, X } from 'lucide-react'
 const subcategories = {
   men: ['T-Shirts', 'Tanks', 'Hoodies', 'Shorts', 'Joggers', 'Compression'],
   women: ['Sports Bras', 'Leggings', 'Tops', 'Shorts', 'Hoodies', 'Sets'],
-  accessories: ['Belts', 'Wraps', 'Straps', 'Bags', 'Knee Sleeves', 'Grips'],
+  accessories: ['Belts', 'Wraps', 'Straps', 'Bags', 'Knee Sleeves', 'Grips', 'Shakers/Bottles'],
   supplements: ['Protein', 'Pre-Workout', 'Creatine', 'Vitamins', 'Recovery', 'Energy']
 }
 

@@ -160,11 +160,19 @@ export default function ProductDetailPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
-              className="relative aspect-square bg-white rounded-2xl overflow-hidden border border-zinc-200 shadow-sm"
+              className={`relative bg-white rounded-2xl overflow-hidden border border-zinc-200 shadow-sm flex items-center justify-center ${
+                product.category === 'supplements' 
+                  ? 'h-72 sm:h-80 md:h-96' 
+                  : 'aspect-square'
+              }`}
             >
               {images[selectedImage] ? (
                 <div 
-                  className="absolute inset-0 bg-cover bg-center"
+                  className={`absolute inset-0 ${
+                    product.category === 'supplements'
+                      ? 'bg-contain bg-no-repeat bg-center'
+                      : 'bg-cover bg-center'
+                  }`}
                   style={{ backgroundImage: `url(${images[selectedImage]})` }}
                 />
               ) : (
@@ -260,11 +268,11 @@ export default function ProductDetailPage() {
               )}
             </div>
 
-            {/* Size Selection */}
+            {/* Size/Flavour Selection */}
             {product.sizes && product.sizes.length > 0 && (
               <div className="space-y-3">
                 <label className="block text-zinc-900 font-semibold text-sm uppercase tracking-wide">
-                  Select Size
+                  {product.category === 'supplements' ? 'Select Flavour' : 'Select Size'}
                 </label>
                 <div className="flex flex-wrap gap-2 sm:gap-3">
                   {product.sizes.map((size) => (
@@ -423,13 +431,19 @@ export default function ProductDetailPage() {
 
             {activeTab === 'details' && (
               <div className="space-y-5 max-w-2xl">
-                {product.material && (
+                {product.category === 'supplements' && product.servings && (
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 py-3 border-b border-zinc-100">
+                    <strong className="text-zinc-900 font-semibold min-w-[140px] text-sm sm:text-base">Servings:</strong>
+                    <span className="text-zinc-700 text-sm sm:text-base">{product.servings}</span>
+                  </div>
+                )}
+                {product.category !== 'supplements' && product.material && (
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 py-3 border-b border-zinc-100">
                     <strong className="text-zinc-900 font-semibold min-w-[140px] text-sm sm:text-base">Material:</strong>
                     <span className="text-zinc-700 text-sm sm:text-base">{product.material}</span>
                   </div>
                 )}
-                {product.care && (
+                {product.category !== 'supplements' && product.care && (
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 py-3 border-b border-zinc-100">
                     <strong className="text-zinc-900 font-semibold min-w-[140px] text-sm sm:text-base">Care Instructions:</strong>
                     <span className="text-zinc-700 text-sm sm:text-base">{product.care}</span>
@@ -449,13 +463,19 @@ export default function ProductDetailPage() {
                     <span className="text-red-600 font-medium text-sm sm:text-base">Out of Stock</span>
                   )}
                 </div>
-                {product.sizes && product.sizes.length > 0 && (
+                {product.category === 'supplements' && product.sizes && product.sizes.length > 0 && (
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 py-3">
+                    <strong className="text-zinc-900 font-semibold min-w-[140px] text-sm sm:text-base">Available Flavours:</strong>
+                    <span className="text-zinc-700 text-sm sm:text-base">{product.sizes.join(', ')}</span>
+                  </div>
+                )}
+                {product.category !== 'supplements' && product.sizes && product.sizes.length > 0 && (
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 py-3 border-b border-zinc-100">
                     <strong className="text-zinc-900 font-semibold min-w-[140px] text-sm sm:text-base">Available Sizes:</strong>
                     <span className="text-zinc-700 text-sm sm:text-base">{product.sizes.join(', ')}</span>
                   </div>
                 )}
-                {product.colors && product.colors.length > 0 && (
+                {product.category !== 'supplements' && product.colors && product.colors.length > 0 && (
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 py-3">
                     <strong className="text-zinc-900 font-semibold min-w-[140px] text-sm sm:text-base">Available Colors:</strong>
                     <span className="text-zinc-700 text-sm sm:text-base capitalize">{product.colors.join(', ')}</span>

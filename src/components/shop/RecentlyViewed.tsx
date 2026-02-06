@@ -11,10 +11,10 @@ interface Product {
   id: string
   name: string
   price: number
-  compare_price?: number
+  comparePrice?: number
   image: string
   category: string
-  in_stock: boolean
+  inStock: boolean
   sizes?: string[]
   colors?: string[]
 }
@@ -221,15 +221,15 @@ export default function RecentlyViewed() {
                             e.stopPropagation()
                             handleQuickAdd(product)
                           }}
-                          disabled={!product.in_stock}
-                          className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-1.5 rounded-[6px] text-xs font-medium flex items-center justify-center gap-2 shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <span>{product.in_stock ? 'Quick Add' : 'Out of Stock'}</span>
+                        disabled={!product.inStock}
+                        className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-1.5 rounded-[6px] text-xs font-medium flex items-center justify-center gap-2 shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <span>{product.inStock ? 'Quick Add' : 'Out of Stock'}</span>
                         </button>
                       </div>
 
                       {/* Out of Stock Overlay */}
-                      {!product.in_stock && (
+                      {!product.inStock && (
                         <div className="absolute inset-0 bg-zinc-900/70 flex items-center justify-center">
                           <span className="text-white text-sm font-medium px-3 py-1.5 bg-zinc-800 rounded-full">
                             Out of Stock

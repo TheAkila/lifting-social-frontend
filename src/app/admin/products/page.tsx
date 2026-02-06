@@ -42,6 +42,7 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
     colors: [] as string[],
     material: '',
     care: '',
+    servings: '',
     features: [] as string[],
   })
   const [newSize, setNewSize] = useState('')
@@ -180,6 +181,7 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
       colors: product.colors || [],
       material: product.material || '',
       care: product.care || '',
+      servings: product.servings || '',
       features: product.features || [],
     })
     setShowForm(true)
@@ -203,6 +205,7 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
       colors: [],
       material: '',
       care: '',
+      servings: '',
       features: [],
     })
   }
@@ -366,6 +369,7 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
                         <option value="Bags">Bags</option>
                         <option value="Knee Sleeves">Knee Sleeves</option>
                         <option value="Grips">Grips</option>
+                        <option value="Shakers/Bottles">Shakers/Bottles</option>
                       </>
                     )}
                     {formData.category === 'supplements' && (
@@ -525,9 +529,11 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
                 />
               </div>
 
-              {/* Sizes */}
+              {/* Sizes/Flavours */}
               <div className="border-t border-brand-light/10 pt-6">
-                <label className="block text-sm font-semibold mb-3">Available Sizes</label>
+                <label className="block text-sm font-semibold mb-3">
+                  {formData.category === 'supplements' ? 'Available Flavours' : 'Available Sizes'}
+                </label>
                 <div className="flex flex-wrap gap-2 mb-3">
                   {formData.sizes.map((size) => (
                     <span
@@ -551,73 +557,88 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
                     value={newSize}
                     onChange={(e) => setNewSize(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSize())}
-                    placeholder="e.g., S, M, L, XL"
+                    placeholder={formData.category === 'supplements' ? 'e.g., Chocolate, Vanilla, Strawberry' : 'e.g., S, M, L, XL'}
                     className="input-field flex-1"
                   />
                   <button type="button" onClick={addSize} className="btn-outline">
-                    Add Size
+                    {formData.category === 'supplements' ? 'Add Flavour' : 'Add Size'}
                   </button>
                 </div>
               </div>
 
-              {/* Colors */}
-              <div className="border-t border-brand-light/10 pt-6">
-                <label className="block text-sm font-semibold mb-3">Available Colors</label>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {formData.colors.map((color) => (
-                    <span
-                      key={color}
-                      className="bg-brand-secondary/20 text-brand-secondary px-3 py-1 rounded-full text-sm flex items-center space-x-2"
-                    >
-                      <span>{color}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeColor(color)}
-                        className="hover:text-blue-400"
+              {/* Colors - Only show for non-supplement products */}
+              {formData.category !== 'supplements' && (
+                <div className="border-t border-brand-light/10 pt-6">
+                  <label className="block text-sm font-semibold mb-3">Available Colors</label>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {formData.colors.map((color) => (
+                      <span
+                        key={color}
+                        className="bg-brand-secondary/20 text-brand-secondary px-3 py-1 rounded-full text-sm flex items-center space-x-2"
                       >
-                        <FaTimes className="text-xs" />
-                      </button>
-                    </span>
-                  ))}
+                        <span>{color}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeColor(color)}
+                          className="hover:text-blue-400"
+                        >
+                          <FaTimes className="text-xs" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex space-x-2">
+                    <input
+                      type="text"
+                      value={newColor}
+                      onChange={(e) => setNewColor(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addColor())}
+                      placeholder="e.g., Black, Navy, Red"
+                      className="input-field flex-1"
+                    />
+                    <button type="button" onClick={addColor} className="btn-outline">
+                      Add Color
+                    </button>
+                  </div>
                 </div>
-                <div className="flex space-x-2">
-                  <input
-                    type="text"
-                    value={newColor}
-                    onChange={(e) => setNewColor(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addColor())}
-                    placeholder="e.g., Black, Navy, Red"
-                    className="input-field flex-1"
-                  />
-                  <button type="button" onClick={addColor} className="btn-outline">
-                    Add Color
-                  </button>
-                </div>
-              </div>
+              )}
 
-              {/* Material & Care */}
-              <div className="border-t border-brand-light/10 pt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold mb-2">Material</label>
+              {/* Material & Care OR Servings */}
+              {formData.category === 'supplements' ? (
+                <div className="border-t border-brand-light/10 pt-6">
+                  <label className="block text-sm font-semibold mb-2">Servings</label>
                   <input
                     type="text"
-                    value={formData.material}
-                    onChange={(e) => setFormData({ ...formData, material: e.target.value })}
+                    value={formData.servings}
+                    onChange={(e) => setFormData({ ...formData, servings: e.target.value })}
                     className="input-field"
-                    placeholder="e.g., 100% Cotton"
+                    placeholder="e.g., 30 servings, 60 servings"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-semibold mb-2">Care Instructions</label>
-                  <input
-                    type="text"
-                    value={formData.care}
-                    onChange={(e) => setFormData({ ...formData, care: e.target.value })}
-                    className="input-field"
-                    placeholder="e.g., Machine wash cold"
-                  />
+              ) : (
+                <div className="border-t border-brand-light/10 pt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold mb-2">Material</label>
+                    <input
+                      type="text"
+                      value={formData.material}
+                      onChange={(e) => setFormData({ ...formData, material: e.target.value })}
+                      className="input-field"
+                      placeholder="e.g., 100% Cotton"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2">Care Instructions</label>
+                    <input
+                      type="text"
+                      value={formData.care}
+                      onChange={(e) => setFormData({ ...formData, care: e.target.value })}
+                      className="input-field"
+                      placeholder="e.g., Machine wash cold"
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Features */}
               <div className="border-t border-brand-light/10 pt-6">

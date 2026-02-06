@@ -295,7 +295,7 @@ export default function ProductGrid({ filters }: ProductGridProps) {
 
                     {/* Badges */}
                     <div className="absolute top-2 left-2 flex flex-col gap-1">
-                      {product.comparePrice && (
+                      {product.comparePrice && product.comparePrice > product.price && (
                         <span className="bg-brand-accent text-white px-2 py-0.5 rounded-full text-[10px] font-medium">
                           {Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)}% OFF
                         </span>
