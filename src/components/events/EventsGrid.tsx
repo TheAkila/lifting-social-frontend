@@ -106,17 +106,6 @@ export default function EventsGrid({ events }: EventsGridProps) {
 
   return (
     <div>
-      {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-8 pb-4 sm:pb-6 border-b border-zinc-200">
-        <p className="text-sm text-zinc-500">
-          Showing{' '}
-          <span className="text-zinc-900 font-medium">
-            {events.length > 0 ? startIndex + 1 : 0}–{Math.min(endIndex, events.length)}
-          </span>{' '}
-          of <span className="text-zinc-900 font-medium">{events.length}</span> events
-        </p>
-      </div>
-
       {/* Events Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {currentEvents.map((event, index) => (
@@ -128,7 +117,7 @@ export default function EventsGrid({ events }: EventsGridProps) {
           >
             <Link
               href={`/events/${event.slug}`}
-              className="group block bg-white rounded-[12px] overflow-hidden border border-zinc-100 hover:border-zinc-200 hover:shadow-lg transition-all duration-300"
+              className="group block bg-white rounded-lg overflow-hidden border border-zinc-200 shadow-md transition-all duration-300"
             >
               {/* Image */}
               <div className="relative w-full overflow-hidden bg-zinc-100" style={{ paddingBottom: '66.67%' }}>
@@ -137,7 +126,7 @@ export default function EventsGrid({ events }: EventsGridProps) {
                     src={event.cover_image}
                     alt={event.title}
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="object-cover"
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center bg-zinc-200">
@@ -145,7 +134,7 @@ export default function EventsGrid({ events }: EventsGridProps) {
                   </div>
                 )}
                 {/* Event Type Badge */}
-                <div className="absolute top-3 left-3 bg-indigo-600 text-white text-xs font-medium px-3 py-1 rounded-full">
+                <div className="absolute top-3 left-3 bg-blue-600 text-white text-xs font-medium px-3 py-1 rounded-full">
                   {getEventTypeLabel(event.event_type)}
                 </div>
               </div>

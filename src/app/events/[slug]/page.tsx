@@ -433,8 +433,8 @@ export default function EventDetailPage() {
   const currentGender = registration?.gender || 'male'
 
   return (
-    <div className="min-h-screen pt-16 sm:pt-20 bg-zinc-50">
-      <div className="container-custom py-4 sm:py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen pt-12 sm:pt-16 bg-zinc-50">
+      <div className="container-custom py-2 sm:py-4 px-4 sm:px-6 lg:px-8">
         <Link href="/events" className="inline-flex items-center gap-2 text-zinc-600 hover:text-zinc-900 mb-6 sm:mb-8 font-medium transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to Events
         </Link>
@@ -442,68 +442,46 @@ export default function EventDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           <div className="lg:col-span-2">
             {event.cover_image && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative w-full rounded-card overflow-hidden mb-6 bg-zinc-200" style={{ paddingBottom: '56.25%' }}>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative w-full rounded-card overflow-hidden mb-3 sm:mb-4 bg-zinc-200" style={{ paddingBottom: '50%' }}>
                 <Image src={event.cover_image} alt={event.title} fill className="object-cover" />
               </motion.div>
             )}
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6 sm:mb-8">
-              <div className="flex flex-wrap gap-2 sm:gap-3 mb-3 sm:mb-4">
-                <span className={`px-3 py-1.5 rounded-badge text-xs font-medium ${phase === 'closed' ? 'bg-zinc-200 text-zinc-700' : 'bg-emerald-100 text-emerald-700'}`}>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-3 sm:mb-4">
+              <div className="flex flex-wrap gap-2 mb-2 sm:mb-3">
+                <span className={`px-3 py-1 rounded-badge text-xs font-medium ${phase === 'closed' ? 'bg-zinc-200 text-zinc-700' : 'bg-emerald-100 text-emerald-700'}`}>
                   {getPhaseLabel(phase)}
                 </span>
               </div>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-zinc-900 mb-3 sm:mb-4">{event.title}</h1>
-              <p className="text-sm sm:text-base text-zinc-600 leading-relaxed">{event.description}</p>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-zinc-900 mb-2 sm:mb-3">{event.title}</h1>
+              <p className="text-sm text-zinc-600 leading-relaxed line-clamp-2">{event.description}</p>
             </motion.div>
 
-            {registration && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white border border-zinc-200 rounded-card p-4 sm:p-6 mb-6 sm:mb-8 shadow-sm">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <div>
-                    <h3 className="text-lg font-display font-semibold text-zinc-900 mb-2">
-                      {registration.is_team_registration ? 'Team Registered' : 'Registered'}
-                    </h3>
-                    <p className="text-sm sm:text-base text-zinc-600">
-                      Manage your registration, preliminary entries, and final entries from your dashboard.
-                    </p>
-                  </div>
-                  <span className={`px-3 py-1.5 rounded-badge text-xs font-medium whitespace-nowrap ${statusBadge?.color}`}>{statusBadge?.label}</span>
-                </div>
-                <button
-                  onClick={() => router.push('/dashboard')}
-                  className="mt-4 w-full sm:w-auto px-6 py-2.5 bg-zinc-900 text-white rounded-lg font-medium hover:bg-zinc-800 transition-colors text-sm sm:text-base"
-                >
-                  Go to Dashboard →
-                </button>
-              </motion.div>
-            )}
-
             {(event.registration_start_date || event.preliminary_entry_start || event.final_entry_start) && (
-              <div className="bg-white border border-zinc-200 rounded-card p-4 sm:p-6 mb-6 sm:mb-8 shadow-sm">
-                <h3 className="text-lg font-display font-semibold text-zinc-900 mb-4 sm:mb-6">Important Dates</h3>
-                <div className="space-y-3 sm:space-y-4">
+              <div className="bg-white border border-zinc-200 rounded-card p-3 sm:p-4 mb-3 sm:mb-4 shadow-sm">
+                <h3 className="text-base font-display font-semibold text-zinc-900 mb-3">Important Dates</h3>
+                <div className="space-y-2">
                   {event.registration_start_date && (
-                    <div className="flex items-start gap-3 sm:gap-4">
-                      <div className={`w-3 h-3 rounded-full mt-1 sm:mt-1.5 flex-shrink-0 ${phase === 'registration' ? 'bg-emerald-500' : 'bg-zinc-300'}`}></div>
-                      <div><div className="font-semibold text-zinc-900 text-sm sm:text-base">Registration</div><div className="text-xs sm:text-sm text-zinc-600 mt-0.5">{formatDateTime(event.registration_start_date)}{event.registration_end_date && ` - ${formatDateTime(event.registration_end_date)}`}</div></div>
+                    <div className="flex items-start gap-2">
+                      <div className={`w-2 h-2 rounded-full mt-1 flex-shrink-0 ${phase === 'registration' ? 'bg-emerald-500' : 'bg-zinc-300'}`}></div>
+                      <div><div className="font-semibold text-zinc-900 text-xs">Registration</div><div className="text-xs text-zinc-600 mt-0.5">{formatDateTime(event.registration_start_date)}{event.registration_end_date && ` - ${formatDateTime(event.registration_end_date)}`}</div></div>
                     </div>
                   )}
                   {event.preliminary_entry_start && (
-                    <div className="flex items-start gap-3 sm:gap-4">
-                      <div className={`w-3 h-3 rounded-full mt-1 sm:mt-1.5 flex-shrink-0 ${phase === 'preliminary_entries' ? 'bg-emerald-500' : 'bg-zinc-300'}`}></div>
-                      <div><div className="font-semibold text-zinc-900 text-sm sm:text-base">Preliminary Entries</div><div className="text-xs sm:text-sm text-zinc-600 mt-0.5">{formatDateTime(event.preliminary_entry_start)}{event.preliminary_entry_deadline && ` - ${formatDateTime(event.preliminary_entry_deadline)}`}</div></div>
+                    <div className="flex items-start gap-2">
+                      <div className={`w-2 h-2 rounded-full mt-1 flex-shrink-0 ${phase === 'preliminary_entries' ? 'bg-emerald-500' : 'bg-zinc-300'}`}></div>
+                      <div><div className="font-semibold text-zinc-900 text-xs">Preliminary Entries</div><div className="text-xs text-zinc-600 mt-0.5">{formatDateTime(event.preliminary_entry_start)}{event.preliminary_entry_deadline && ` - ${formatDateTime(event.preliminary_entry_deadline)}`}</div></div>
                     </div>
                   )}
                   {event.final_entry_start && (
-                    <div className="flex items-start gap-3 sm:gap-4">
-                      <div className={`w-3 h-3 rounded-full mt-1.5 flex-shrink-0 ${phase === 'final_entries' ? 'bg-emerald-500' : 'bg-zinc-300'}`}></div>
-                      <div><div className="font-semibold text-zinc-900">Final Entries</div><div className="text-sm text-zinc-600 mt-0.5">{formatDateTime(event.final_entry_start)}{event.final_entry_deadline && ` - ${formatDateTime(event.final_entry_deadline)}`}</div></div>
+                    <div className="flex items-start gap-2">
+                      <div className={`w-2 h-2 rounded-full mt-1 flex-shrink-0 ${phase === 'final_entries' ? 'bg-emerald-500' : 'bg-zinc-300'}`}></div>
+                      <div><div className="font-semibold text-zinc-900 text-xs">Final Entries</div><div className="text-xs text-zinc-600 mt-0.5">{formatDateTime(event.final_entry_start)}{event.final_entry_deadline && ` - ${formatDateTime(event.final_entry_deadline)}`}</div></div>
                     </div>
                   )}
-                  <div className="flex items-start gap-4">
-                    <div className="w-3 h-3 rounded-full mt-1.5 bg-zinc-300 flex-shrink-0"></div>
-                    <div><div className="font-semibold text-zinc-900">Competition</div><div className="text-sm text-zinc-600 mt-0.5">{formatDate(event.start_date)}</div></div>
+                  <div className="flex items-start gap-2">
+                    <div className="w-2 h-2 rounded-full mt-1 bg-zinc-300 flex-shrink-0"></div>
+                    <div><div className="font-semibold text-zinc-900 text-xs">Competition</div><div className="text-xs text-zinc-600 mt-0.5">{formatDate(event.start_date)}</div></div>
                   </div>
                 </div>
               </div>
@@ -543,6 +521,28 @@ export default function EventDetailPage() {
                   <div className="mt-6 text-center text-sm text-zinc-500">Registration opens {formatDateTime(event.registration_start_date)}</div>
                 )}
               </motion.div>
+
+              {registration && (
+                <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="bg-white border border-zinc-200 rounded-card p-6 mb-6 shadow-sm">
+                  <h3 className="text-lg font-display font-semibold text-zinc-900 mb-4">
+                    {registration.is_team_registration ? ' Team Registered' : '✓ Registered'}
+                  </h3>
+                  <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <span className={`inline-block text-xs font-semibold px-3 py-1.5 rounded-full ${statusBadge?.color}`}>
+                      {statusBadge?.label}
+                    </span>
+                  </div>
+                  <p className="text-sm text-zinc-600 mb-4">
+                    Manage your registration and entries from your dashboard.
+                  </p>
+                  <button
+                    onClick={() => router.push('/dashboard')}
+                    className="w-full px-4 py-2.5 bg-zinc-900 text-white rounded-lg font-medium hover:bg-zinc-800 transition-colors text-sm"
+                  >
+                    Go to Dashboard →
+                  </button>
+                </motion.div>
+              )}
             </div>
           </div>
         </div>
