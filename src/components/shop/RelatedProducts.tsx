@@ -141,9 +141,9 @@ export default function RelatedProducts({ productId, limit = 6 }: RelatedProduct
       >
         {products.map((product, index) => {
           const productId = product.id || product._id || ''
-          const hasDiscount = product.compare_price && product.compare_price > product.price
+          const hasDiscount = product.comparePrice && product.comparePrice > product.price
           const discountPercent = hasDiscount 
-            ? Math.round(((product.compare_price! - product.price) / product.compare_price!) * 100)
+            ? Math.round(((product.comparePrice! - product.price) / product.comparePrice!) * 100)
             : 0
 
           return (
