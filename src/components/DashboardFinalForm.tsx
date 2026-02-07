@@ -99,8 +99,8 @@ export default function DashboardFinalForm({
       
       // Extract unique weight categories from preliminary data for reference
       const prelimCategories = [...new Set(processedAthletes
-        .map(a => a.weight_category)
-        .filter(cat => cat && cat.trim()))]
+        .map((a: Athlete) => a.weight_category)
+        .filter((cat: string) => cat && cat.trim()))]
       
       // Always use ALL gender-appropriate categories, not just preliminary ones
       // This allows athletes to change their weight class in final entry
