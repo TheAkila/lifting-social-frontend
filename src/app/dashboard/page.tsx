@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import DashboardPreliminaryForm from '@/components/DashboardPreliminaryForm'
 import DashboardFinalForm from '@/components/DashboardFinalForm'
+import OrderTracking from '@/components/dashboard/OrderTracking'
 import { 
   Trophy,
   Calendar,
@@ -548,65 +549,75 @@ export default function UserDashboard() {
   }).length
 
   return (
-    <div className="min-h-screen bg-white pt-16 sm:pt-24 md:pt-32 pb-12 sm:pb-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
+    <div className="min-h-screen bg-gray-50 pt-14 sm:pt-20 md:pt-24 lg:pt-28 pb-8 sm:pb-12 md:pb-16 lg:pb-20">
+      <div className="max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+        {/* Header Section */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-6 sm:mb-8 md:mb-10"
+          className="mb-6 sm:mb-8 md:mb-10 lg:mb-12"
         >
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-black mb-1 sm:mb-2">
-            Hi {user?.name || 'there'}! 
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-1 sm:mb-2 md:mb-3">
+            Hi {user?.name || 'there'}!
           </h1>
-          <p className="text-xs sm:text-sm md:text-base text-gray-500">Welcome back to your weightlifting dashboard</p>
+          <p className="text-xs sm:text-sm md:text-base text-gray-600">Manage your events and orders in one place</p>
         </motion.div>
 
-        {/* Events List */}
-        {activeRegistrations.length === 0 ? (
-          <motion.div 
+        {/* Main Content Grid */}
+        <div className="space-y-6 sm:space-y-8 md:space-y-10 lg:space-y-12">
+          {/* Orders Section */}
+          <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="border-2 border-gray-200 rounded-lg p-8 sm:p-12 md:p-16 text-center"
+            transition={{ delay: 0.1 }}
           >
-            <Trophy className="w-16 sm:w-20 text-gray-300 mx-auto mb-4 sm:mb-6" />
-            <h3 className="text-xl sm:text-2xl font-bold text-black mb-2">No Event Registrations</h3>
-            <p className="text-xs sm:text-sm md:text-base text-gray-500 max-w-md mx-auto mb-4 sm:mb-6">
-              You haven't registered for any weightlifting competitions yet. Browse upcoming events and register to get started!
-            </p>
-            <Link href="/events">
-              <button className="px-4 sm:px-6 py-2 sm:py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors inline-flex items-center gap-2 text-sm sm:text-base">
-                <Plus className="w-4 h-4" />
-                Browse Events
-              </button>
-            </Link>
-          </motion.div>
-        ) : (
-          <div className="space-y-4">
-            {activeRegistrations.map((reg, index) => (
-              <EventCard
-                key={reg.id}
-                reg={reg}
-                index={index}
-                getRegistrationStatusBadge={getRegistrationStatusBadge}
-                getEventData={getEventData}
-                getRequiredAction={getRequiredAction}
-                onDelete={handleDeleteRegistration}
-                onUpdate={handleUpdateRegistration}
-                onPreliminary={(reg) => {
-                  setSelectedRegistration(reg)
-                  setPreliminaryForm({ entryTotal: reg.entry_total?.toString() || '', bodyweight: reg.weight_category?.toString() || '' })
-                  setShowPreliminaryModal(true)
-                }}
-                onFinal={(reg) => {
-                  setSelectedRegistration(reg)
-                  setShowFinalModal(true)
-                }}
-              />
-            ))}
-          </div>
-        )}
+            <OrderTracking />
+          </motion.section>
+
+          {/* Events Section */}
+          {activeRegistrations.length > 0 && (
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-5 md:mb-6 lg:mb-7 gap-3 sm:gap-4">
+                <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">
+                  My Events
+                </h2>
+                <Link href="/events">
+                  <button className="text-blue-600 hover:text-blue-700 font-medium text-xs sm:text-sm md:text-base hover:underline transition whitespace-nowrap">
+                    Browse Events
+                  </button>
+                </Link>
+              </div>
+
+              <div className="space-y-2 sm:space-y-3 md:space-y-4">
+                {activeRegistrations.map((reg, index) => (
+                  <EventCard
+                    key={reg.id}
+                    reg={reg}
+                    index={index}
+                    getRegistrationStatusBadge={getRegistrationStatusBadge}
+                    getEventData={getEventData}
+                    getRequiredAction={getRequiredAction}
+                    onDelete={handleDeleteRegistration}
+                    onUpdate={handleUpdateRegistration}
+                    onPreliminary={(reg) => {
+                      setSelectedRegistration(reg)
+                      setPreliminaryForm({ entryTotal: reg.entry_total?.toString() || '', bodyweight: reg.weight_category?.toString() || '' })
+                      setShowPreliminaryModal(true)
+                    }}
+                    onFinal={(reg) => {
+                      setSelectedRegistration(reg)
+                      setShowFinalModal(true)
+                    }}
+                  />
+                ))}
+              </div>
+            </motion.section>
+          )}
+        </div>
       </div>
 
       {/* Update Modal */}
