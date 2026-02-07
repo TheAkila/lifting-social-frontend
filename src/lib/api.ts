@@ -8,6 +8,7 @@ export const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 60000, // 60 second timeout for all requests
 })
 
 // Add request interceptor to include auth token
@@ -33,6 +34,7 @@ api.interceptors.response.use(
   (error) => {
     // Don't log 404 errors as they're expected for missing resources
     const is404 = error.response?.status === 404
+    const isAbortError = error.name === 'AbortError' || error.code === 'ECONNABORTED'
     
     // Skip logging for 404 errors
     if (is404) {
@@ -40,7 +42,14 @@ api.interceptors.response.use(
     }
     
     // Log errors with detailed information
-    if (error.response) {
+    if (isAbortError) {
+      console.error('🚨 Request Timeout or Aborted:', {
+        url: error.config?.url || 'unknown',
+        method: error.config?.method || 'unknown',
+        timeout: error.config?.timeout || 'unknown',
+        message: error.message || 'Request was aborted or timed out'
+      })
+    } else if (error.response) {
       // Server responded with error status
       console.error('🚨 API Error:', {
         url: error.config?.url || 'unknown',

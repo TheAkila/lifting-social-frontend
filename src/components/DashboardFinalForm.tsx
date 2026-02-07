@@ -162,7 +162,16 @@ export default function DashboardFinalForm({
       alert(isUpdate ? 'Final entry updated successfully!' : 'Final entry submitted successfully!')
       onSuccess()
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to submit final entry')
+      console.error('Final entry submission error:', err)
+      
+      // Handle timeout/abort errors
+      if (err.name === 'AbortError' || err.code === 'ECONNABORTED') {
+        alert('Request timed out. Please check your internet connection and try again.')
+      } else if (err.response?.status === 408) {
+        alert('Request timed out. The server took too long to respond. Please try again.')
+      } else {
+        alert(err.response?.data?.message || err.message || 'Failed to submit final entry')
+      }
     } finally {
       setSubmitting(false)
     }
