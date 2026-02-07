@@ -523,23 +523,27 @@ export default function EventDetailPage() {
               </motion.div>
 
               {registration && (
-                <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="bg-white border border-zinc-200 rounded-card p-6 mb-6 shadow-sm">
-                  <h3 className="text-lg font-display font-semibold text-zinc-900 mb-4">
-                    {registration.is_team_registration ? ' Team Registered' : '✓ Registered'}
-                  </h3>
-                  <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                    <span className={`inline-block text-xs font-semibold px-3 py-1.5 rounded-full ${statusBadge?.color}`}>
-                      {statusBadge?.label}
-                    </span>
+                <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="bg-blue-50 border border-blue-200 rounded-card p-5 mb-6">
+                  <div className="flex items-start gap-3 mb-4">
+                    <div className="flex-shrink-0 mt-0.5">
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600">
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-zinc-900 text-sm">
+                        {registration.is_team_registration ? 'Team Registered' : 'Registered'}
+                      </h3>
+                      <p className="text-xs text-zinc-600 mt-0.5">{statusBadge?.label}</p>
+                    </div>
                   </div>
-                  <p className="text-sm text-zinc-600 mb-4">
-                    Manage your registration and entries from your dashboard.
-                  </p>
                   <button
                     onClick={() => router.push('/dashboard')}
-                    className="w-full px-4 py-2.5 bg-zinc-900 text-white rounded-lg font-medium hover:bg-zinc-800 transition-colors text-sm"
+                    className="w-full px-3 py-2.5 bg-zinc-900 text-white rounded-lg font-medium hover:bg-zinc-800 transition-colors text-xs sm:text-sm"
                   >
-                    Go to Dashboard →
+                    View in Dashboard
                   </button>
                 </motion.div>
               )}
