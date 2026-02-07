@@ -37,6 +37,7 @@ interface Product {
   material?: string
   care?: string
   features?: string[]
+  servings?: string
 }
 
 export default function ProductDetailPage() {
