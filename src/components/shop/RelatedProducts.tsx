@@ -11,14 +11,14 @@ interface Product {
   _id?: string
   name: string
   price: number
-  compare_price?: number
+  comparePrice?: number
   image: string
   category: string
-  in_stock: boolean
+  inStock: boolean
   sizes?: string[]
   colors?: string[]
-  shipping_type?: 'free' | 'paid'
-  shipping_amount?: number
+  shippingType?: 'free' | 'paid'
+  shippingAmount?: number
 }
 
 interface RelatedProductsProps {
@@ -82,8 +82,8 @@ export default function RelatedProducts({ productId, limit = 6 }: RelatedProduct
       size: product.sizes?.[0] || '',
       color: product.colors?.[0] || '',
       image: product.image,
-      shippingType: product.shipping_type || 'free',
-      shippingAmount: product.shipping_amount || 0,
+      shippingType: product.shippingType || 'free',
+      shippingAmount: product.shippingAmount || 0,
     })
   }
 
@@ -190,15 +190,15 @@ export default function RelatedProducts({ productId, limit = 6 }: RelatedProduct
                           e.stopPropagation()
                           handleQuickAdd(product)
                         }}
-                        disabled={!product.in_stock}
+                        disabled={!product.inStock}
                         className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-2.5 rounded-[8px] text-sm font-medium flex items-center justify-center gap-2 shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <span>{product.in_stock ? 'Quick Add' : 'Out of Stock'}</span>
+                        <span>{product.inStock ? 'Quick Add' : 'Out of Stock'}</span>
                       </button>
                     </div>
 
                     {/* Out of Stock Overlay */}
-                    {!product.in_stock && (
+                    {!product.inStock && (
                       <div className="absolute inset-0 bg-zinc-900/70 flex items-center justify-center">
                         <span className="text-white text-sm font-medium px-3 py-1.5 bg-zinc-800 rounded-full">
                           Out of Stock
@@ -214,7 +214,7 @@ export default function RelatedProducts({ productId, limit = 6 }: RelatedProduct
                     <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
                       {product.category}
                     </span>
-                    {product.shipping_type === 'free' && (
+                    {product.shippingType === 'free' && (
                       <span className="font-display text-red-600 font-semibold text-sm">
                         Free Delivery
                       </span>
@@ -229,7 +229,7 @@ export default function RelatedProducts({ productId, limit = 6 }: RelatedProduct
                     </span>
                     {hasDiscount && (
                       <span className="text-zinc-400 text-sm line-through">
-                        LKR {product.compare_price!.toLocaleString()}
+                        LKR {product.comparePrice!.toLocaleString()}
                       </span>
                     )}
                   </div>
