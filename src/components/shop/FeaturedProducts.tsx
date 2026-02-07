@@ -12,9 +12,9 @@ export default function FeaturedProducts() {
   const [scrollPosition, setScrollPosition] = useState(0)
   const { addItem } = useCart()
 
-  useEffect(() => {
+  const fetchFeaturedProducts = () => {
     api
-      .get('/products')
+      .get(`/products?t=${Date.now()}`)
       .then((res) => {
         const featured = res.data.filter((p: any) => p.featured)
         setProducts(featured.slice(0, 8)) // Show max 8 featured products
@@ -24,6 +24,21 @@ export default function FeaturedProducts() {
         console.error('Failed to fetch featured products', err)
         setLoading(false)
       })
+  }
+
+  useEffect(() => {
+    fetchFeaturedProducts()
+  }, [])
+
+  // Refetch when page becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchFeaturedProducts()
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
   }, [])
 
   const handleScroll = (direction: 'left' | 'right') => {
@@ -47,7 +62,9 @@ export default function FeaturedProducts() {
       quantity: 1,
       size: product.sizes?.[0] || '',
       color: product.colors?.[0] || '',
-      image: product.image
+      image: product.image,
+      shippingType: product.shippingType || 'free',
+      shippingAmount: product.shippingAmount || 0,
     })
   }
 
@@ -135,6 +152,8 @@ export default function FeaturedProducts() {
                       </div>
                     )}
 
+
+
                     {/* Quick Add */}
                     <div className="absolute inset-x-0 bottom-0 p-4 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
                       <button 
@@ -163,9 +182,16 @@ export default function FeaturedProducts() {
 
                 {/* Product Info */}
                 <Link href={`/shop/product/${product._id || product.id}`} className="block p-4">
-                  <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
-                    {product.category}
-                  </span>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                      {product.category}
+                    </span>
+                    {product.shippingType === 'free' && (
+                      <span className="text-red-600 font-bold text-xs uppercase tracking-widest">
+                        FREE delivery
+                      </span>
+                    )}
+                  </div>
                   <h3 className="font-display font-semibold text-base text-zinc-900 mt-1 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
                     {product.name}
                   </h3>

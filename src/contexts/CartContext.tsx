@@ -10,6 +10,8 @@ export interface CartItem {
   size: string
   color?: string
   image: string
+  shippingType?: 'free' | 'paid'
+  shippingAmount?: number
 }
 
 interface CartContextType {
@@ -20,6 +22,7 @@ interface CartContextType {
   clearCart: () => void
   totalItems: number
   totalPrice: number
+  totalShipping: number
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
@@ -55,7 +58,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (existingItem) {
         return prevItems.map((i) =>
           i.id === item.id && i.size === item.size
-            ? { ...i, quantity: i.quantity + item.quantity }
+            ? { 
+                ...i, 
+                quantity: i.quantity + item.quantity,
+                shippingType: item.shippingType || i.shippingType,
+                shippingAmount: item.shippingAmount ?? i.shippingAmount,
+              }
             : i
         )
       }
@@ -94,6 +102,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
     (sum, item) => sum + item.price * item.quantity,
     0
   )
+  const totalShipping = items.reduce(
+    (sum, item) => {
+      // Only add shipping if explicitly marked as paid
+      const shipping = item.shippingType === 'paid' && item.shippingAmount ? item.shippingAmount : 0
+      return sum + shipping
+    },
+    0
+  )
+
+  // Debug: log cart state
+  useEffect(() => {
+    if (items.length > 0) {
+      console.log('Cart items:', items)
+      console.log('Total shipping:', totalShipping)
+    }
+  }, [items, totalShipping])
 
   return (
     <CartContext.Provider
@@ -105,6 +129,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         clearCart,
         totalItems,
         totalPrice,
+        totalShipping,
       }}
     >
       {children}

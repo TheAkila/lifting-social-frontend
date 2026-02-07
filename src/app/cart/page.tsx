@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/contexts/CartContext'
 import Link from 'next/link'
@@ -7,8 +8,30 @@ import { FaTrash, FaShoppingBag, FaMinus, FaPlus } from 'react-icons/fa'
 import { motion } from 'framer-motion'
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, clearCart, totalItems, totalPrice } = useCart()
+  const { items, removeItem, updateQuantity, clearCart, totalItems, totalPrice, totalShipping } = useCart()
   const router = useRouter()
+
+  // Force re-render when page becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Trigger a state update to force re-render
+        window.dispatchEvent(new Event('cartUpdate'))
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [])
+
+  // Debug: log cart summary
+  useEffect(() => {
+    console.log('Cart Summary:', {
+      totalItems,
+      totalPrice,
+      totalShipping,
+      items: items.map(i => ({ name: i.name, shippingType: i.shippingType, shippingAmount: i.shippingAmount }))
+    })
+  }, [totalItems, totalPrice, totalShipping, items])
 
   const handleCheckout = () => {
     router.push('/checkout')
@@ -120,18 +143,14 @@ export default function CartPage() {
                     <span>LKR {totalPrice.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between text-gray-600">
-                    <span>Tax (8%)</span>
-                    <span>LKR {(totalPrice * 0.08).toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-600">
                     <span>Shipping</span>
-                    <span>{totalPrice >= 5000 ? 'FREE' : 'LKR 500'}</span>
+                    <span>{totalShipping === 0 ? 'FREE' : `LKR ${totalShipping.toLocaleString()}`}</span>
                   </div>
                   <div className="border-t border-gray-200 pt-3">
                     <div className="flex justify-between text-xl font-bold text-black">
                       <span>Total</span>
                       <span className="text-black">
-                        LKR {(totalPrice + (totalPrice * 0.08) + (totalPrice >= 5000 ? 0 : 500)).toLocaleString()}
+                        LKR {(totalPrice + totalShipping).toLocaleString()}
                       </span>
                     </div>
                   </div>
@@ -151,15 +170,6 @@ export default function CartPage() {
                     Continue Shopping
                   </Link>
                 </div>
-
-                {/* Free Shipping Notice */}
-                {totalPrice < 5000 && (
-                  <div className="mt-6 p-4 bg-gray-100 border border-gray-300 rounded-lg">
-                    <p className="text-sm text-black">
-                      Add <strong>LKR {(5000 - totalPrice).toLocaleString()}</strong> more to get FREE shipping!
-                    </p>
-                  </div>
-                )}
               </div>
             </div>
           </div>

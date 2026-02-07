@@ -166,7 +166,9 @@ export default function ProductGrid({ filters }: ProductGridProps) {
         quantity: 1,
         size: '',
         color: product.colors?.[0] || '',
-        image: product.image
+        image: product.image,
+        shippingType: product.shippingType || 'free',
+        shippingAmount: product.shippingAmount || 0,
       })
     }
   }
@@ -181,7 +183,9 @@ export default function ProductGrid({ filters }: ProductGridProps) {
       quantity: 1,
       size: quickAddModal.selectedSize,
       color: quickAddModal.selectedColor,
-      image: quickAddModal.product.image
+      image: quickAddModal.product.image,
+      shippingType: quickAddModal.product.shippingType || 'free',
+      shippingAmount: quickAddModal.product.shippingAmount || 0,
     })
 
     setQuickAddModal({ isOpen: false, product: null, selectedSize: '', selectedColor: '' })
@@ -305,6 +309,8 @@ export default function ProductGrid({ filters }: ProductGridProps) {
                       )}
                     </div>
 
+
+
                     {/* Quick Add */}
                     <div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
                       <button 
@@ -334,9 +340,16 @@ export default function ProductGrid({ filters }: ProductGridProps) {
 
                 {/* Product Info */}
                 <Link href={`/shop/product/${product._id || product.id}`} className="block p-2.5 sm:p-3">
-                  <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">
-                    {product.category}
-                  </span>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">
+                      {product.category}
+                    </span>
+                    {product.shippingType === 'free' && (
+                      <span className="text-red-600 font-bold text-xs uppercase tracking-widest">
+                        FREE delivery
+                      </span>
+                    )}
+                  </div>
                   <h3 className="font-display font-semibold text-xs sm:text-sm text-zinc-900 mt-0.5 mb-1 line-clamp-2 group-hover:text-brand-accent transition-colors">
                     {product.name}
                   </h3>

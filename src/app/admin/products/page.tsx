@@ -44,6 +44,8 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
     care: '',
     servings: '',
     features: [] as string[],
+    shippingType: 'free' as 'free' | 'paid',
+    shippingAmount: '0',
   })
   const [newSize, setNewSize] = useState('')
   const [newColor, setNewColor] = useState('')
@@ -130,6 +132,7 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
         price: Number(formData.price),
         comparePrice: formData.comparePrice ? Number(formData.comparePrice) : undefined,
         inventory: Number(formData.inventory),
+        shippingAmount: formData.shippingType === 'paid' ? Number(formData.shippingAmount) : 0,
       }
 
       if (editingProduct) {
@@ -183,6 +186,8 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
       care: product.care || '',
       servings: product.servings || '',
       features: product.features || [],
+      shippingType: product.shippingType || 'free',
+      shippingAmount: product.shippingAmount?.toString() || '0',
     })
     setShowForm(true)
   }
@@ -207,6 +212,8 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
       care: '',
       servings: '',
       features: [],
+      shippingType: 'free',
+      shippingAmount: '0',
     })
   }
 
@@ -671,6 +678,50 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
                   <button type="button" onClick={addFeature} className="btn-outline w-full">
                     Add Feature / Paragraph
                   </button>
+                </div>
+              </div>
+
+              {/* Shipping Configuration */}
+              <div className="border-t border-brand-light/10 pt-6">
+                <label className="block text-sm font-semibold mb-3">Shipping Configuration</label>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-6">
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="shippingType"
+                        value="free"
+                        checked={formData.shippingType === 'free'}
+                        onChange={(e) => setFormData({ ...formData, shippingType: 'free', shippingAmount: '0' })}
+                        className="w-4 h-4"
+                      />
+                      <span>Free Delivery</span>
+                    </label>
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="shippingType"
+                        value="paid"
+                        checked={formData.shippingType === 'paid'}
+                        onChange={(e) => setFormData({ ...formData, shippingType: 'paid' })}
+                        className="w-4 h-4"
+                      />
+                      <span>Paid Delivery</span>
+                    </label>
+                  </div>
+                  {formData.shippingType === 'paid' && (
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Shipping Amount (LKR)</label>
+                      <input
+                        type="number"
+                        value={formData.shippingAmount}
+                        onChange={(e) => setFormData({ ...formData, shippingAmount: e.target.value })}
+                        className="input-field max-w-xs"
+                        placeholder="e.g., 500"
+                        min="0"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 

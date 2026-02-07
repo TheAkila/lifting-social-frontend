@@ -10,7 +10,7 @@ import { motion } from 'framer-motion'
 export const dynamic = 'force-dynamic'
 
 export default function CheckoutPage() {
-  const { items, totalPrice, clearCart } = useCart()
+  const { items, totalPrice, totalShipping, clearCart } = useCart()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -38,6 +38,18 @@ export default function CheckoutPage() {
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Force re-render when page becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Trigger a state update to force re-render
+        window.dispatchEvent(new Event('cartUpdate'))
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [])
   
   // Redirect if cart is empty
   useEffect(() => {
@@ -51,7 +63,7 @@ export default function CheckoutPage() {
   }
 
   const subtotal = totalPrice
-  const shipping = 400
+  const shipping = totalShipping
   const total = subtotal + shipping
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -447,7 +459,7 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex justify-between text-gray-600">
                     <span>Shipping</span>
-                    <span>LKR {shipping.toLocaleString()}</span>
+                    <span>{shipping === 0 ? 'FREE' : `LKR ${shipping.toLocaleString()}`}</span>
                   </div>
                   <div className="border-t border-gray-200 pt-3">
                     <div className="flex justify-between text-xl font-bold text-black">

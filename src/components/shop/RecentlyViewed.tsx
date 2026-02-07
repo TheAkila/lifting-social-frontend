@@ -16,6 +16,8 @@ interface Product {
   inStock: boolean
   sizes?: string[]
   colors?: string[]
+  shippingType?: 'free' | 'paid'
+  shippingAmount?: number
 }
 
 const STORAGE_KEY = 'lifting_social_recently_viewed'
@@ -33,6 +35,17 @@ export default function RecentlyViewed() {
     setMounted(true)
     fetchRecentlyViewed()
   }, [])
+
+  // Refetch when page becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && mounted) {
+        fetchRecentlyViewed()
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [mounted])
 
   const fetchRecentlyViewed = async () => {
     try {
@@ -58,7 +71,7 @@ export default function RecentlyViewed() {
 
       // Fetch product details for all IDs
       const productPromises = productIds.map(id => 
-        api.get(`/products/${id}`).catch(() => null)
+        api.get(`/products/${id}?t=${Date.now()}`).catch(() => null)
       )
       
       const responses = await Promise.all(productPromises)
@@ -95,7 +108,9 @@ export default function RecentlyViewed() {
       quantity: 1,
       size: product.sizes?.[0] || '',
       color: product.colors?.[0] || '',
-      image: product.image
+      image: product.image,
+      shippingType: product.shippingType || 'free',
+      shippingAmount: product.shippingAmount || 0,
     })
   }
 
@@ -194,6 +209,8 @@ export default function RecentlyViewed() {
                         </div>
                       )}
 
+
+
                       {/* Quick Add */}
                       <div className="absolute inset-x-0 bottom-0 p-2.5 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
                         <button 
@@ -222,9 +239,16 @@ export default function RecentlyViewed() {
 
                   {/* Product Info */}
                   <Link href={`/shop/product/${product.id}`} className="block p-2.5 bg-white">
-                    <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">
-                      {product.category}
-                    </span>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[9px] sm:text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                        {product.category}
+                      </span>
+                      {product.shippingType === 'free' && (
+                        <span className="text-red-600 font-bold text-[9px] sm:text-xs uppercase tracking-widest">
+                          FREE delivery
+                        </span>
+                      )}
+                    </div>
                     <h3 className="font-display font-semibold text-xs text-zinc-900 mt-0.5 mb-1 line-clamp-2 group-hover:text-brand-accent transition-colors">
                       {product.name}
                     </h3>

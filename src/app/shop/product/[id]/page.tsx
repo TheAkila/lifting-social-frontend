@@ -38,6 +38,8 @@ interface Product {
   care?: string
   features?: string[]
   servings?: string
+  shippingType?: 'free' | 'paid'
+  shippingAmount?: number
 }
 
 export default function ProductDetailPage() {
@@ -93,7 +95,9 @@ export default function ProductDetailPage() {
       quantity: quantity,
       size: selectedSize,
       color: selectedColor,
-      image: product.image
+      image: product.image,
+      shippingType: product.shippingType || 'free',
+      shippingAmount: product.shippingAmount || 0,
     })
 
     // Show success notification (you can add a toast library later)
@@ -267,6 +271,25 @@ export default function ProductDetailPage() {
                   You save LKR {(product.comparePrice! - product.price).toLocaleString()} ({discount}% off)
                 </p>
               )}
+            </div>
+
+            {/* Shipping Information */}
+            <div className="space-y-2">
+              {product.shippingType === 'free' ? (
+                <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+                  <div>
+                    <p className="text-red-700 font-semibold text-sm">Free Delivery</p>
+                    <p className="text-red-600 text-xs">No shipping charges on this product</p>
+                  </div>
+                </div>
+              ) : product.shippingType === 'paid' ? (
+                <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+                  <div>
+                    <p className="text-green-700 font-semibold text-sm">Shipping Cost</p>
+                    <p className="text-green-600 text-xs">LKR {product.shippingAmount?.toLocaleString()} for this product</p>
+                  </div>
+                </div>
+              ) : null}
             </div>
 
             {/* Size/Flavour Selection */}

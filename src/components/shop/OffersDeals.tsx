@@ -11,9 +11,9 @@ export default function OffersDeals() {
   const [loading, setLoading] = useState(true)
   const { addItem } = useCart()
 
-  useEffect(() => {
+  const fetchDealProducts = () => {
     api
-      .get('/products')
+      .get(`/products?t=${Date.now()}`)
       .then((res) => {
         // Filter products with discounts (comparePrice > price)
         const deals = res.data.filter((p: any) => p.comparePrice && p.comparePrice > p.price)
@@ -24,6 +24,21 @@ export default function OffersDeals() {
         console.error('Failed to fetch deal products', err)
         setLoading(false)
       })
+  }
+
+  useEffect(() => {
+    fetchDealProducts()
+  }, [])
+
+  // Refetch when page becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchDealProducts()
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
   }, [])
 
   const handleQuickAdd = (product: any) => {
@@ -34,7 +49,9 @@ export default function OffersDeals() {
       quantity: 1,
       size: product.sizes?.[0] || '',
       color: product.colors?.[0] || '',
-      image: product.image
+      image: product.image,
+      shippingType: product.shippingType || 'free',
+      shippingAmount: product.shippingAmount || 0,
     })
   }
 
@@ -102,6 +119,8 @@ export default function OffersDeals() {
                         </span>
                       </div>
 
+
+
                       {/* Quick Add */}
                       <div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
                         <button 
@@ -130,9 +149,16 @@ export default function OffersDeals() {
 
                   {/* Product Info */}
                   <Link href={`/shop/product/${product._id || product.id}`} className="block p-2.5 sm:p-3 bg-white">
-                    <span className="text-[10px] sm:text-xs font-medium text-zinc-400 uppercase tracking-wider">
-                      {product.category}
-                    </span>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[10px] sm:text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                        {product.category}
+                      </span>
+                      {product.shippingType === 'free' && (
+                        <span className="text-red-600 font-bold text-[10px] sm:text-xs uppercase tracking-widest">
+                          FREE delivery
+                        </span>
+                      )}
+                    </div>
                     <h3 className="font-display font-semibold text-xs sm:text-sm text-zinc-900 mt-0.5 sm:mt-1 mb-1 sm:mb-1.5 line-clamp-2 group-hover:text-zinc-700 transition-colors">
                       {product.name}
                     </h3>

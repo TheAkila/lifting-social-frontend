@@ -17,6 +17,8 @@ interface Product {
   in_stock: boolean
   sizes?: string[]
   colors?: string[]
+  shipping_type?: 'free' | 'paid'
+  shipping_amount?: number
 }
 
 interface RelatedProductsProps {
@@ -35,10 +37,21 @@ export default function RelatedProducts({ productId, limit = 6 }: RelatedProduct
     fetchRelatedProducts()
   }, [productId])
 
+  // Refetch when page becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchRelatedProducts()
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [productId])
+
   const fetchRelatedProducts = async () => {
     try {
       setLoading(true)
-      const res = await api.get(`/products/${productId}/related?limit=${limit}`)
+      const res = await api.get(`/products/${productId}/related?limit=${limit}&t=${Date.now()}`)
       setProducts(res.data)
     } catch (error) {
       console.error('Error fetching related products:', error)
@@ -68,7 +81,9 @@ export default function RelatedProducts({ productId, limit = 6 }: RelatedProduct
       quantity: 1,
       size: product.sizes?.[0] || '',
       color: product.colors?.[0] || '',
-      image: product.image
+      image: product.image,
+      shippingType: product.shipping_type || 'free',
+      shippingAmount: product.shipping_amount || 0,
     })
   }
 
@@ -165,6 +180,8 @@ export default function RelatedProducts({ productId, limit = 6 }: RelatedProduct
                       </div>
                     )}
 
+
+
                     {/* Quick Add */}
                     <div className="absolute inset-x-0 bottom-0 p-4 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
                       <button 
@@ -193,9 +210,16 @@ export default function RelatedProducts({ productId, limit = 6 }: RelatedProduct
 
                 {/* Product Info */}
                 <Link href={`/shop/product/${productId}`} className="block p-4">
-                  <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
-                    {product.category}
-                  </span>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                      {product.category}
+                    </span>
+                    {product.shipping_type === 'free' && (
+                      <span className="text-red-600 font-bold text-xs uppercase tracking-widest">
+                        FREE delivery
+                      </span>
+                    )}
+                  </div>
                   <h3 className="font-display font-semibold text-base text-zinc-900 mt-1 mb-2 line-clamp-2 group-hover:text-brand-accent transition-colors">
                     {product.name}
                   </h3>
