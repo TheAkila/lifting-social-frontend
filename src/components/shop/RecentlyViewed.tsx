@@ -234,7 +234,7 @@ export default function RecentlyViewed() {
                       </span>
                       {hasDiscount && (
                         <span className="text-zinc-400 text-[10px] line-through">
-                          LKR {product.compare_price!.toLocaleString()}
+                          LKR {product.comparePrice!.toLocaleString()}
                         </span>
                       )}
                     </div>
