@@ -155,9 +155,9 @@ export default function RecentlyViewed() {
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {products.map((product, index) => {
-            const hasDiscount = product.compare_price && product.compare_price > product.price
+            const hasDiscount = product.comparePrice && product.comparePrice > product.price
             const discountPercent = hasDiscount 
-              ? Math.round(((product.compare_price! - product.price) / product.compare_price!) * 100)
+              ? Math.round(((product.comparePrice! - product.price) / product.comparePrice!) * 100)
               : 0
 
             return (
