@@ -44,6 +44,7 @@ interface EventRegistration {
     slug: string
     date: string
     location?: string
+    image_url?: string
     status?: string
     registration_open?: boolean
     preliminary_entry_open?: boolean
@@ -889,90 +890,109 @@ function EventCard({ reg, index, getRegistrationStatusBadge, getEventData, getRe
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 + index * 0.05 }}
-      className="bg-white border-2 border-gray-200 rounded-xl overflow-hidden hover:shadow-xl hover:border-gray-300 transition-all duration-300"
+      className="bg-white border border-gray-200 rounded-lg sm:rounded-xl overflow-hidden hover:shadow-lg hover:border-gray-300 transition-all duration-300"
     >
       {/* Status Badge */}
-      <div className="px-6 py-3 border-b border-gray-100">
-        <div className="flex items-center justify-between">
-          <div className="inline-flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-green-500"></div>
-            <span className="text-sm font-medium text-gray-700">{statusBadge.label}</span>
+      <div className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 border-b border-gray-100">
+        <div className="flex items-center justify-between gap-2">
+          <div className="inline-flex items-center gap-2 min-w-0">
+            <div className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0"></div>
+            <span className="text-xs sm:text-sm font-medium text-gray-700 truncate">{statusBadge.label}</span>
           </div>
           {isUpcoming && daysUntil <= 30 && (
-            <span className="text-xs font-semibold text-gray-500">
-              {daysUntil} days to go
+            <span className="text-xs font-semibold text-gray-500 flex-shrink-0">
+              {daysUntil}d
             </span>
           )}
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="p-6">
-        {/* Event Title */}
-        <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight">{eventData.title}</h3>
-        
-        {/* Date & Location */}
-        <div className="space-y-2.5 mb-5">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-50">
-              <Calendar className="w-5 h-5 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Date</p>
-              <p className="text-sm font-bold text-gray-900">
-                {eventDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
-              </p>
-            </div>
-          </div>
-          {eventData.location && (
-            <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-purple-50">
-                <MapPin className="w-5 h-5 text-purple-600" />
+      <div className="p-3 sm:p-4 md:p-6">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-5 md:gap-6 items-start">
+          {/* Left Side - Content */}
+          <div className="flex-1 min-w-0">
+            {/* Event Title */}
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight">{eventData.title}</h3>
+            
+            {/* Date & Location */}
+            <div className="space-y-2 sm:space-y-2.5 mb-4 sm:mb-5">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-blue-50 flex-shrink-0">
+                  <Calendar className="w-4 sm:w-5 h-4 sm:h-5 text-blue-600" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Date</p>
+                  <p className="text-xs sm:text-sm font-bold text-gray-900">
+                    {eventDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Venue</p>
-                <p className="text-sm font-bold text-gray-900">{eventData.location}</p>
-              </div>
+              {eventData.location && (
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-purple-50 flex-shrink-0">
+                    <MapPin className="w-4 sm:w-5 h-4 sm:h-5 text-purple-600" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Venue</p>
+                    <p className="text-xs sm:text-sm font-bold text-gray-900 truncate">{eventData.location}</p>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-      {/* Details Grid */}
-      {(reg.weight_category || reg.entry_total || reg.snatch_opener || reg.cnj_opener) && (
-        <div className="grid grid-cols-2 gap-3 mb-5">
-          {reg.weight_category && (
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-3 border border-gray-200">
-              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Category</p>
-              <p className="text-lg font-black text-gray-900">{reg.weight_category}<span className="text-sm">kg</span></p>
-            </div>
-          )}
-          {reg.entry_total && (
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-3 border border-blue-200">
-              <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Entry Total</p>
-              <p className="text-lg font-black text-blue-900">{reg.entry_total}<span className="text-sm">kg</span></p>
-            </div>
-          )}
-          {reg.snatch_opener && (
-            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-3 border border-green-200">
-              <p className="text-xs font-bold text-green-600 uppercase tracking-wider mb-1">Snatch Opener</p>
-              <p className="text-lg font-black text-green-900">{reg.snatch_opener}<span className="text-sm">kg</span></p>
-            </div>
-          )}
-          {reg.cnj_opener && (
-            <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-3 border border-orange-200">
-              <p className="text-xs font-bold text-orange-600 uppercase tracking-wider mb-1">C&J Opener</p>
-              <p className="text-lg font-black text-orange-900">{reg.cnj_opener}<span className="text-sm">kg</span></p>
+            {/* Details Grid */}
+            {(reg.weight_category || reg.entry_total || reg.snatch_opener || reg.cnj_opener) && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                {reg.weight_category && (
+                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-2 sm:p-3 border border-gray-200">
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Category</p>
+                    <p className="text-base sm:text-lg font-black text-gray-900">{reg.weight_category}<span className="text-xs sm:text-sm">kg</span></p>
+                  </div>
+                )}
+                {reg.entry_total && (
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-2 sm:p-3 border border-blue-200">
+                    <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Entry Total</p>
+                    <p className="text-base sm:text-lg font-black text-blue-900">{reg.entry_total}<span className="text-xs sm:text-sm">kg</span></p>
+                  </div>
+                )}
+                {reg.snatch_opener && (
+                  <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-2 sm:p-3 border border-green-200">
+                    <p className="text-xs font-bold text-green-600 uppercase tracking-wider mb-1">Snatch Opener</p>
+                    <p className="text-base sm:text-lg font-black text-green-900">{reg.snatch_opener}<span className="text-xs sm:text-sm">kg</span></p>
+                  </div>
+                )}
+                {reg.cnj_opener && (
+                  <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-2 sm:p-3 border border-orange-200">
+                    <p className="text-xs font-bold text-orange-600 uppercase tracking-wider mb-1">C&J Opener</p>
+                    <p className="text-base sm:text-lg font-black text-orange-900">{reg.cnj_opener}<span className="text-xs sm:text-sm">kg</span></p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Right Side - Competition Image */}
+          {reg.competition?.image_url && (
+            <div className="w-full lg:w-64 xl:w-80 flex-shrink-0">
+              <div className="rounded-lg overflow-hidden h-40 sm:h-48 lg:h-56">
+                <img 
+                  src={reg.competition.image_url} 
+                  alt={eventData.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
           )}
         </div>
-      )}
+      </div>
 
       {/* Action Required */}
       {requiredAction && (
-        <div className="rounded-xl p-4 bg-blue-50 border border-blue-200 mb-4">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-gray-900">{requiredAction.message}</p>
+        <div className="px-3 sm:px-5 md:px-8 mx-2 sm:mx-4 md:mx-8 rounded-lg sm:rounded-xl py-4 sm:py-5 bg-blue-50 border border-blue-200 mb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex-1 min-w-0 pb-2 sm:pb-0">
+              <p className="text-xs sm:text-sm font-semibold text-gray-900">{requiredAction.message}</p>
             </div>
             {requiredAction.action === 'action' && (
               <button 
@@ -983,7 +1003,7 @@ function EventCard({ reg, index, getRegistrationStatusBadge, getEventData, getRe
                     onFinal(reg)
                   }
                 }}
-                className="px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm whitespace-nowrap"
+                className="px-4 sm:px-7 py-2 sm:py-2.5 bg-blue-600 text-white rounded-lg text-xs sm:text-sm font-bold hover:bg-blue-700 transition-all shadow-sm whitespace-nowrap flex-shrink-0"
               >
                 {requiredAction.actionType === 'preliminary' 
                   ? (reg.status === 'preliminary_pending' ? 'Update Entry' : reg.status === 'preliminary_declined' ? 'Resubmit Entry' : 'Submit Entry') 
@@ -996,22 +1016,21 @@ function EventCard({ reg, index, getRegistrationStatusBadge, getEventData, getRe
 
       {/* Action Buttons - Only show for pending registrations */}
       {reg.status === 'pending' && (
-        <div className="flex gap-3 pt-2">
+        <div className="px-3 sm:px-5 md:px-8 mx-2 sm:mx-4 md:mx-8 flex flex-col sm:flex-row gap-2 sm:gap-4 pt-3 sm:pt-5 pb-3 sm:pb-5 md:pb-7">
           <button
             onClick={() => onUpdate(reg)}
-            className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-md hover:shadow-lg"
+            className="flex-1 px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg text-xs sm:text-sm font-bold hover:bg-blue-700 transition-all shadow-md hover:shadow-lg"
           >
             Update Details
           </button>
           <button
             onClick={() => onDelete(reg.id, eventData.title)}
-            className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg text-sm font-bold hover:bg-red-700 transition-all shadow-md hover:shadow-lg"
+            className="flex-1 px-4 sm:px-6 py-2 sm:py-3 bg-red-600 text-white rounded-lg text-xs sm:text-sm font-bold hover:bg-red-700 transition-all shadow-md hover:shadow-lg"
           >
             Delete
           </button>
         </div>
       )}
-      </div>
     </motion.div>
   )
 }
