@@ -34,8 +34,13 @@ api.interceptors.response.use(
     // Don't log 404 errors as they're expected for missing resources
     const is404 = error.response?.status === 404
     
-    // Log all errors for debugging (except 404s)
-    if (error.response && !is404) {
+    // Skip logging for 404 errors
+    if (is404) {
+      return Promise.reject(error)
+    }
+    
+    // Log errors with detailed information
+    if (error.response) {
       // Server responded with error status
       console.error('🚨 API Error:', {
         url: error.config?.url || 'unknown',
@@ -45,16 +50,16 @@ api.interceptors.response.use(
         data: error.response?.data || 'no data',
         message: error.message || 'no message'
       })
-    } else if (error.request && !is404) {
+    } else if (error.request) {
       // Request made but no response
       console.error('🚨 Network Error - No response:', {
         url: error.config?.url,
         method: error.config?.method,
         message: error.message
       })
-    } else if (!is404) {
+    } else {
       // Error in request setup
-      console.error('🚨 Request Setup Error:', error.message)
+      console.error('🚨 Request Setup Error:', error.message || error)
     }
     
     if (error.response?.status === 401) {
