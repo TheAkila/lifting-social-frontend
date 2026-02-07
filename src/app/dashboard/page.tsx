@@ -379,8 +379,17 @@ export default function UserDashboard() {
       }
     }
     
-    // Status: final_pending or final_submitted - admin needs to approve
+    // Status: final_pending or final_submitted - admin needs to approve, but allow editing while pending
     if (['final_pending', 'final_submitted'].includes(reg.status)) {
+      if (eventData.finalEntryOpen && reg.status === 'final_pending') {
+        return { 
+          action: 'action', 
+          actionType: 'final',
+          message: 'Your final entry is pending review...you can still edit before approval',
+          phase: 'final-pending',
+          color: 'bg-yellow-100 text-yellow-700'
+        }
+      }
       return { 
         action: 'wait', 
         message: 'Admin reviewing your final entry',
@@ -838,8 +847,10 @@ export default function UserDashboard() {
         <DashboardFinalForm
           registrationId={selectedRegistration.id}
           clubName={(selectedRegistration as any).club_name || ''}
-          gender={(selectedRegistration as any).gender || 'male'}
+          gender={(selectedRegistration as any).gender || 'men'}
           ageCategory={(selectedRegistration as any).age_category || ''}
+          registrationStatus={selectedRegistration.status}
+          competitionName={getEventData(selectedRegistration).title}
           onClose={() => {
             setShowFinalModal(false)
             setSelectedRegistration(null)
@@ -976,7 +987,7 @@ function EventCard({ reg, index, getRegistrationStatusBadge, getEventData, getRe
               >
                 {requiredAction.actionType === 'preliminary' 
                   ? (reg.status === 'preliminary_pending' ? 'Update Entry' : reg.status === 'preliminary_declined' ? 'Resubmit Entry' : 'Submit Entry') 
-                  : (reg.status === 'final_declined' ? 'Resubmit Final' : 'Submit Final')}
+                  : (reg.status === 'final_pending' ? 'Update Final' : reg.status === 'final_declined' ? 'Resubmit Final' : 'Submit Final')}
               </button>
             )}
           </div>

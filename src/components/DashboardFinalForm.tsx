@@ -24,6 +24,8 @@ interface DashboardFinalFormProps {
   clubName: string
   gender: string
   ageCategory: string
+  registrationStatus?: string
+  competitionName?: string
   onSuccess: () => void
   onClose: () => void
 }
@@ -33,27 +35,54 @@ export default function DashboardFinalForm({
   clubName,
   gender,
   ageCategory,
+  registrationStatus,
+  competitionName: initialCompetitionName,
   onSuccess,
   onClose
 }: DashboardFinalFormProps) {
   const [athletes, setAthletes] = useState<Athlete[]>([])
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
+  const [availableCategories, setAvailableCategories] = useState<string[]>([])
+  const [actualGender, setActualGender] = useState<string>(gender)
+  const [competitionName, setCompetitionName] = useState<string>(initialCompetitionName || '')
 
-  const weightCategories = gender === 'Men' 
+  // Normalize gender to handle different formats (men/women vs male/female vs Men/Women)
+  const normalizedGender = actualGender?.toLowerCase()
+  const isMen = normalizedGender === 'men' || normalizedGender === 'male' || normalizedGender === 'm'
+  
+  // Default weight categories as fallback
+  const defaultWeightCategories = isMen
     ? ['60', '65', '71', '79', '88', '94', '110', '+110']
     : ['48', '53', '58', '63', '69', '77', '86', '+86']
 
   useEffect(() => {
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = 'hidden'
+    
     loadPreliminaryAthletes()
+    
+    // Cleanup: restore scroll when modal closes
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
   }, [registrationId])
 
   const loadPreliminaryAthletes = async () => {
     try {
       const response = await api.get(`/registrations/${registrationId}/preliminary-athletes`)
       const preliminaryAthletes = response.data.athletes || []
+      const registrationData = response.data.registration || {}
       
       console.log('Raw athletes data:', preliminaryAthletes)
+      console.log('Registration data from API:', registrationData)
+      
+      // Use gender from API if available, otherwise use prop
+      const genderToUse = registrationData.gender || gender
+      setActualGender(genderToUse)
+      
+      console.log('Final gender to use:', genderToUse)
+      console.log('Normalized gender (is men?):', genderToUse?.toLowerCase())
       
       // Initialize athletes and strip 'kg' suffix from weight categories
       const processedAthletes = preliminaryAthletes.map((a: any) => {
@@ -67,6 +96,23 @@ export default function DashboardFinalForm({
           bodyweight: a.bodyweight || ''
         }
       })
+      
+      // Extract unique weight categories from preliminary data for reference
+      const prelimCategories = [...new Set(processedAthletes
+        .map(a => a.weight_category)
+        .filter(cat => cat && cat.trim()))]
+      
+      // Always use ALL gender-appropriate categories, not just preliminary ones
+      // This allows athletes to change their weight class in final entry
+      const isActuallyMen = genderToUse?.toLowerCase() === 'men' || genderToUse?.toLowerCase() === 'male' || genderToUse?.toLowerCase() === 'm'
+      const allGenderCategories = isActuallyMen
+        ? ['60', '65', '71', '79', '88', '94', '110', '+110']
+        : ['48', '53', '58', '63', '69', '77', '86', '+86']
+      
+      console.log('Categories from preliminary data:', prelimCategories)
+      console.log('All available categories for this gender:', allGenderCategories)
+      
+      setAvailableCategories(allGenderCategories)
       
       console.log('Processed athletes:', processedAthletes)
       setAthletes(processedAthletes)
@@ -111,7 +157,9 @@ export default function DashboardFinalForm({
       console.log('Submitting final entry payload:', payload)
       
       await api.post(`/registrations/${registrationId}/final`, payload)
-      alert('Final entry submitted successfully!')
+      
+      const isUpdate = registrationStatus === 'final_pending'
+      alert(isUpdate ? 'Final entry updated successfully!' : 'Final entry submitted successfully!')
       onSuccess()
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to submit final entry')
@@ -139,7 +187,9 @@ export default function DashboardFinalForm({
         <div className="bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex items-center justify-between">
           <div className="flex-1 min-w-0">
             <h2 className="text-lg sm:text-xl font-bold text-gray-900">ENTRY FORM (Final)</h2>
-            <p className="text-xs sm:text-sm text-gray-600 mt-1">Confirm your final entry details</p>
+            <p className="text-sm sm:text-base font-bold text-gray-900 mt-1">
+              {competitionName ? competitionName : 'Confirm your final entry details'}
+            </p>
           </div>
           <button
             onClick={onClose}
@@ -160,7 +210,7 @@ export default function DashboardFinalForm({
             </div>
             <div>
               <p className="text-xs text-gray-600 mb-1">Men / Women:</p>
-              <p className="text-sm sm:text-base font-semibold capitalize">{gender}</p>
+              <p className="text-sm sm:text-base font-semibold capitalize">{actualGender}</p>
             </div>
             <div>
               <p className="text-xs text-gray-600 mb-1">Age Category:</p>
@@ -198,7 +248,8 @@ export default function DashboardFinalForm({
                         className="w-full px-2 py-1 border border-gray-300 rounded text-xs sm:text-sm font-semibold"
                       >
                         <option value="">Select</option>
-                        {weightCategories.map(cat => (
+                        {/* Show all valid weight categories for the gender */}
+                        {availableCategories.map(cat => (
                           <option key={cat} value={cat}>{cat}kg</option>
                         ))}
                       </select>
@@ -245,7 +296,9 @@ export default function DashboardFinalForm({
             disabled={submitting}
             className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-black text-white rounded-lg text-sm sm:text-base hover:bg-gray-800 transition-colors disabled:opacity-50"
           >
-            {submitting ? 'Submitting...' : 'Submit Final Entry'}
+            {submitting 
+              ? (registrationStatus === 'final_pending' ? 'Updating...' : 'Submitting...') 
+              : (registrationStatus === 'final_pending' ? 'Update Final Entry' : 'Submit Final Entry')}
           </button>
         </div>
       </motion.div>

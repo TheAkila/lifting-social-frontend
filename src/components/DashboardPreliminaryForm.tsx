@@ -51,6 +51,15 @@ export default function DashboardPreliminaryForm({
   const [submitting, setSubmitting] = useState(false)
   const [loading, setLoading] = useState(true)
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [])
+
   // Load existing preliminary entry data
   useEffect(() => {
     const loadExistingData = async () => {
@@ -269,7 +278,7 @@ export default function DashboardPreliminaryForm({
         <div className="bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex items-center justify-between">
           <div className="flex-1 min-w-0">
             <h2 className="text-lg sm:text-xl font-bold text-gray-900">ENTRY FORM (Preliminary)</h2>
-            <p className="text-xs sm:text-sm text-gray-600 mt-1">{competitionName}</p>
+            <p className="text-sm sm:text-base font-bold text-gray-900 mt-1">{competitionName}</p>
           </div>
           <button
             onClick={onClose}
