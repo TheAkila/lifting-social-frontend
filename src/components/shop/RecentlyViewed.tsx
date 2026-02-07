@@ -244,7 +244,7 @@ export default function RecentlyViewed() {
                         {product.category}
                       </span>
                       {product.shippingType === 'free' && (
-                        <span className="text-red-600 font-bold text-[9px] sm:text-xs uppercase tracking-widest">
+                        <span className="font-display text-red-600 font-semibold text-sm">
                           FREE delivery
                         </span>
                       )}

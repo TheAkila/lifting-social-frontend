@@ -274,20 +274,16 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Shipping Information */}
-            <div className="space-y-2">
+            <div className="space-y-3">
               {product.shippingType === 'free' ? (
-                <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
-                  <div>
-                    <p className="text-red-700 font-semibold text-sm">Free Delivery</p>
-                    <p className="text-red-600 text-xs">No shipping charges on this product</p>
-                  </div>
+                <div className="bg-gradient-to-br from-status-positive/15 to-emerald-100 border border-status-positive/40 rounded-card px-4 py-3.5 backdrop-blur-sm">
+                  <p className="font-sans text-status-positive font-semibold text-sm mb-1">Free Delivery</p>
+                  <p className="font-sans text-status-positive/80 text-xs">No shipping charges on this product</p>
                 </div>
               ) : product.shippingType === 'paid' ? (
-                <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
-                  <div>
-                    <p className="text-green-700 font-semibold text-sm">Shipping Cost</p>
-                    <p className="text-green-600 text-xs">LKR {product.shippingAmount?.toLocaleString()} for this product</p>
-                  </div>
+                <div className="bg-gradient-to-br from-brand-accent/15 to-blue-100 border border-brand-accent/40 rounded-card px-4 py-3.5 backdrop-blur-sm">
+                  <p className="font-sans text-brand-accent font-semibold text-sm mb-1">Shipping Cost</p>
+                  <p className="font-sans text-brand-accent/80 text-xs">LKR {product.shippingAmount?.toLocaleString()} for this product</p>
                 </div>
               ) : null}
             </div>

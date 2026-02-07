@@ -154,8 +154,8 @@ export default function OffersDeals() {
                         {product.category}
                       </span>
                       {product.shippingType === 'free' && (
-                        <span className="text-red-600 font-bold text-[10px] sm:text-xs uppercase tracking-widest">
-                          FREE delivery
+                        <span className="font-display text-red-600 font-semibold text-sm">
+                          Free Delivery
                         </span>
                       )}
                     </div>

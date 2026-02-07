@@ -17,6 +17,9 @@ function ShopContent() {
       {/* Featured Products Section */}
       <FeaturedProducts />
 
+      {/* Offers & Deals Section */}
+      <OffersDeals />
+
       {/* All Products Section */}
       <div className="bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
@@ -34,9 +37,6 @@ function ShopContent() {
           </main>
         </div>
       </div>
-
-      {/* Offers & Deals Section */}
-      <OffersDeals />
 
       {/* Recently Viewed Section */}
       <RecentlyViewed />

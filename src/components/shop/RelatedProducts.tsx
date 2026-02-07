@@ -215,8 +215,8 @@ export default function RelatedProducts({ productId, limit = 6 }: RelatedProduct
                       {product.category}
                     </span>
                     {product.shipping_type === 'free' && (
-                      <span className="text-red-600 font-bold text-xs uppercase tracking-widest">
-                        FREE delivery
+                      <span className="font-display text-red-600 font-semibold text-sm">
+                        Free Delivery
                       </span>
                     )}
                   </div>

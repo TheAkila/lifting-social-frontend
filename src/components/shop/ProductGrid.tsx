@@ -345,8 +345,8 @@ export default function ProductGrid({ filters }: ProductGridProps) {
                       {product.category}
                     </span>
                     {product.shippingType === 'free' && (
-                      <span className="text-red-600 font-bold text-xs uppercase tracking-widest">
-                        FREE delivery
+                      <span className="font-display text-red-600 font-semibold text-sm">
+                        Free Delivery
                       </span>
                     )}
                   </div>
