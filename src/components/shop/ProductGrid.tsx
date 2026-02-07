@@ -6,7 +6,6 @@ import { ArrowRight, X } from 'lucide-react'
 import { useState, useEffect, useMemo } from 'react'
 import api from '@/lib/api'
 import { useCart } from '@/contexts/CartContext'
-import { useWishlist } from '@/contexts/WishlistContext'
 
 interface ProductGridProps {
   filters: {
@@ -25,7 +24,6 @@ export default function ProductGrid({ filters }: ProductGridProps) {
   const [currentPage, setCurrentPage] = useState(1)
   const productsPerPage = 9
   const { addItem } = useCart()
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
   
   // Quick add modal state
   const [quickAddModal, setQuickAddModal] = useState<{
@@ -306,24 +304,6 @@ export default function ProductGrid({ filters }: ProductGridProps) {
                         </span>
                       )}
                     </div>
-
-                    {/* Wishlist Button */}
-                    <button 
-                      onClick={async (e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        const productId = product._id || product.id
-                        if (isInWishlist(productId)) {
-                          await removeFromWishlist(productId)
-                        } else {
-                          await addToWishlist(productId)
-                        }
-                      }}
-                      className="absolute top-2 right-2 w-7 h-7 rounded-[6px] bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100"
-                      aria-label={isInWishlist(product._id || product.id) ? "Remove from wishlist" : "Add to wishlist"}
-                    >
-                      <span className="text-sm">{isInWishlist(product._id || product.id) ? '❤️' : '🤍'}</span>
-                    </button>
 
                     {/* Quick Add */}
                     <div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">

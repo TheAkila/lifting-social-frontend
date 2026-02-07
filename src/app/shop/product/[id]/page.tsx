@@ -353,10 +353,6 @@ export default function ProductDetailPage() {
                 <FaShoppingCart className="text-base sm:text-lg" />
                 <span>Add to Cart</span>
               </button>
-              <button className="sm:w-14 sm:h-14 h-12 flex items-center justify-center gap-2 border-2 border-zinc-200 text-zinc-700 hover:border-zinc-900 hover:text-zinc-900 rounded-xl transition-all sm:px-0 px-6 font-semibold text-sm sm:text-base">
-                <FaHeart className="text-lg sm:text-xl" />
-                <span className="sm:hidden">Add to Wishlist</span>
-              </button>
             </div>
           </div>
         </div>

@@ -5,14 +5,12 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import api from '@/lib/api'
 import { useCart } from '@/contexts/CartContext'
-import { useWishlist } from '@/contexts/WishlistContext'
 
 export default function FeaturedProducts() {
   const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [scrollPosition, setScrollPosition] = useState(0)
   const { addItem } = useCart()
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
 
   useEffect(() => {
     api
@@ -136,24 +134,6 @@ export default function FeaturedProducts() {
                         </span>
                       </div>
                     )}
-
-                    {/* Wishlist Button */}
-                    <button 
-                      onClick={async (e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        const productId = product._id || product.id
-                        if (isInWishlist(productId)) {
-                          await removeFromWishlist(productId)
-                        } else {
-                          await addToWishlist(productId)
-                        }
-                      }}
-                      className={`absolute ${product.comparePrice ? 'top-14' : 'top-3'} right-3 w-9 h-9 rounded-[8px] bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100 text-lg`}
-                      aria-label={isInWishlist(product._id || product.id) ? "Remove from wishlist" : "Add to wishlist"}
-                    >
-                      {isInWishlist(product._id || product.id) ? '❤️' : '🤍'}
-                    </button>
 
                     {/* Quick Add */}
                     <div className="absolute inset-x-0 bottom-0 p-4 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">

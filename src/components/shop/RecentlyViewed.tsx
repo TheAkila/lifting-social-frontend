@@ -5,7 +5,6 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import api from '@/lib/api'
 import { useCart } from '@/contexts/CartContext'
-import { useWishlist } from '@/contexts/WishlistContext'
 
 interface Product {
   id: string
@@ -29,7 +28,6 @@ export default function RecentlyViewed() {
   const [scrollPosition, setScrollPosition] = useState(0)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const { addItem } = useCart()
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
 
   useEffect(() => {
     setMounted(true)
@@ -195,23 +193,6 @@ export default function RecentlyViewed() {
                           </span>
                         </div>
                       )}
-
-                      {/* Wishlist Button */}
-                      <button 
-                        onClick={async (e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          if (isInWishlist(product.id)) {
-                            await removeFromWishlist(product.id)
-                          } else {
-                            await addToWishlist(product.id)
-                          }
-                        }}
-                        className={`absolute ${hasDiscount ? 'top-14' : 'top-3'} right-3 w-9 h-9 rounded-[8px] bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100`}
-                        aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
-                      >
-                        <span className="text-lg">{isInWishlist(product.id) ? '❤️' : '🤍'}</span>
-                      </button>
 
                       {/* Quick Add */}
                       <div className="absolute inset-x-0 bottom-0 p-2.5 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">

@@ -238,12 +238,6 @@ export default function AdminDashboard() {
                 </div>
                 <div className="text-gray-600 text-xs">Total Reviews</div>
               </div>
-              <div className="text-center p-4 bg-pink-50 rounded-[10px]">
-                <div className="text-2xl font-bold text-pink-600 mb-1">
-                  {shopStats.wishlist.totalItems}
-                </div>
-                <div className="text-gray-600 text-xs">Wishlist Items</div>
-              </div>
             </div>
             
             {/* Additional Shop Metrics */}

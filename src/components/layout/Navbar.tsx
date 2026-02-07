@@ -3,10 +3,9 @@
 import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { ShoppingCart, User, Menu, X, LogOut, ChevronDown, Search, Heart } from 'lucide-react'
+import { ShoppingCart, User, Menu, X, LogOut, ChevronDown, Search } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
 import { useAuth } from '@/contexts/AuthContext'
-import { useWishlist } from '@/contexts/WishlistContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import Logo from '@/components/layout/Logo'
 import api from '@/lib/api'
@@ -33,7 +32,6 @@ export default function Navbar() {
   const [searchResults, setSearchResults] = useState<any[]>([])
   const [searchLoading, setSearchLoading] = useState(false)
   const { totalItems } = useCart()
-  const { items: wishlistItems } = useWishlist()
   const { user, logout } = useAuth()
   const router = useRouter()
   const pathname = usePathname()

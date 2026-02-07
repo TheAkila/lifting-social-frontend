@@ -5,13 +5,11 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import api from '@/lib/api'
 import { useCart } from '@/contexts/CartContext'
-import { useWishlist } from '@/contexts/WishlistContext'
 
 export default function OffersDeals() {
   const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const { addItem } = useCart()
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
 
   useEffect(() => {
     api
@@ -103,24 +101,6 @@ export default function OffersDeals() {
                           Sale
                         </span>
                       </div>
-
-                      {/* Wishlist Button */}
-                      <button 
-                        onClick={async (e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          const productId = product._id || product.id
-                          if (isInWishlist(productId)) {
-                            await removeFromWishlist(productId)
-                          } else {
-                            await addToWishlist(productId)
-                          }
-                        }}
-                        className="absolute bottom-2 sm:bottom-3 right-2 sm:right-3 w-7 h-7 rounded-[6px] bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100 text-xs sm:text-sm font-bold"
-                        aria-label={isInWishlist(product._id || product.id) ? "Remove from wishlist" : "Add to wishlist"}
-                      >
-                        {isInWishlist(product._id || product.id) ? '❤️' : '🤍'}
-                      </button>
 
                       {/* Quick Add */}
                       <div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
