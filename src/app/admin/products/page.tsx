@@ -10,10 +10,23 @@ import { FaPlus, FaEdit, FaTrash, FaArrowLeft, FaUpload, FaTimes, FaImage } from
 export default function AdminProducts() {
   const { user } = useAuth()
   const router = useRouter()
+  const [mounted, setMounted] = useState(false)
 
-  // Check auth early and return loading state if needed
-  if (!user) {
-    return null
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Show consistent loading state during hydration
+  if (!mounted || !user) {
+    return (
+      <div className="min-h-screen bg-gray-50 pt-28 pb-12">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="flex items-center justify-center">
+            <div className="text-gray-600">Loading...</div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return <AdminProductsContent user={user} router={router} />
