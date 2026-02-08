@@ -14,9 +14,6 @@ interface Athlete {
   id_number: string | null
   best_total: number
   coach_name: string | null
-  snatch_opener?: number
-  cnj_opener?: number
-  bodyweight?: number
 }
 
 interface DashboardFinalFormProps {
@@ -90,10 +87,7 @@ export default function DashboardFinalForm({
         console.log(`Athlete ${a.name}: original category = "${a.weight_category}", stripped = "${strippedCategory}"`)
         return {
           ...a,
-          weight_category: strippedCategory,
-          snatch_opener: a.snatch_opener || '',
-          cnj_opener: a.cnj_opener || '',
-          bodyweight: a.bodyweight || ''
+          weight_category: strippedCategory
         }
       })
       

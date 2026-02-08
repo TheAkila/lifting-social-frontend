@@ -35,8 +35,6 @@ interface EventRegistration {
   weight_category?: string
   age_category?: string
   entry_total?: number
-  snatch_opener?: number
-  cnj_opener?: number
   registered_at: string
   competition?: {  // New unified schema
     id: string
@@ -942,7 +940,7 @@ function EventCard({ reg, index, getRegistrationStatusBadge, getEventData, getRe
             </div>
 
             {/* Details Grid */}
-            {(reg.weight_category || reg.entry_total || reg.snatch_opener || reg.cnj_opener) && (
+            {(reg.weight_category || reg.entry_total) && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                 {reg.weight_category && (
                   <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-2 sm:p-3 border border-gray-200">
@@ -954,18 +952,6 @@ function EventCard({ reg, index, getRegistrationStatusBadge, getEventData, getRe
                   <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-2 sm:p-3 border border-blue-200">
                     <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Entry Total</p>
                     <p className="text-base sm:text-lg font-black text-blue-900">{reg.entry_total}<span className="text-xs sm:text-sm">kg</span></p>
-                  </div>
-                )}
-                {reg.snatch_opener && (
-                  <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-2 sm:p-3 border border-green-200">
-                    <p className="text-xs font-bold text-green-600 uppercase tracking-wider mb-1">Snatch Opener</p>
-                    <p className="text-base sm:text-lg font-black text-green-900">{reg.snatch_opener}<span className="text-xs sm:text-sm">kg</span></p>
-                  </div>
-                )}
-                {reg.cnj_opener && (
-                  <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-2 sm:p-3 border border-orange-200">
-                    <p className="text-xs font-bold text-orange-600 uppercase tracking-wider mb-1">C&J Opener</p>
-                    <p className="text-base sm:text-lg font-black text-orange-900">{reg.cnj_opener}<span className="text-xs sm:text-sm">kg</span></p>
                   </div>
                 )}
               </div>

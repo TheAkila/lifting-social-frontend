@@ -57,8 +57,6 @@ interface Registration {
   entry_total?: number
   best_snatch?: number
   best_clean_jerk?: number
-  snatch_opener?: number
-  cnj_opener?: number
   payment_status: string
   registered_at: string
   club_name?: string
@@ -95,6 +93,7 @@ export default function EventDetailPage() {
   const [regForm, setRegForm] = useState({
     // Team registration fields
     teamName: '',
+    teamCode: '',
     teamManagerName: '',
     teamManagerPhone: '',
     ageCategory: ''
@@ -114,8 +113,6 @@ export default function EventDetailPage() {
 
   const [finalForm, setFinalForm] = useState({
     confirmedWeightCategory: '',
-    snatchOpener: '',
-    cnjOpener: '',
     medicalClearance: false
   })
 
@@ -161,9 +158,7 @@ export default function EventDetailPage() {
         }))
         setFinalForm(prev => ({
           ...prev,
-          confirmedWeightCategory: reg.confirmed_weight_category || reg.weight_category || '',
-          snatchOpener: reg.snatch_opener?.toString() || '',
-          cnjOpener: reg.cnj_opener?.toString() || ''
+          confirmedWeightCategory: reg.confirmed_weight_category || reg.weight_category || ''
         }))
       }
     } catch (err) {
@@ -280,6 +275,10 @@ export default function EventDetailPage() {
       alert('Please enter your team name')
       return
     }
+    if (!regForm.teamCode) {
+      alert('Please enter team code')
+      return
+    }
     if (!regForm.teamManagerName) {
       alert('Please enter team manager name')
       return
@@ -299,6 +298,7 @@ export default function EventDetailPage() {
         competitionId: event?.id,
         isTeamRegistration: true,
         teamName: regForm.teamName,
+        teamCode: regForm.teamCode,
         teamManagerName: regForm.teamManagerName,
         teamManagerPhone: regForm.teamManagerPhone,
         ageCategory: regForm.ageCategory
@@ -376,16 +376,10 @@ export default function EventDetailPage() {
   }
 
   const handleFinalSubmit = async () => {
-    if (!finalForm.snatchOpener || !finalForm.cnjOpener) {
-      alert('Opening attempts are required')
-      return
-    }
     setSubmitting(true)
     try {
       const response = await api.post(`/registrations/${registration?.id}/final`, {
         confirmedWeightCategory: finalForm.confirmedWeightCategory || registration?.weight_category,
-        snatchOpener: parseInt(finalForm.snatchOpener),
-        cnjOpener: parseInt(finalForm.cnjOpener),
         medicalClearance: finalForm.medicalClearance
       })
       setRegistration(response.data)
@@ -572,6 +566,17 @@ export default function EventDetailPage() {
                     />
                   </div>
                   <div>
+                    <label className="block text-xs sm:text-sm font-medium text-zinc-700 mb-2">Team Code *</label>
+                    <input 
+                      type="text" 
+                      value={regForm.teamCode} 
+                      onChange={(e) => setRegForm({ ...regForm, teamCode: e.target.value.toUpperCase() })} 
+                      className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-zinc-300 rounded-input focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white text-zinc-900 placeholder:text-zinc-400 text-sm" 
+                      placeholder="e.g., LKA, USA, TEAM01" 
+                      required
+                    />
+                  </div>
+                  <div>
                     <label className="block text-xs sm:text-sm font-medium text-zinc-700 mb-2">Team Manager Name *</label>
                     <input 
                       type="text" 
@@ -683,22 +688,14 @@ export default function EventDetailPage() {
                   {WEIGHT_CATEGORIES[currentGender as keyof typeof WEIGHT_CATEGORIES].map(cat => <option key={cat} value={cat}>{cat}</option>)}
                 </select>
               </div>
-              <div>
-                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Snatch Opening Attempt (kg) *</label>
-                <input type="number" value={finalForm.snatchOpener} onChange={(e) => setFinalForm({ ...finalForm, snatchOpener: e.target.value })} className="w-full px-3 sm:px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none text-sm" placeholder="First snatch attempt" />
-              </div>
-              <div>
-                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Clean & Jerk Opening Attempt (kg) *</label>
-                <input type="number" value={finalForm.cnjOpener} onChange={(e) => setFinalForm({ ...finalForm, cnjOpener: e.target.value })} className="w-full px-3 sm:px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none text-sm" placeholder="First C&J attempt" />
-              </div>
               {event.require_medical_clearance && (
                 <div className="flex items-center gap-2 sm:gap-3">
                   <input type="checkbox" id="medical" checked={finalForm.medicalClearance} onChange={(e) => setFinalForm({ ...finalForm, medicalClearance: e.target.checked })} className="w-5 h-5 border-2 border-gray-300 rounded" />
                   <label htmlFor="medical" className="text-xs sm:text-sm text-gray-700">I confirm I have medical clearance to compete</label>
                 </div>
               )}
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 sm:p-4">
-                <p className="text-xs sm:text-sm text-yellow-800"><strong>Note:</strong> Opening attempts can only be increased after weigh-in, not decreased. Please enter conservative opening weights.</p>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
+                <p className="text-xs sm:text-sm text-blue-800"><strong>Note:</strong> Opening attempts will be collected at weigh-in on competition day.</p>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4 sm:mt-6">
