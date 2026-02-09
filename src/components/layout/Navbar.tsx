@@ -14,7 +14,7 @@ const mainNavLinks = [
   { name: 'Home', href: '/' },
   { name: 'Shop', href: '/shop' },
   { name: 'Stories', href: '/stories' },
-  { name: 'Events', href: '/events' },
+  // { name: 'Events', href: '/events' },
 ]
 
 const secondaryNavLinks = [

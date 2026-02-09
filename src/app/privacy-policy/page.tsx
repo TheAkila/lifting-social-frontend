@@ -37,9 +37,7 @@ export default function PrivacyPolicyPage() {
               Browsing information, such as your IP address, browser type, and device
               information, collected automatically using cookies and similar technologies.
             </li>
-            <li>
-              Competition registration details including athlete information, body weight, and category preferences.
-            </li>
+
           </ul>
 
           <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">Use of Information</h2>
@@ -52,9 +50,7 @@ export default function PrivacyPolicyPage() {
               To communicate with you regarding your purchases, provide customer support, and
               respond to inquiries or requests.
             </li>
-            <li>
-              To manage your competition registrations and provide updates about events.
-            </li>
+
             <li>
               To personalize your shopping experience and present relevant product
               recommendations and promotions.
@@ -84,9 +80,7 @@ export default function PrivacyPolicyPage() {
               <strong>Legal requirements:</strong> We may disclose your information if required to do so by law
               or in response to valid legal requests or orders.
             </li>
-            <li>
-              <strong>Competition organizers:</strong> When you register for competitions, we may share your information with the Sri Lanka Weightlifting Federation and event organizers as required for competition management.
-            </li>
+
           </ul>
 
           <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">Data Security</h2>
@@ -154,7 +148,7 @@ export default function PrivacyPolicyPage() {
           </ul>
 
           <p className="text-sm text-gray-500 italic mt-8 pt-6 border-t border-gray-200">
-            Last updated: February 4, 2026
+            Last updated: February 10, 2026
           </p>
         </div>
       </div>

@@ -86,23 +86,7 @@ export default function Footer() {
                 </a>
               </div>
 
-              {/* Newsletter Signup */}
-              <div className="bg-zinc-900 border border-zinc-800 rounded-[12px] p-4 sm:p-5">
-                <h4 className="font-display font-semibold text-base sm:text-lg mb-2 text-white">Stay Connected</h4>
-                <p className="text-zinc-400 text-xs sm:text-sm mb-3 sm:mb-4">
-                  Get the latest updates on athletes, events, and products.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-0">
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    className="flex-1 bg-zinc-800 border border-zinc-700 rounded-[8px] sm:rounded-l-[8px] sm:rounded-r-none px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors"
-                  />
-                  <button className="bg-blue-600 hover:bg-blue-700 px-4 sm:px-5 py-2 sm:py-2.5 rounded-[8px] sm:rounded-l-none sm:rounded-r-[8px] text-xs sm:text-sm font-medium transition-colors duration-250 whitespace-nowrap">
-                    Subscribe
-                  </button>
-                </div>
-              </div>
+
             </div>
 
             {/* Shop Links */}
@@ -129,29 +113,7 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Community Links */}
-            <div className="lg:col-span-2">
-              <h3 className="font-display font-semibold text-sm sm:text-base mb-3 sm:mb-5 text-white">Community</h3>
-              <ul className="space-y-2 sm:space-y-3">
-                {[
-                  { name: 'Lifting Stories', href: '/stories' },
-               
-                
-                  { name: 'Events', href: '/events' },
-                  { name: 'Join Community', href: '/signup' },
-                ].map((link) => (
-                  <li key={link.name}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-zinc-400 hover:text-white transition-colors duration-200 inline-flex items-center group"
-                    >
-                      <span>{link.name}</span>
-                      <ArrowRight className="w-3 h-3 ml-1.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+
 
             {/* Company Links */}
             <div className="lg:col-span-2">
@@ -160,7 +122,6 @@ export default function Footer() {
                 {[
                   { name: 'About Us', href: '/about' },
                   { name: 'Contact', href: '/contact' },
-                  { name: 'Partnerships', href: '/partnerships' },
                   { name: 'Privacy Policy', href: '/privacy-policy' },
                   { name: 'Terms & Conditions', href: '/terms' },
                   { name: 'Refund Policy', href: '/refund-policy' },

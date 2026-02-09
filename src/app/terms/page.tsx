@@ -90,16 +90,7 @@ export default function TermsPage() {
             returning products and seeking refunds. Please refer to our <a href="/refund-policy" className="text-blue-600 hover:underline">Refund Policy</a> page for more information.
           </p>
 
-          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">6. Competition Registrations</h2>
-          <ul className="list-disc list-outside ml-5 sm:ml-6 text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 space-y-1.5 sm:space-y-2">
-            <li>Competition registrations are subject to approval by event organizers.</li>
-            <li>Registration fees are non-refundable unless the event is canceled.</li>
-            <li>You must provide accurate athlete information and meet eligibility requirements.</li>
-            <li>Competition rules and regulations are governed by the Sri Lanka Weightlifting Federation.</li>
-            <li>We reserve the right to reject registrations that do not meet requirements.</li>
-          </ul>
-
-          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">7. Intellectual Property</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">6. Intellectual Property</h2>
           <ul className="list-disc list-outside ml-5 sm:ml-6 text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 space-y-1.5 sm:space-y-2">
             <li>
               All content and materials on our website, including but not limited to text,
@@ -113,7 +104,7 @@ export default function TermsPage() {
             <li>User-generated content (reviews, comments) remains your property but you grant us a license to use it.</li>
           </ul>
 
-          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">8. User Accounts</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">7. User Accounts</h2>
           <ul className="list-disc list-outside ml-5 sm:ml-6 text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 space-y-1.5 sm:space-y-2">
             <li>You are responsible for maintaining the security of your account.</li>
             <li>You must not share your account credentials with others.</li>
@@ -121,7 +112,7 @@ export default function TermsPage() {
             <li>We reserve the right to suspend or terminate accounts that violate these terms.</li>
           </ul>
 
-          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">9. Limitation of Liability</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">8. Limitation of Liability</h2>
           <ul className="list-disc list-outside ml-5 sm:ml-6 text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 space-y-1.5 sm:space-y-2">
             <li>
               In no event shall <strong>Lifting Social</strong>, its directors, employees, or affiliates be liable for any direct, indirect,
@@ -136,29 +127,29 @@ export default function TermsPage() {
             <li>We are not responsible for injuries resulting from improper use of weightlifting equipment or nutritional supplements.</li>
           </ul>
 
-          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">10. Indemnification</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">9. Indemnification</h2>
           <p className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6">
             You agree to indemnify and hold harmless Lifting Social and its affiliates from any claims, damages, losses, or expenses arising from your violation of these Terms and Conditions or your use of our website.
           </p>
 
-          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">11. Third-Party Links</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">10. Third-Party Links</h2>
           <p className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6">
             Our website may contain links to third-party websites. We are not responsible for the content, privacy practices, or terms of these external sites. Your use of third-party websites is at your own risk.
           </p>
 
-          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">12. Governing Law</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">11. Governing Law</h2>
           <p className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6">
             These Terms and Conditions shall be governed by and construed in accordance with the laws of Sri Lanka. Any disputes arising from these terms shall be subject to the exclusive jurisdiction of the courts of Sri Lanka.
           </p>
 
-          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">13. Amendments and Termination</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">12. Amendments and Termination</h2>
           <p className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6">
             We reserve the right to modify, update, or terminate these Terms and Conditions
             at any time without prior notice. It is your responsibility to review these
             terms periodically for any changes. Continued use of our website after changes constitutes acceptance of the modified terms.
           </p>
 
-          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">14. Contact Information</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-black mt-6 sm:mt-8 mb-3 sm:mb-4">13. Contact Information</h2>
           <p className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6">
             If you have any questions or concerns regarding these Terms and Conditions, please contact us at:
           </p>
@@ -169,7 +160,7 @@ export default function TermsPage() {
           </ul>
 
           <p className="text-sm text-gray-500 italic mt-8 pt-6 border-t border-gray-200">
-            Last updated: February 4, 2026
+            Last updated: February 10, 2026
           </p>
         </div>
       </div>
