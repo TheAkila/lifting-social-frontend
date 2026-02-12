@@ -2,7 +2,6 @@
 
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 export default function Hero() {
   const images = [
@@ -26,21 +25,6 @@ export default function Hero() {
 
   const goToImage = (index: number) => {
     setCurrentImageIndex(index)
-    setAutoPlay(false)
-    // Resume auto-play after 8 seconds of inactivity
-    setTimeout(() => setAutoPlay(true), 8000)
-  }
-
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length)
-    setAutoPlay(false)
-    setTimeout(() => setAutoPlay(true), 8000)
-  }
-
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length)
-    setAutoPlay(false)
-    setTimeout(() => setAutoPlay(true), 8000)
   }
 
   return (
@@ -70,24 +54,6 @@ export default function Hero() {
           </div>
         ))}
       </div>
-
-      {/* Previous Button */}
-      <button
-        onClick={prevImage}
-        className="absolute left-4 sm:left-6 top-1/2 transform -translate-y-1/2 z-20 bg-white/30 hover:bg-white/50 text-white p-2 sm:p-3 rounded-full transition-all duration-300 backdrop-blur-sm"
-        aria-label="Previous image"
-      >
-        <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
-      </button>
-
-      {/* Next Button */}
-      <button
-        onClick={nextImage}
-        className="absolute right-4 sm:right-6 top-1/2 transform -translate-y-1/2 z-20 bg-white/30 hover:bg-white/50 text-white p-2 sm:p-3 rounded-full transition-all duration-300 backdrop-blur-sm"
-        aria-label="Next image"
-      >
-        <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
-      </button>
 
       {/* Dots Navigation */}
       <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20 flex gap-2 sm:gap-3">
