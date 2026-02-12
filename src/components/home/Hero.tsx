@@ -24,7 +24,7 @@ export default function Hero() {
     return () => clearInterval(interval)
   }, [autoPlay, images.length])
 
-  const goToImage = (index) => {
+  const goToImage = (index: number) => {
     setCurrentImageIndex(index)
     setAutoPlay(false)
     // Resume auto-play after 8 seconds of inactivity
