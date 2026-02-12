@@ -7,7 +7,7 @@ export default function Hero() {
     <section className="relative w-full min-h-screen overflow-hidden">
       {/* Full Screen Responsive Image */}
       <Image
-        src="/images/hero-background.jpg"
+        src="/images/hero-background.png"
         alt="Lifting Social - Weightlifters with Barbells"
         fill
         className="object-cover object-center"
