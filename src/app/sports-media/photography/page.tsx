@@ -244,30 +244,28 @@ export default function PhotographyPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black z-50 flex items-center justify-center"
             onClick={() => setSelectedImage(null)}
           >
             <button
               onClick={() => setSelectedImage(null)}
-              className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+              className="absolute top-4 right-4 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors z-10"
               aria-label="Close image modal"
             >
               <X className="w-6 h-6 text-white" />
             </button>
-            <div className="max-w-5xl w-full">
-              <div className="aspect-video bg-zinc-800 rounded-xl overflow-hidden flex items-center justify-center relative">
-                {selectedImage.image_url ? (
-                  <Image
-                    src={selectedImage.image_url}
-                    alt={selectedImage.alt_text}
-                    fill
-                    className="object-contain"
-                  />
-                ) : (
-                  <Camera className="w-20 h-20 text-white/20" />
-                )}
-              </div>
-              <p className="text-white text-center mt-4">{selectedImage.alt_text}</p>
+            <div className="relative w-full h-full flex items-center justify-center p-4">
+              {selectedImage.image_url ? (
+                <Image
+                  src={selectedImage.image_url}
+                  alt={selectedImage.alt_text}
+                  fill
+                  className="object-contain"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              ) : (
+                <Camera className="w-20 h-20 text-white/20" />
+              )}
             </div>
           </motion.div>
         )}

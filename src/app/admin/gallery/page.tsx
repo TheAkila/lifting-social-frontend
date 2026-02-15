@@ -40,10 +40,22 @@ export default function GalleryManagementPage() {
   const fetchGalleryImages = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/gallery`)
+      console.log('Fetching gallery images from:', `${process.env.NEXT_PUBLIC_API_URL}/gallery`)
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/gallery`)
+      console.log('Response status:', response.status)
+      
       if (response.ok) {
         const data = await response.json()
-        setGalleryImages(data)
+        console.log('Gallery data received:', data)
+        
+        // Handle both direct array and object with data property
+        const images = Array.isArray(data) ? data : (data.data || [])
+        console.log('Processed images:', images.length)
+        
+        setGalleryImages(images)
+      } else {
+        console.error('Failed to fetch gallery images:', response.statusText)
       }
     } catch (error) {
       console.error('Failed to fetch gallery images:', error)
@@ -178,6 +190,15 @@ export default function GalleryManagementPage() {
     }
   }
 
+  const getSectionImages = (section: UploadSection) => {
+    const categoryMap: Record<UploadSection, string> = {
+      photography: 'Competition',
+      events: 'Events',
+      gallery: 'Other'
+    }
+    return galleryImages.filter(img => img.category === categoryMap[section])
+  }
+
   const UploadCard = ({ 
     section, 
     title, 
@@ -195,6 +216,7 @@ export default function GalleryManagementPage() {
     const isDragActive = dragActiveSection === section
     const error = errors[section]
     const success = successes[section]
+    const sectionImages = getSectionImages(section)
 
     return (
       <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-xl border-2 border-zinc-100">
@@ -203,9 +225,12 @@ export default function GalleryManagementPage() {
           <div className={`w-12 h-12 rounded-xl ${colorClass} flex items-center justify-center`}>
             <Icon className="w-6 h-6 text-white" />
           </div>
-          <div>
+          <div className="flex-1">
             <h3 className="font-bold text-lg text-zinc-900">{title}</h3>
             <p className="text-sm text-zinc-600">{description}</p>
+          </div>
+          <div className="text-sm font-semibold text-zinc-500">
+            {sectionImages.length} {sectionImages.length === 1 ? 'image' : 'images'}
           </div>
         </div>
 
@@ -263,6 +288,59 @@ export default function GalleryManagementPage() {
             <p className="text-red-700 font-semibold text-sm">❌ {error}</p>
           </div>
         )}
+
+        {/* Uploaded Images for this Section */}
+        {loading ? (
+          <div className="mt-6 pt-6 border-t border-zinc-200 text-center py-8">
+            <div className="animate-spin w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full mx-auto mb-2"></div>
+            <p className="text-zinc-500 text-sm">Loading images...</p>
+          </div>
+        ) : sectionImages.length > 0 ? (
+          <div className="mt-6 pt-6 border-t border-zinc-200">
+            <h4 className="text-sm font-semibold text-zinc-700 mb-3">Uploaded Images</h4>
+            <div className="grid grid-cols-2 gap-3">
+              {sectionImages.map((image) => (
+                <div key={image.id} className="relative group bg-zinc-50 rounded-lg overflow-hidden border border-zinc-200">
+                  <div className="relative aspect-video">
+                    <Image
+                      src={image.image_url}
+                      alt={image.alt_text}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="p-2">
+                    <p className="text-xs font-medium text-zinc-900 truncate">{image.title}</p>
+                    <div className="flex gap-1 mt-2">
+                      <button
+                        onClick={() => setEditingImage(image)}
+                        className="flex-1 flex items-center justify-center gap-1 px-2 py-1 text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 rounded transition-colors"
+                        title="Edit image"
+                      >
+                        <Edit2 className="w-3 h-3" />
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => setDeleteConfirm(image.id)}
+                        className="flex-1 flex items-center justify-center gap-1 px-2 py-1 text-xs bg-red-50 hover:bg-red-100 text-red-700 rounded transition-colors"
+                        title="Delete image"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : !loading ? (
+          <div className="mt-6 pt-6 border-t border-zinc-200 text-center py-8">
+            <ImageIcon className="w-12 h-12 text-zinc-300 mx-auto mb-2" />
+            <p className="text-zinc-500 text-sm">No images uploaded yet</p>
+            <p className="text-zinc-400 text-xs mt-1">Upload your first image above</p>
+          </div>
+        ) : null}
       </div>
     )
   }
@@ -278,6 +356,12 @@ export default function GalleryManagementPage() {
           <p className="text-zinc-400 text-base sm:text-lg">
             Upload images for sports media sections
           </p>
+          {loading && (
+            <p className="text-yellow-400 text-sm mt-2">Loading gallery images...</p>
+          )}
+          {!loading && (
+            <p className="text-zinc-500 text-sm mt-2">Total: {galleryImages.length} images</p>
+          )}
         </div>
 
         {/* Upload Sections Grid */}
@@ -307,65 +391,31 @@ export default function GalleryManagementPage() {
           colorClass="bg-gradient-to-br from-blue-500 to-blue-600"
         />
 
-        {/* Gallery Images Management */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold text-white mb-6">Manage Gallery Images</h2>
-          
-          {loading ? (
-            <div className="bg-white rounded-2xl p-12 text-center">
-              <div className="animate-spin w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto"></div>
-              <p className="text-zinc-600 mt-4">Loading gallery images...</p>
-            </div>
-          ) : galleryImages.length === 0 ? (
-            <div className="bg-white rounded-2xl p-12 text-center">
-              <ImageIcon className="w-16 h-16 text-zinc-300 mx-auto mb-4" />
-              <p className="text-zinc-600">No images in the gallery yet</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {galleryImages.map((image) => (
-                <div key={image.id} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-                  <div className="relative aspect-video">
-                    <Image
-                      src={image.image_url}
-                      alt={image.alt_text}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-zinc-900 truncate">{image.title}</h3>
-                        <p className="text-xs text-zinc-500 mt-1">
-                          <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
-                            {image.category}
-                          </span>
-                        </p>
-                      </div>
-                      <div className="flex gap-2 ml-2">
-                        <button
-                          onClick={() => setEditingImage(image)}
-                          className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="Edit image"
-                        >
-                          <Edit2 className="w-4 h-4 text-blue-600" />
-                        </button>
-                        <button
-                          onClick={() => setDeleteConfirm(image.id)}
-                          className="p-2 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete image"
-                        >
-                          <Trash2 className="w-4 h-4 text-red-600" />
-                        </button>
-                      </div>
-                    </div>
-                    <p className="text-sm text-zinc-600 truncate">{image.alt_text}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+        {/* Info Section */}
+        <div className="mt-8 bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
+          <h3 className="font-semibold text-white mb-3 text-lg">Upload Information:</h3>
+          <ul className="space-y-2 text-sm text-zinc-300">
+            <li className="flex items-start gap-2">
+              <span className="text-purple-400 font-bold mt-0.5">•</span>
+              <span><strong>Sports Photography:</strong> Images appear in Sports Media → Photography section (Competition category)</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-red-400 font-bold mt-0.5">•</span>
+              <span><strong>Live Events:</strong> Images appear in Sports Media → Live Events section (Events category)</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-blue-400 font-bold mt-0.5">•</span>
+              <span><strong>General Gallery:</strong> Images for other purposes (Other category)</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-zinc-400 font-bold mt-0.5">•</span>
+              <span>Maximum file size: 10MB • Supported: PNG, JPG, GIF, WebP</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-zinc-400 font-bold mt-0.5">•</span>
+              <span>Images are automatically optimized and stored in Cloudinary</span>
+            </li>
+          </ul>
         </div>
 
         {/* Edit Modal */}
