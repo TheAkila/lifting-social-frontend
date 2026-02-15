@@ -5,8 +5,8 @@ import { useState, useEffect } from 'react'
 
 export default function Hero() {
   const images = [
-    '/images/hero-background.svg',
-    '/images/hero-background-2.svg',
+    '/images/hero-background.png',
+    '/images/hero-background-2.png',
   ]
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
