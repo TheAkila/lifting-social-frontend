@@ -108,7 +108,8 @@ function CategorySections() {
   return (
     <section className="py-12 sm:py-16 md:py-20 bg-white">
       <div className="container mx-auto px-4">
-        {sections.map((section, sectionIndex) => (
+        {/* Only show sections with at least one product */}
+        {sections.filter(s => s.products.length > 0).map((section, sectionIndex) => (
           <div key={section.category} className={sectionIndex > 0 ? 'mt-16 sm:mt-20 md:mt-24' : ''}>
             {/* Section Header */}
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 sm:gap-6 mb-8 sm:mb-12">
@@ -148,13 +149,6 @@ function CategorySections() {
                 </div>
               ))}
             </div>
-
-            {/* Empty State */}
-            {section.products.length === 0 && (
-              <div className="text-center py-16 bg-zinc-50 rounded-xl border border-zinc-100">
-                <p className="text-zinc-500">No products available in this category.</p>
-              </div>
-            )}
           </div>
         ))}
       </div>
