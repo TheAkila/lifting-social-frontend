@@ -124,7 +124,7 @@ export default function GalleryManagementPage() {
 
   const handleUpdateImage = async (id: number, updates: Partial<GalleryImage>) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/gallery/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/gallery/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -133,7 +133,11 @@ export default function GalleryManagementPage() {
         body: JSON.stringify(updates),
       })
 
-      if (!response.ok) throw new Error('Update failed')
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Update failed:', response.status, errorText)
+        throw new Error(`Update failed: ${response.status}`)
+      }
 
       await fetchGalleryImages()
       setEditingImage(null)
@@ -145,14 +149,18 @@ export default function GalleryManagementPage() {
 
   const handleDeleteImage = async (id: number) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/gallery/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/gallery/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('authToken')}`,
         },
       })
 
-      if (!response.ok) throw new Error('Delete failed')
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Delete failed:', response.status, errorText)
+        throw new Error(`Delete failed: ${response.status}`)
+      }
 
       await fetchGalleryImages()
       setDeleteConfirm(null)
