@@ -1,13 +1,53 @@
-import { Metadata } from 'next'
+'use client'
+
 import Link from 'next/link'
 import { Video, Wifi, Users, Camera, Radio, ArrowLeft, Phone, Mail, MapPin } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import Image from 'next/image'
 
-export const metadata: Metadata = {
-  title: 'Live Sports Events | LiftingSocial',
-  description: 'Professional live streaming and event coverage for weightlifting competitions',
+interface GalleryImage {
+  id: string
+  title: string
+  image_url: string
+  alt_text: string
+  category: string
 }
 
 export default function LiveEventsPage() {
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchGalleryImages()
+  }, [])
+
+  const fetchGalleryImages = async () => {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL
+      if (!apiUrl) {
+        setLoading(false)
+        return
+      }
+
+      const response = await fetch(`${apiUrl}/gallery?limit=100`)
+      if (!response.ok) throw new Error('Failed to fetch')
+
+      const json = await response.json()
+      console.log('Live Events gallery API response:', json)
+      const data = json.data || json
+      const images = Array.isArray(data) ? data : []
+
+      // Filter for Events category images
+      const eventsImages = images.filter((img: GalleryImage) => img.category === 'Events')
+      console.log('Filtered Events images:', eventsImages)
+      setGalleryImages(eventsImages)
+    } catch (error) {
+      console.error('Error fetching gallery images:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen pt-20">
       {/* Breadcrumb */}
@@ -138,6 +178,50 @@ export default function LiveEventsPage() {
         </div>
       </section>
 
+      {/* Gallery Section */}
+      <section className="py-10 sm:py-16 md:py-20 bg-zinc-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8 sm:mb-10">
+            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-zinc-900 mb-2 sm:mb-3">
+              Event Coverage Gallery
+            </h2>
+            <p className="text-base sm:text-lg text-zinc-600">
+              See examples of our professional live event coverage and streaming setup
+            </p>
+          </div>
+
+          {loading ? (
+            <div className="flex items-center justify-center py-16">
+              <div className="text-center">
+                <div className="inline-block p-3 rounded-full bg-zinc-200 animate-spin mb-4">
+                  <div className="w-6 h-6" />
+                </div>
+                <p className="text-zinc-600">Loading gallery...</p>
+              </div>
+            </div>
+          ) : galleryImages.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+              {galleryImages.map((image) => (
+                <div key={image.id} className="group relative aspect-square overflow-hidden rounded-xl bg-zinc-200">
+                  <Image
+                    src={image.image_url}
+                    alt={image.alt_text}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <Camera className="w-16 h-16 mx-auto text-zinc-300 mb-4" />
+              <p className="text-zinc-600">No event coverage images available yet</p>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-10 sm:py-16 md:py-20 bg-zinc-50">
         <div className="container mx-auto px-4">
@@ -151,13 +235,13 @@ export default function LiveEventsPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                 <a
-                  href="tel:+94771234567"
+                  href="tel:+94764829645"
                   className="bg-white text-black px-6 sm:px-8 py-3 rounded-xl font-semibold hover:bg-zinc-100 transition-colors text-sm sm:text-base"
                 >
                   Call Now
                 </a>
                 <a
-                  href="mailto:events@liftingsocial.lk"
+                  href="mailto:theliftingsocial@gmail.com"
                   className="bg-zinc-700 text-white px-6 sm:px-8 py-3 rounded-xl font-semibold hover:bg-zinc-800 transition-colors text-sm sm:text-base"
                 >
                   Send Email
@@ -168,47 +252,8 @@ export default function LiveEventsPage() {
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section className="py-12 sm:py-16 md:py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-10 sm:mb-12">
-              <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-zinc-900 mb-3 sm:mb-4">
-                Get in Touch
-              </h2>
-              <p className="text-base sm:text-lg text-zinc-600">
-                Ready to elevate your event? Contact our team today
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-              <div className="bg-zinc-50 rounded-xl p-5 sm:p-6 text-center">
-                <div className="w-12 h-12 bg-black/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                  <Phone className="w-6 h-6 text-black" />
-                </div>
-                <h3 className="font-semibold text-zinc-900 mb-2 text-sm sm:text-base">Phone</h3>
-                <p className="text-zinc-600 text-sm sm:text-base">+94 77 123 4567</p>
-              </div>
-
-              <div className="bg-zinc-50 rounded-xl p-5 sm:p-6 text-center">
-                <div className="w-12 h-12 bg-black/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                  <Mail className="w-6 h-6 text-black" />
-                </div>
-                <h3 className="font-semibold text-zinc-900 mb-2 text-sm sm:text-base">Email</h3>
-                <p className="text-zinc-600 text-sm sm:text-base">events@liftingsocial.lk</p>
-              </div>
-
-              <div className="bg-zinc-50 rounded-xl p-5 sm:p-6 text-center">
-                <div className="w-12 h-12 bg-black/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                  <MapPin className="w-6 h-6 text-black" />
-                </div>
-                <h3 className="font-semibold text-zinc-900 mb-2 text-sm sm:text-base">Location</h3>
-                <p className="text-zinc-600 text-sm sm:text-base">Colombo, Sri Lanka</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+     
+      
     </div>
   )
 }

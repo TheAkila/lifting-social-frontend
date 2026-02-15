@@ -13,14 +13,7 @@ import api from '@/lib/api'
 const mainNavLinks = [
   { name: 'Home', href: '/' },
   { name: 'Shop', href: '/shop' },
-  { 
-    name: 'Sports Media', 
-    href: '/sports-media',
-    dropdown: [
-      { name: 'Photography', href: '/sports-media/photography' },
-      { name: 'Live Events', href: '/sports-media/live-events' }
-    ]
-  },
+  { name: 'Sports Media', href: '/sports-media' },
   { name: 'Stories', href: '/stories' },
   { name: 'Events', href: '/events' },
 ]
@@ -39,14 +32,12 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<any[]>([])
   const [searchLoading, setSearchLoading] = useState(false)
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const { totalItems } = useCart()
   const { user, logout } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
   const userMenuRef = useRef<HTMLDivElement>(null)
   const searchRef = useRef<HTMLDivElement>(null)
-  const dropdownRef = useRef<HTMLDivElement>(null)
 
   // Ensure component is hydrated before rendering user-dependent content
   useEffect(() => {
@@ -75,9 +66,6 @@ export default function Navbar() {
       }
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setSearchOpen(false)
-      }
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setOpenDropdown(null)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -150,60 +138,17 @@ export default function Navbar() {
             {/* Main Navigation - Desktop - Centered */}
             <div className="hidden md:flex items-center space-x-0.5 sm:space-x-1 absolute left-1/2 transform -translate-x-1/2">
               {mainNavLinks.map((link) => (
-                <div key={link.name} className="relative" ref={link.dropdown ? dropdownRef : undefined}>
-                  {link.dropdown ? (
-                    <>
-                      <button
-                        onClick={() => setOpenDropdown(openDropdown === link.name ? null : link.name)}
-                        className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 text-xs sm:text-sm md:text-base font-medium rounded-[8px] sm:rounded-[10px] transition-all duration-200 flex items-center gap-1 ${
-                          isActive(link.href)
-                            ? 'text-zinc-900 bg-zinc-100'
-                            : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
-                        }`}
-                      >
-                        {link.name}
-                        <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === link.name ? 'rotate-180' : ''}`} />
-                      </button>
-                      
-                      <AnimatePresence>
-                        {openDropdown === link.name && (
-                          <motion.div
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-zinc-200 overflow-hidden z-50"
-                          >
-                            {link.dropdown.map((item) => (
-                              <Link
-                                key={item.name}
-                                href={item.href}
-                                onClick={() => setOpenDropdown(null)}
-                                className={`block px-4 py-2.5 text-sm font-medium transition-colors ${
-                                  pathname === item.href
-                                    ? 'text-zinc-900 bg-zinc-100'
-                                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
-                                }`}
-                              >
-                                {item.name}
-                              </Link>
-                            ))}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </>
-                  ) : (
-                    <Link
-                      href={link.href}
-                      className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 text-xs sm:text-sm md:text-base font-medium rounded-[8px] sm:rounded-[10px] transition-all duration-200 ${
-                        isActive(link.href)
-                          ? 'text-zinc-900 bg-zinc-100'
-                          : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
-                      }`}
-                    >
-                      {link.name}
-                    </Link>
-                  )}
-                </div>
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 text-xs sm:text-sm md:text-base font-medium rounded-[8px] sm:rounded-[10px] transition-all duration-200 ${
+                    isActive(link.href)
+                      ? 'text-zinc-900 bg-zinc-100'
+                      : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
+                  }`}
+                >
+                  {link.name}
+                </Link>
               ))}
             </div>
 
@@ -454,51 +399,18 @@ export default function Navbar() {
                   {/* Main Links */}
                   <div className="space-y-1">
                     {mainNavLinks.map((link) => (
-                      <div key={link.name}>
-                        {link.dropdown ? (
-                          <>
-                            <Link
-                              href={link.href}
-                              onClick={() => setIsMobileMenuOpen(false)}
-                              className={`flex items-center px-4 py-3 text-base font-medium rounded-[10px] transition-all duration-200 ${
-                                isActive(link.href)
-                                  ? 'text-zinc-900 bg-zinc-100'
-                                  : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
-                              }`}
-                            >
-                              {link.name}
-                            </Link>
-                            <div className="ml-4 mt-1 space-y-1">
-                              {link.dropdown.map((item) => (
-                                <Link
-                                  key={item.name}
-                                  href={item.href}
-                                  onClick={() => setIsMobileMenuOpen(false)}
-                                  className={`flex items-center px-4 py-2 text-sm font-medium rounded-[8px] transition-all duration-200 ${
-                                    pathname === item.href
-                                      ? 'text-zinc-900 bg-zinc-100'
-                                      : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50'
-                                  }`}
-                                >
-                                  {item.name}
-                                </Link>
-                              ))}
-                            </div>
-                          </>
-                        ) : (
-                          <Link
-                            href={link.href}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className={`flex items-center px-4 py-3 text-base font-medium rounded-[10px] transition-all duration-200 ${
-                              isActive(link.href)
-                                ? 'text-zinc-900 bg-zinc-100'
-                                : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
-                            }`}
-                          >
-                            {link.name}
-                          </Link>
-                        )}
-                      </div>
+                      <Link
+                        key={link.name}
+                        href={link.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`flex items-center px-4 py-3 text-base font-medium rounded-[10px] transition-all duration-200 ${
+                          isActive(link.href)
+                            ? 'text-zinc-900 bg-zinc-100'
+                            : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
+                        }`}
+                      >
+                        {link.name}
+                      </Link>
                     ))}
                   </div>
 

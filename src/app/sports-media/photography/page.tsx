@@ -1,23 +1,72 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Camera, X, Phone, Mail, MapPin, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 
-// Sample gallery images - replace with actual images from admin dashboard
-const galleryImages = [
-  { id: 1, src: '/images/gallery/sample-1.jpg', alt: 'Weightlifting competition moment', category: 'Competition' },
-  { id: 2, src: '/images/gallery/sample-2.jpg', alt: 'Athlete performing snatch', category: 'Training' },
-  { id: 3, src: '/images/gallery/sample-3.jpg', alt: 'Clean and jerk lift', category: 'Competition' },
-  { id: 4, src: '/images/gallery/sample-4.jpg', alt: 'Celebration after successful lift', category: 'Moments' },
-  { id: 5, src: '/images/gallery/sample-5.jpg', alt: 'Intense training session', category: 'Training' },
-  { id: 6, src: '/images/gallery/sample-6.jpg', alt: 'Medal ceremony', category: 'Moments' },
-]
+interface GalleryImage {
+  id: string
+  title: string
+  image_url: string
+  alt_text: string
+  category: string
+}
 
 export default function PhotographyPage() {
-  const [selectedImage, setSelectedImage] = useState<typeof galleryImages[0] | null>(null)
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([])
+  const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchGalleryImages()
+  }, [])
+
+  const fetchGalleryImages = async () => {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL
+      if (!apiUrl) {
+        console.warn('NEXT_PUBLIC_API_URL not configured, using fallback images')
+        throw new Error('API URL not configured')
+      }
+
+      const response = await fetch(`${apiUrl}/gallery?limit=100`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: Failed to fetch gallery images`)
+      }
+
+      const json = await response.json()
+      console.log('Gallery API response:', json)
+      const data = json.data || json
+
+      if (Array.isArray(data) && data.length > 0) {
+        setGalleryImages(data)
+      } else {
+        console.warn('No gallery images found - data is:', data)
+        throw new Error('No gallery images found in response')
+      }
+    } catch (error) {
+      console.error('Error fetching gallery images:', error)
+      // Use default placeholder images if API fails or returns no data
+      console.log('Using placeholder gallery images')
+      setGalleryImages([
+        { id: '1', title: 'Competition Moment', image_url: '/images/gallery/sample-1.jpg', alt_text: 'Weightlifting competition moment', category: 'Competition' },
+        { id: '2', title: 'Athlete Snatch', image_url: '/images/gallery/sample-2.jpg', alt_text: 'Athlete performing snatch', category: 'Training' },
+        { id: '3', title: 'Clean and Jerk', image_url: '/images/gallery/sample-3.jpg', alt_text: 'Clean and jerk lift', category: 'Competition' },
+        { id: '4', title: 'Success Celebration', image_url: '/images/gallery/sample-4.jpg', alt_text: 'Celebration after successful lift', category: 'Moments' },
+        { id: '5', title: 'Training Session', image_url: '/images/gallery/sample-5.jpg', alt_text: 'Intense training session', category: 'Training' },
+        { id: '6', title: 'Medal Ceremony', image_url: '/images/gallery/sample-6.jpg', alt_text: 'Medal ceremony', category: 'Moments' },
+      ])
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen pt-20">
@@ -100,33 +149,55 @@ export default function PhotographyPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-            {galleryImages.map((image, index) => (
-              <motion.div
-                key={image.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
-                className="group relative aspect-square bg-zinc-200 rounded-xl overflow-hidden cursor-pointer"
-                onClick={() => setSelectedImage(image)}
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-zinc-800 to-zinc-900 group-hover:scale-105 transition-transform duration-300">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Camera className="w-12 h-12 text-white/20" />
+          {loading ? (
+            <div className="flex items-center justify-center h-96">
+              <div className="text-center">
+                <div className="w-12 h-12 border-4 border-zinc-300 border-t-black rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-zinc-600">Loading gallery...</p>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+                {galleryImages.length > 0 ? (
+                  galleryImages.map((image, index) => (
+                    <motion.div
+                      key={image.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, delay: index * 0.1 }}
+                      className="group relative aspect-square bg-zinc-200 rounded-xl overflow-hidden cursor-pointer"
+                      onClick={() => setSelectedImage(image)}
+                    >
+                      <Image
+                        src={image.image_url}
+                        alt={image.alt_text}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors" />
+                      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                        <p className="text-white text-sm font-medium">{image.category}</p>
+                      </div>
+                    </motion.div>
+                  ))
+                ) : (
+                  <div className="col-span-2 md:col-span-3 text-center py-12">
+                    <Camera className="w-12 h-12 text-zinc-300 mx-auto mb-4" />
+                    <p className="text-zinc-600">No gallery images available yet</p>
                   </div>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <p className="text-white text-sm font-medium">{image.category}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                )}
+              </div>
 
-          <div className="text-center mt-6 sm:mt-8">
-            <p className="text-zinc-500 text-xs sm:text-sm px-4">
-              Sample gallery images. Add your photos through the admin dashboard.
-            </p>
-          </div>
+              <div className="text-center mt-6 sm:mt-8">
+                <p className="text-zinc-500 text-xs sm:text-sm px-4">
+                  {galleryImages.length === 0
+                    ? 'Gallery images will appear here once added through the admin dashboard'
+                    : 'Click images to view in full screen'}
+                </p>
+              </div>
+            </>
+          )}
         </div>
       </section>
 
@@ -149,7 +220,7 @@ export default function PhotographyPage() {
                   <Phone className="w-6 h-6 text-black" />
                 </div>
                 <h3 className="font-semibold text-zinc-900 mb-2 text-sm sm:text-base">Phone</h3>
-                <p className="text-zinc-600 text-sm sm:text-base">+94 77 123 4567</p>
+                <p className="text-zinc-600 text-sm sm:text-base">+94 76 482 9645</p>
               </div>
 
               <div className="bg-zinc-50 rounded-xl p-5 sm:p-6 text-center">
@@ -157,16 +228,10 @@ export default function PhotographyPage() {
                   <Mail className="w-6 h-6 text-black" />
                 </div>
                 <h3 className="font-semibold text-zinc-900 mb-2 text-sm sm:text-base">Email</h3>
-                <p className="text-zinc-600 text-sm sm:text-base">photography@liftingsocial.lk</p>
+                <p className="text-zinc-600 text-sm sm:text-base">theliftingsocial@gmail.com</p>
               </div>
 
-              <div className="bg-zinc-50 rounded-xl p-5 sm:p-6 text-center">
-                <div className="w-12 h-12 bg-black/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                  <MapPin className="w-6 h-6 text-black" />
-                </div>
-                <h3 className="font-semibold text-zinc-900 mb-2 text-sm sm:text-base">Location</h3>
-                <p className="text-zinc-600 text-sm sm:text-base">Colombo, Sri Lanka</p>
-              </div>
+              
             </div>
           </div>
         </div>
@@ -190,10 +255,19 @@ export default function PhotographyPage() {
               <X className="w-6 h-6 text-white" />
             </button>
             <div className="max-w-5xl w-full">
-              <div className="aspect-video bg-zinc-800 rounded-xl overflow-hidden flex items-center justify-center">
-                <Camera className="w-20 h-20 text-white/20" />
+              <div className="aspect-video bg-zinc-800 rounded-xl overflow-hidden flex items-center justify-center relative">
+                {selectedImage.image_url ? (
+                  <Image
+                    src={selectedImage.image_url}
+                    alt={selectedImage.alt_text}
+                    fill
+                    className="object-contain"
+                  />
+                ) : (
+                  <Camera className="w-20 h-20 text-white/20" />
+                )}
               </div>
-              <p className="text-white text-center mt-4">{selectedImage.alt}</p>
+              <p className="text-white text-center mt-4">{selectedImage.alt_text}</p>
             </div>
           </motion.div>
         )}
