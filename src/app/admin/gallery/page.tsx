@@ -1,9 +1,19 @@
 'use client'
 
-import { useState } from 'react'
-import { Upload, Camera, Video, Image as ImageIcon } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Upload, Camera, Video, Image as ImageIcon, Trash2, Edit2, X } from 'lucide-react'
+import Image from 'next/image'
 
 type UploadSection = 'photography' | 'events' | 'gallery'
+
+interface GalleryImage {
+  id: number
+  image_url: string
+  category: string
+  title: string
+  alt_text: string
+  created_at: string
+}
 
 export default function GalleryManagementPage() {
   const [uploadingSection, setUploadingSection] = useState<UploadSection | null>(null)
@@ -18,6 +28,29 @@ export default function GalleryManagementPage() {
     gallery: '',
   })
   const [dragActiveSection, setDragActiveSection] = useState<UploadSection | null>(null)
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([])
+  const [loading, setLoading] = useState(true)
+  const [editingImage, setEditingImage] = useState<GalleryImage | null>(null)
+  const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null)
+
+  useEffect(() => {
+    fetchGalleryImages()
+  }, [])
+
+  const fetchGalleryImages = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/gallery`)
+      if (response.ok) {
+        const data = await response.json()
+        setGalleryImages(data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch gallery images:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleFileUpload = async (file: File, section: UploadSection) => {
     if (!file) return
