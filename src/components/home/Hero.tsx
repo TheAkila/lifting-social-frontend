@@ -5,8 +5,8 @@ import { useState, useEffect } from 'react'
 
 export default function Hero() {
   const images = [
-    '/images/hero-background.jpg',
-    '/images/hero-background-2.jpg',
+    '/images/hero-background.svg',
+    '/images/hero-background-2.svg',
   ]
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
@@ -29,7 +29,7 @@ export default function Hero() {
 
   return (
     <section className="relative w-full min-h-screen overflow-hidden">
-      {/* Image Carousel */}
+      {/* SVG Background Carousel */}
       <div className="relative w-full h-screen">
         {images.map((image, index) => (
           <div
@@ -66,7 +66,7 @@ export default function Hero() {
                 ? 'bg-white w-8 h-2 sm:w-10 sm:h-2.5'
                 : 'bg-white/50 hover:bg-white/75 w-2 h-2 sm:w-2.5 sm:h-2.5'
             }`}
-            aria-label={`Go to image ${index + 1}`}
+            aria-label={`Go to background ${index + 1}`}
           />
         ))}
       </div>
