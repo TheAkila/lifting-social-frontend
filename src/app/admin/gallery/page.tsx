@@ -98,12 +98,55 @@ export default function GalleryManagementPage() {
       const data = await response.json()
       setSuccesses({ ...successes, [section]: `✅ Image uploaded successfully: ${file.name}` })
       
+      // Refresh gallery images
+      fetchGalleryImages()
+      
       // Reset after 3 seconds
       setTimeout(() => setSuccesses({ ...successes, [section]: '' }), 3000)
     } catch (err: any) {
       setErrors({ ...errors, [section]: err.message || 'Failed to upload image' })
     } finally {
       setUploadingSection(null)
+    }
+  }
+
+  const handleUpdateImage = async (id: number, updates: Partial<GalleryImage>) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/gallery/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+        },
+        body: JSON.stringify(updates),
+      })
+
+      if (!response.ok) throw new Error('Update failed')
+
+      await fetchGalleryImages()
+      setEditingImage(null)
+    } catch (error) {
+      console.error('Failed to update image:', error)
+      alert('Failed to update image')
+    }
+  }
+
+  const handleDeleteImage = async (id: number) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/gallery/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+        },
+      })
+
+      if (!response.ok) throw new Error('Delete failed')
+
+      await fetchGalleryImages()
+      setDeleteConfirm(null)
+    } catch (error) {
+      console.error('Failed to delete image:', error)
+      alert('Failed to delete image')
     }
   }
 
@@ -263,6 +306,184 @@ export default function GalleryManagementPage() {
           icon={ImageIcon}
           colorClass="bg-gradient-to-br from-blue-500 to-blue-600"
         />
+
+        {/* Gallery Images Management */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold text-white mb-6">Manage Gallery Images</h2>
+          
+          {loading ? (
+            <div className="bg-white rounded-2xl p-12 text-center">
+              <div className="animate-spin w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto"></div>
+              <p className="text-zinc-600 mt-4">Loading gallery images...</p>
+            </div>
+          ) : galleryImages.length === 0 ? (
+            <div className="bg-white rounded-2xl p-12 text-center">
+              <ImageIcon className="w-16 h-16 text-zinc-300 mx-auto mb-4" />
+              <p className="text-zinc-600">No images in the gallery yet</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {galleryImages.map((image) => (
+                <div key={image.id} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+                  <div className="relative aspect-video">
+                    <Image
+                      src={image.image_url}
+                      alt={image.alt_text}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-zinc-900 truncate">{image.title}</h3>
+                        <p className="text-xs text-zinc-500 mt-1">
+                          <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
+                            {image.category}
+                          </span>
+                        </p>
+                      </div>
+                      <div className="flex gap-2 ml-2">
+                        <button
+                          onClick={() => setEditingImage(image)}
+                          className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="Edit image"
+                        >
+                          <Edit2 className="w-4 h-4 text-blue-600" />
+                        </button>
+                        <button
+                          onClick={() => setDeleteConfirm(image.id)}
+                          className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete image"
+                        >
+                          <Trash2 className="w-4 h-4 text-red-600" />
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-sm text-zinc-600 truncate">{image.alt_text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Edit Modal */}
+        {editingImage && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-2xl max-w-md w-full p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-zinc-900">Edit Image</h3>
+                <button
+                  onClick={() => setEditingImage(null)}
+                  className="p-2 hover:bg-zinc-100 rounded-lg"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  const formData = new FormData(e.currentTarget)
+                  handleUpdateImage(editingImage.id, {
+                    title: formData.get('title') as string,
+                    alt_text: formData.get('alt_text') as string,
+                    category: formData.get('category') as string,
+                  })
+                }}
+              >
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-zinc-700 mb-2">
+                      Title
+                    </label>
+                    <input
+                      type="text"
+                      name="title"
+                      defaultValue={editingImage.title}
+                      className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-zinc-700 mb-2">
+                      Alt Text
+                    </label>
+                    <input
+                      type="text"
+                      name="alt_text"
+                      defaultValue={editingImage.alt_text}
+                      className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-zinc-700 mb-2">
+                      Category
+                    </label>
+                    <select
+                      name="category"
+                      defaultValue={editingImage.category}
+                      className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="Competition">Competition</option>
+                      <option value="Training">Training</option>
+                      <option value="Moments">Moments</option>
+                      <option value="Events">Events</option>
+                      <option value="Team">Team</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="flex gap-3 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => setEditingImage(null)}
+                    className="flex-1 px-4 py-2 border border-zinc-300 rounded-lg hover:bg-zinc-50 font-semibold"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {deleteConfirm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-2xl max-w-md w-full p-6">
+              <h3 className="text-xl font-bold text-zinc-900 mb-2">Delete Image?</h3>
+              <p className="text-zinc-600 mb-6">
+                Are you sure you want to delete this image? This action cannot be undone.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setDeleteConfirm(null)}
+                  className="flex-1 px-4 py-2 border border-zinc-300 rounded-lg hover:bg-zinc-50 font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleDeleteImage(deleteConfirm)}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         
         
