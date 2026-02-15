@@ -13,7 +13,7 @@ import api from '@/lib/api'
 const mainNavLinks = [
   { name: 'Home', href: '/' },
   { name: 'Shop', href: '/shop' },
-  { name: 'Sports Media', href: '/sports-media' },
+  { name: 'Media', href: '/sports-media' },
   { name: 'Stories', href: '/stories' },
   { name: 'Events', href: '/events' },
 ]

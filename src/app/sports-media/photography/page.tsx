@@ -53,16 +53,8 @@ export default function PhotographyPage() {
       }
     } catch (error) {
       console.error('Error fetching gallery images:', error)
-      // Use default placeholder images if API fails or returns no data
-      console.log('Using placeholder gallery images')
-      setGalleryImages([
-        { id: '1', title: 'Competition Moment', image_url: '/images/gallery/sample-1.jpg', alt_text: 'Weightlifting competition moment', category: 'Competition' },
-        { id: '2', title: 'Athlete Snatch', image_url: '/images/gallery/sample-2.jpg', alt_text: 'Athlete performing snatch', category: 'Training' },
-        { id: '3', title: 'Clean and Jerk', image_url: '/images/gallery/sample-3.jpg', alt_text: 'Clean and jerk lift', category: 'Competition' },
-        { id: '4', title: 'Success Celebration', image_url: '/images/gallery/sample-4.jpg', alt_text: 'Celebration after successful lift', category: 'Moments' },
-        { id: '5', title: 'Training Session', image_url: '/images/gallery/sample-5.jpg', alt_text: 'Intense training session', category: 'Training' },
-        { id: '6', title: 'Medal Ceremony', image_url: '/images/gallery/sample-6.jpg', alt_text: 'Medal ceremony', category: 'Moments' },
-      ])
+      // Don't use placeholder images - show empty gallery
+      setGalleryImages([])
     } finally {
       setLoading(false)
     }
@@ -176,9 +168,6 @@ export default function PhotographyPage() {
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors" />
-                      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                        <p className="text-white text-sm font-medium">{image.category}</p>
-                      </div>
                     </motion.div>
                   ))
                 ) : (

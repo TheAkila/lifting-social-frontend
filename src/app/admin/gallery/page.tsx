@@ -204,7 +204,24 @@ export default function GalleryManagementPage() {
       events: 'Events',
       gallery: 'Other'
     }
-    return galleryImages.filter(img => img.category === categoryMap[section])
+    
+    const targetCategory = categoryMap[section]
+    const filtered = galleryImages.filter(img => {
+      const imgCategory = img.category?.trim()
+      
+      // For General Gallery, explicitly exclude Competition and Events
+      if (section === 'gallery') {
+        return imgCategory !== 'Competition' && 
+               imgCategory !== 'Events' && 
+               (imgCategory === 'Other' || imgCategory === 'Team' || imgCategory === 'Training' || imgCategory === 'Moments')
+      }
+      
+      // For other sections, strict category match
+      return imgCategory === targetCategory
+    })
+    
+    console.log(`Section: ${section}, Target: ${targetCategory}, Found: ${filtered.length} images`)
+    return filtered
   }
 
   const UploadCard = ({ 
