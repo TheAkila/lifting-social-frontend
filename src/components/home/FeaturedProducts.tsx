@@ -158,8 +158,10 @@ export default function FeaturedProducts() {
 
             {/* Products Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-8">
-              {section.products.map((product) => (
-                <ProductCard key={product._id || product.id} product={product} />
+              {section.products.map((product, index) => (
+                <div key={product._id || product.id} className={index >= 2 ? 'hidden sm:block' : ''}>
+                  <ProductCard product={product} />
+                </div>
               ))}
             </div>
 
