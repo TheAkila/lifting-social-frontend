@@ -46,7 +46,10 @@ export default function PhotographyPage() {
       const data = json.data || json
 
       if (Array.isArray(data) && data.length > 0) {
-        setGalleryImages(data)
+        // Filter to only show Competition category images for Photography page
+        const filteredImages = data.filter((img: GalleryImage) => img.category === 'Competition')
+        console.log(`Total images: ${data.length}, Competition images: ${filteredImages.length}`)
+        setGalleryImages(filteredImages)
       } else {
         console.warn('No gallery images found - data is:', data)
         throw new Error('No gallery images found in response')
