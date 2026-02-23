@@ -6,35 +6,35 @@ import Link from 'next/link'
 import api from '@/lib/api'
 import { useCart } from '@/contexts/CartContext'
 
-export default function OffersDeals() {
+export default function BundleOffers() {
   const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const { addItem } = useCart()
 
-  const fetchDealProducts = () => {
+  const fetchBundleProducts = () => {
     api
       .get(`/products?t=${Date.now()}`)
       .then((res) => {
-        // Filter products with discounts (comparePrice > price)
-        const deals = res.data.filter((p: any) => p.comparePrice && p.comparePrice > p.price)
-        setProducts(deals.slice(0, 6)) // Show max 6 deal products
+        // Filter products marked as bundle offers
+        const bundles = res.data.filter((p: any) => p.bundleOffer === true)
+        setProducts(bundles.slice(0, 6)) // Show max 6 bundle products
         setLoading(false)
       })
       .catch((err) => {
-        console.error('Failed to fetch deal products', err)
+        console.error('Failed to fetch bundle products', err)
         setLoading(false)
       })
   }
 
   useEffect(() => {
-    fetchDealProducts()
+    fetchBundleProducts()
   }, [])
 
   // Refetch when page becomes visible
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        fetchDealProducts()
+        fetchBundleProducts()
       }
     }
     document.addEventListener('visibilitychange', handleVisibilityChange)
@@ -60,25 +60,28 @@ export default function OffersDeals() {
   }
 
   return (
-    <section className="bg-white py-8 sm:py-12 md:py-16 lg:py-20">
+    <section className="bg-gradient-to-r from-blue-600 to-purple-600 py-8 sm:py-12 md:py-16 lg:py-20">
       <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-6 sm:mb-8 md:mb-10 lg:mb-12">
-          <div className="inline-flex items-center gap-2 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider mb-3 sm:mb-4" style={{ backgroundColor: '#D00000' }}>
-            Limited Time Offers
+          <div className="inline-flex items-center gap-2 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider mb-3 sm:mb-4 bg-white/20 backdrop-blur-sm">
+            ✨ Bundle Offers
           </div>
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-display font-bold text-zinc-900 mb-2 sm:mb-3">
-            Deals & Discounts
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-display font-bold text-white mb-2 sm:mb-3">
+            Bundle Offers & Combos
           </h2>
-          <p className="text-xs sm:text-sm md:text-base text-zinc-600 max-w-2xl mx-auto px-2">
-            Save big on premium weightlifting gear - up to 50% off
+          <p className="text-xs sm:text-sm md:text-base text-white/90 max-w-2xl mx-auto px-2">
+            Complete your training with bundled essentials at special prices
           </p>
         </div>
 
         {/* Products Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6 md:mb-8">
           {products.map((product, index) => {
-            const discount = Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)
+            const hasDiscount = product.comparePrice && product.comparePrice > product.price
+            const discountPercent = hasDiscount 
+              ? Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)
+              : 0
             
             return (
               <motion.div
@@ -104,22 +107,22 @@ export default function OffersDeals() {
                         </div>
                       )}
 
-                      {/* Large Discount Badge */}
-                      <div className="absolute top-0 right-0">
-                        <div className="text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded-bl-lg sm:rounded-bl-[8px] shadow-xl" style={{ backgroundColor: '#D00000' }}>
-                          <div className="text-base sm:text-xl font-black leading-none mb-0.5">{discount}%</div>
-                          <div className="text-[9px] sm:text-xs font-bold uppercase tracking-wide">OFF</div>
+                      {/* Discount Badge */}
+                      {discountPercent > 0 && (
+                        <div className="absolute top-0 right-0">
+                          <div className="text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded-bl-lg sm:rounded-bl-[8px] shadow-xl bg-purple-600">
+                            <div className="text-base sm:text-xl font-black leading-none mb-0.5">{discountPercent}%</div>
+                            <div className="text-[9px] sm:text-xs font-bold uppercase tracking-wide">OFF</div>
+                          </div>
                         </div>
-                      </div>
+                      )}
 
-                      {/* Sale Badge */}
+                      {/* Bundle Badge */}
                       <div className="absolute top-2 sm:top-3 left-2 sm:left-3">
-                        <span className="bg-yellow-400 text-zinc-900 px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-lg">
-                          Sale
+                        <span className="bg-blue-400 text-white px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-lg">
+                          Bundle
                         </span>
                       </div>
-
-
 
                       {/* Quick Add */}
                       <div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
@@ -130,7 +133,7 @@ export default function OffersDeals() {
                             handleQuickAdd(product)
                           }}
                           disabled={product.inStock === false}
-                          className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-1.5 sm:py-2 rounded-[6px] text-xs sm:text-sm font-bold shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="w-full bg-purple-600 hover:bg-purple-700 text-white py-1.5 sm:py-2 rounded-[6px] text-xs sm:text-sm font-bold shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           Quick Add
                         </button>
@@ -162,16 +165,15 @@ export default function OffersDeals() {
                     <h3 className="font-display font-semibold text-xs sm:text-sm text-zinc-900 mt-0.5 sm:mt-1 mb-1 sm:mb-1.5 line-clamp-2 group-hover:text-zinc-700 transition-colors">
                       {product.name}
                     </h3>
-                    <div className="flex items-center gap-1 sm:gap-1.5 mb-0.5 sm:mb-1">
+                    <div className="flex items-center gap-1 sm:gap-1.5">
                       <span className="font-display font-bold text-xs sm:text-sm text-zinc-900">
                         LKR {product.price?.toLocaleString()}
                       </span>
-                      <span className="text-zinc-400 text-[10px] sm:text-xs line-through">
-                        LKR {product.comparePrice.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="text-[9px] sm:text-xs text-green-600 font-semibold">
-                      Save LKR {(product.comparePrice - product.price).toLocaleString()}
+                      {product.comparePrice && (
+                        <span className="text-zinc-400 text-[10px] sm:text-xs line-through">
+                          LKR {product.comparePrice.toLocaleString()}
+                        </span>
+                      )}
                     </div>
                   </Link>
                 </div>
@@ -180,14 +182,14 @@ export default function OffersDeals() {
           })}
         </div>
 
-        {/* View All Deals Link */}
+        {/* View All Bundles Link */}
         <div className="text-center">
           <Link
-            href="/shop?filter=deals"
-            className="inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 text-white font-bold text-sm sm:text-base rounded-md transition-colors shadow-lg hover:shadow-xl"
-            style={{ backgroundColor: '#D00000' }}
+            href="/shop?filter=bundles"
+            className="inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 text-white font-bold text-sm sm:text-base rounded-md transition-all shadow-lg hover:shadow-xl bg-white/10 hover:bg-white/20 backdrop-blur-sm"
           >
-            View All Deals →
+            <span>View All Bundle Offers</span>
+            <span>→</span>
           </Link>
         </div>
       </div>

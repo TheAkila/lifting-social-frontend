@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { FaBox, FaNewspaper, FaChartBar, FaCalendar, FaRss, FaShoppingCart, FaStar, FaHeart, FaDollarSign, FaImages } from 'react-icons/fa'
+import { FaBox, FaNewspaper, FaChartBar, FaCalendar, FaRss, FaShoppingCart, FaStar, FaHeart, FaDollarSign, FaImages, FaGift } from 'react-icons/fa'
 import api from '@/lib/api'
 
 interface ShopStats {
@@ -136,6 +136,21 @@ export default function AdminDashboard() {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">Products</h3>
                   <p className="text-gray-600 text-sm">Manage shop items</p>
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          {/* Bundles Card */}
+          <Link href="/admin/bundles">
+            <div className="bg-white rounded-[12px] p-6 hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200 shadow-sm">
+              <div className="flex items-center space-x-4">
+                <div className="w-14 h-14 rounded-[10px] bg-purple-500/10 flex items-center justify-center">
+                  <FaGift className="text-xl text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Bundles</h3>
+                  <p className="text-gray-600 text-sm">Manage bundle offers</p>
                 </div>
               </div>
             </div>

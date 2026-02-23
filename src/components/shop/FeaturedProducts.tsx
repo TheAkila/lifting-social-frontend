@@ -187,7 +187,7 @@ export default function FeaturedProducts() {
                       {product.category}
                     </span>
                     {product.shippingType === 'free' && (
-                      <span className="font-display text-red-600 font-semibold text-sm">
+                      <span className="font-display text-red-600 font-semibold text-xs">
                         Free Delivery
                       </span>
                     )}

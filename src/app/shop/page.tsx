@@ -8,6 +8,7 @@ import ShopHeader from '@/components/shop/ShopHeader'
 import ShopCategoryNav from '@/components/shop/ShopCategoryNav'
 import FeaturedProducts from '@/components/shop/FeaturedProducts'
 import OffersDeals from '@/components/shop/OffersDeals'
+import BundleOffers from '@/components/shop/BundleOffers'
 import RecentlyViewed from '@/components/shop/RecentlyViewed'
 import api from '@/lib/api'
 
@@ -167,6 +168,9 @@ function ShopContent() {
 
       {/* Offers & Deals Section */}
       <OffersDeals />
+
+      {/* Bundle Offers Section */}
+      <BundleOffers />
 
       {/* Three Category Sections */}
       <CategorySections />

@@ -51,6 +51,7 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
     inventory: '0',
     inStock: true,
     featured: false,
+    bundleOffer: false,
     sizes: [] as string[],
     colors: [] as string[],
     material: '',
@@ -193,6 +194,7 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
       inventory: product.inventory?.toString() || '0',
       inStock: product.inStock !== false,
       featured: product.featured || false,
+      bundleOffer: product.bundleOffer || false,
       sizes: product.sizes || [],
       colors: product.colors || [],
       material: product.material || '',
@@ -219,6 +221,7 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
       inventory: '0',
       inStock: true,
       featured: false,
+      bundleOffer: false,
       sizes: [],
       colors: [],
       material: '',
@@ -739,7 +742,7 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
               </div>
 
               {/* Checkboxes */}
-              <div className="flex items-center space-x-6 border-t border-brand-light/10 pt-6">
+              <div className="flex items-center space-x-6 border-t border-brand-light/10 pt-6 flex-wrap gap-y-3">
                 <label className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -757,6 +760,15 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
                     className="w-5 h-5"
                   />
                   <span>Featured Product</span>
+                </label>
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.bundleOffer}
+                    onChange={(e) => setFormData({ ...formData, bundleOffer: e.target.checked })}
+                    className="w-5 h-5"
+                  />
+                  <span>Bundle Offer</span>
                 </label>
               </div>
 
