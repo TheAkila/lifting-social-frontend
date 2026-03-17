@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin-login
+Disallow: /dashboard
+Disallow: /auth
+Disallow: /checkout
+Disallow: /cart
+Disallow: /payment-callback
+Disallow: /order-confirmation
+
+Sitemap: https://liftingsocial.com/sitemap.xml
