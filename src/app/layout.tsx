@@ -38,6 +38,9 @@ export const metadata: Metadata = {
     description: 'Sri Lankan Olympic Weightlifting Lifestyle Brand',
     type: 'website',
   },
+  verification: {
+    google: 'm-QE0gMGK93HzmOl922QcmXbEE6n0emfU7Aobf7ObHA',
+  },
 }
 
 export default function RootLayout({
