@@ -9,4 +9,4 @@ Disallow: /cart
 Disallow: /payment-callback
 Disallow: /order-confirmation
 
-Sitemap: https://liftingsocial.com/sitemap.xml
+Sitemap: https://theliftingsocial.com/sitemap.xml
