@@ -13,11 +13,10 @@ export default function BundleOffers() {
 
   const fetchBundleProducts = () => {
     api
-      .get(`/products?t=${Date.now()}`)
+      .get(`/bundle-products?t=${Date.now()}`)
       .then((res) => {
-        // Filter products marked as bundle offers
-        const bundles = res.data.filter((p: any) => p.bundleOffer === true)
-        setProducts(bundles.slice(0, 6)) // Show max 6 bundle products
+        // Show max 6 bundle products, ordered by display_order
+        setProducts(res.data.slice(0, 6))
         setLoading(false)
       })
       .catch((err) => {
