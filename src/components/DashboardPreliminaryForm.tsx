@@ -315,9 +315,14 @@ export default function DashboardPreliminaryForm({
               <label className="block text-sm font-semibold text-gray-900 mb-2">
                 Men / Women: *
               </label>
-              <div className="w-full px-3 py-2 border-b-2 border-gray-300 bg-gray-50 text-gray-700 font-medium">
-                {menWomen}
-              </div>
+              <select
+                value={menWomen}
+                onChange={(e) => setMenWomen(e.target.value)}
+                className="w-full px-3 py-2 border-b-2 border-gray-300 focus:border-blue-500 focus:outline-none text-sm bg-white font-medium"
+              >
+                <option value="Men">Men</option>
+                <option value="Women">Women</option>
+              </select>
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-2">
