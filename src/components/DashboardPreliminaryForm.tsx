@@ -140,9 +140,9 @@ export default function DashboardPreliminaryForm({
     setAthletes(athletes.map(a => a.id === id ? { ...a, [field]: value } : a))
   }
 
-  const weightCategories = menWomen === 'Men' 
-    ? ['60', '65', '71', '79', '88', '94', '110', '+110']
-    : ['48', '53', '58', '63', '69', '77', '86', '+86']
+  const weightCategories = menWomen === 'Men'
+    ? ['60', '65', '70', '75', '85', '95', '110', '110+']
+    : ['49', '53', '57', '61', '69', '77', '86', '86+']
 
   const handleSubmit = async () => {
     // Validate club information

@@ -50,8 +50,8 @@ export default function DashboardFinalForm({
   
   // Default weight categories as fallback
   const defaultWeightCategories = isMen
-    ? ['60', '65', '71', '79', '88', '94', '110', '+110']
-    : ['48', '53', '58', '63', '69', '77', '86', '+86']
+    ? ['60', '65', '70', '75', '85', '95', '110', '110+']
+    : ['49', '53', '57', '61', '69', '77', '86', '86+']
 
   useEffect(() => {
     // Prevent body scroll when modal is open
@@ -100,8 +100,8 @@ export default function DashboardFinalForm({
       // This allows athletes to change their weight class in final entry
       const isActuallyMen = genderToUse?.toLowerCase() === 'men' || genderToUse?.toLowerCase() === 'male' || genderToUse?.toLowerCase() === 'm'
       const allGenderCategories = isActuallyMen
-        ? ['60', '65', '71', '79', '88', '94', '110', '+110']
-        : ['48', '53', '58', '63', '69', '77', '86', '+86']
+        ? ['60', '65', '70', '75', '85', '95', '110', '110+']
+        : ['49', '53', '57', '61', '69', '77', '86', '86+']
       
       console.log('Categories from preliminary data:', prelimCategories)
       console.log('All available categories for this gender:', allGenderCategories)
