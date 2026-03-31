@@ -448,7 +448,7 @@ export default function EventDetailPage() {
                 </span>
               </div>
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-zinc-900 mb-2 sm:mb-3">{event.title}</h1>
-              <p className="text-sm text-zinc-600 leading-relaxed line-clamp-2">{event.description}</p>
+              <p className="text-sm text-zinc-600 leading-relaxed whitespace-pre-line">{event.description}</p>
             </motion.div>
 
             {(event.registration_start_date || event.preliminary_entry_start || event.final_entry_start) && (
