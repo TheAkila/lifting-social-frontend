@@ -206,7 +206,7 @@ export default function AuthCallbackPage() {
               console.log('👑 Admin user - redirecting to /admin')
               window.location.href = '/admin'
             } else {
-              console.log('👤 Regular user - redirecting to home page')
+              console.log('� Regular user - redirecting to home page')
               window.location.href = '/'
             }
           } else {
