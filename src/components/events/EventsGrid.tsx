@@ -120,13 +120,14 @@ export default function EventsGrid({ events }: EventsGridProps) {
               className="group block bg-white rounded-lg overflow-hidden border border-zinc-200 shadow-md transition-all duration-300"
             >
               {/* Image */}
-              <div className="relative w-full overflow-hidden bg-zinc-100" style={{ paddingBottom: '66.67%' }}>
+              <div className="relative w-full overflow-hidden bg-zinc-100 aspect-[16/9]">
                 {event.cover_image ? (
                   <Image
                     src={event.cover_image}
                     alt={event.title}
                     fill
-                    className="object-cover"
+                    className="object-contain"
+                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center bg-zinc-200">
