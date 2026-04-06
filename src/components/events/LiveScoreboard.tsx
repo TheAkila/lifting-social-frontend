@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
+import api from '@/lib/api';
 
 interface LiveState {
   current_session: number;
@@ -62,15 +63,91 @@ interface LiveScoreboardProps {
 }
 
 export default function LiveScoreboard({ eventId, showControls = false }: LiveScoreboardProps) {
-  const [socket, setSocket] = useState<Socket | null>(null);
   const [liveState, setLiveState] = useState<LiveState | null>(null);
   const [athletes, setAthletes] = useState<AthleteResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
+  const [resolvedEventId, setResolvedEventId] = useState<string | null>(null);
+  const [selectedSession, setSelectedSession] = useState<string>('all');
+  const [selectedGroup, setSelectedGroup] = useState<string>('all');
+  const [availableSessionsFromApi, setAvailableSessionsFromApi] = useState<number[]>([]);
+  const [availableGroupsBySessionFromApi, setAvailableGroupsBySessionFromApi] = useState<Record<string, string[]>>({});
+
+  const selectedSessionNumber = selectedSession === 'all' ? null : parseInt(selectedSession, 10);
+
+  const sessionOptions = useMemo(() => {
+    const values = new Set<number>();
+    availableSessionsFromApi.forEach((value) => values.add(value));
+    athletes.forEach((a) => {
+      if (a.session_number) values.add(a.session_number);
+    });
+    if (liveState?.current_session) values.add(liveState.current_session);
+    return Array.from(values).sort((a, b) => a - b);
+  }, [availableSessionsFromApi, athletes, liveState]);
+
+  const groupOptions = useMemo(() => {
+    const values = new Set<string>();
+
+    if (selectedSession !== 'all') {
+      const apiGroups = availableGroupsBySessionFromApi[selectedSession] || [];
+      apiGroups.forEach((group) => values.add(group));
+    }
+
+    athletes.forEach((a) => {
+      if (selectedSessionNumber === null || a.session_number === selectedSessionNumber) {
+        if (a.group_number) values.add(a.group_number);
+      }
+    });
+    if ((selectedSessionNumber === null || liveState?.current_session === selectedSessionNumber) && liveState?.current_group) {
+      values.add(liveState.current_group);
+    }
+    return Array.from(values).sort((a, b) => a.localeCompare(b));
+  }, [athletes, availableGroupsBySessionFromApi, liveState, selectedSession, selectedSessionNumber]);
+
+  const filteredAthletes = useMemo(() => {
+    return athletes.filter((a) => {
+      const sessionMatch = selectedSessionNumber === null || a.session_number === selectedSessionNumber;
+      const groupMatch = selectedGroup === 'all' || a.group_number === selectedGroup;
+      return sessionMatch && groupMatch;
+    });
+  }, [athletes, selectedSessionNumber, selectedGroup]);
+
+  const boardLabel = useMemo(() => {
+    const first = filteredAthletes[0];
+    const category = first?.weight_category ? `${first.weight_category}kg` : 'Competition';
+    const sessionText = selectedSession === 'all'
+      ? (liveState?.current_session ? `Session ${liveState.current_session}` : 'All Sessions')
+      : `Session ${selectedSession}`;
+    const groupText = selectedGroup === 'all'
+      ? (liveState?.current_group ? `Group ${liveState.current_group}` : 'All Groups')
+      : `Group ${selectedGroup}`;
+    return `${category} ${groupText} • ${sessionText}`;
+  }, [filteredAthletes, liveState, selectedGroup, selectedSession]);
+
+  const highlightedAthleteKey = useMemo(() => {
+    if (!liveState?.current_athlete_name) return null;
+    return liveState.current_athlete_name.toLowerCase();
+  }, [liveState]);
+
+  useEffect(() => {
+    if (selectedSession !== 'all' && !sessionOptions.includes(parseInt(selectedSession, 10))) {
+      setSelectedSession('all');
+    }
+  }, [selectedSession, sessionOptions]);
+
+  useEffect(() => {
+    if (selectedGroup !== 'all' && !groupOptions.includes(selectedGroup)) {
+      setSelectedGroup('all');
+    }
+  }, [selectedGroup, groupOptions]);
 
   useEffect(() => {
     // Fetch initial scoreboard data
     fetchScoreboard();
+
+    const refreshId = setInterval(() => {
+      fetchScoreboard();
+    }, 15000);
 
     // Initialize WebSocket connection
     const newSocket = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000', {
@@ -80,7 +157,7 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
     newSocket.on('connect', () => {
       console.log('WebSocket connected');
       setConnectionStatus('connected');
-      newSocket.emit('join-competition', eventId);
+      newSocket.emit('join-competition', resolvedEventId || eventId);
     });
 
     newSocket.on('disconnect', () => {
@@ -93,23 +170,27 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
       handleLiveUpdate(update);
     });
 
-    setSocket(newSocket);
-
     return () => {
+      clearInterval(refreshId);
       if (newSocket) {
-        newSocket.emit('leave-competition', eventId);
+        newSocket.emit('leave-competition', resolvedEventId || eventId);
         newSocket.close();
       }
     };
-  }, [eventId]);
+  }, [eventId, resolvedEventId]);
 
   const fetchScoreboard = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/wl-system/scoreboard/${eventId}`);
-      const data = await response.json();
-      
-      setAthletes(data.scoreboard || []);
-      setLiveState(data.live_state);
+      const response = await api.get(`/wl-system/scoreboard/${eventId}`);
+      const payload = response?.data || {};
+
+      if (payload.event_id) {
+        setResolvedEventId(payload.event_id);
+      }
+      setAvailableSessionsFromApi(Array.isArray(payload.available_sessions) ? payload.available_sessions : []);
+      setAvailableGroupsBySessionFromApi(payload.available_groups_by_session || {});
+      setAthletes(payload.scoreboard || []);
+      setLiveState(payload.live_state);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching scoreboard:', error);
@@ -147,14 +228,21 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
   };
 
   const renderAttempt = (weight: number | null, result: string | null) => {
-    if (!weight) return <span className="text-gray-400">-</span>;
-    
-    const resultClass = 
-      result === 'good_lift' ? 'text-green-600 font-bold' :
-      result === 'no_lift' ? 'text-red-600 line-through' :
-      'text-gray-500';
-    
-    return <span className={resultClass}>{weight}</span>;
+    if (!weight) return <span className="inline-flex w-12 justify-center text-slate-400">-</span>;
+
+    const normalized = (result || '').toLowerCase();
+    const attemptClass =
+      normalized === 'good_lift'
+        ? 'bg-[#0f6ca8] text-white border-[#8fd5ff]'
+        : normalized === 'no_lift'
+        ? 'bg-[#d02e2e] text-white border-[#ff8d8d]'
+        : 'bg-white text-[#182532] border-[#aeb7c2]';
+
+    return (
+      <span className={`inline-flex min-w-[52px] justify-center px-1.5 py-0.5 border-2 font-bold tracking-wide ${attemptClass}`}>
+        {weight}
+      </span>
+    );
   };
 
   const renderMedal = (medals: any) => {
@@ -173,167 +261,157 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
   }
 
   return (
-    <div className="space-y-6">
-      {/* Connection Status */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-gray-50 p-4 rounded-lg">
-        <div className="flex items-center gap-3">
-          <div className={`w-3 h-3 rounded-full ${
-            connectionStatus === 'connected' ? 'bg-green-500 animate-pulse' :
-            connectionStatus === 'connecting' ? 'bg-yellow-500 animate-pulse' :
-            'bg-red-500'
-          }`} />
-          <span className="font-medium">
-            {connectionStatus === 'connected' ? 'Live Connection Active' :
-             connectionStatus === 'connecting' ? 'Connecting...' :
-             'Disconnected'}
-          </span>
+    <div className="space-y-5">
+      <div className="rounded-2xl border border-[#0a395a] bg-[#0b4f79] text-white shadow-2xl overflow-hidden">
+        <div className="px-4 sm:px-6 py-3 bg-[#e8edf1] text-[#0e1f2d] border-b-4 border-[#00a651]">
+          <p className="text-[11px] sm:text-xs font-bold tracking-[0.14em] uppercase">Lifting Social Live Feed</p>
+          <h2 className="mt-1 text-xl sm:text-3xl font-black tracking-wide">SCOREBOARD</h2>
+          <p className="mt-1 text-sm sm:text-base font-semibold">{boardLabel}</p>
         </div>
-        {liveState && (
-          <div className="text-sm text-gray-600">
-            Session {liveState.current_session} • Group {liveState.current_group}
+
+        <div className="px-4 sm:px-6 py-3 bg-[#00a651] text-white flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center gap-3 text-sm font-semibold">
+            <span className={`inline-block w-2.5 h-2.5 rounded-full ${
+              connectionStatus === 'connected' ? 'bg-white animate-pulse' :
+              connectionStatus === 'connecting' ? 'bg-yellow-200 animate-pulse' :
+              'bg-red-200'
+            }`} />
+            <span>
+              {connectionStatus === 'connected' ? 'Broadcast Connected' :
+               connectionStatus === 'connecting' ? 'Connecting...' :
+               'Disconnected'}
+            </span>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <select
+              aria-label="Select session"
+              title="Select session"
+              className="bg-white/15 border border-white/35 rounded-md px-3 py-1.5 text-xs sm:text-sm font-semibold"
+              value={selectedSession}
+              onChange={(e) => {
+                setSelectedSession(e.target.value);
+                setSelectedGroup('all');
+              }}
+            >
+              <option value="all">All Sessions</option>
+              {sessionOptions.map((session) => (
+                <option key={session} value={String(session)}>Session {session}</option>
+              ))}
+            </select>
+
+            <select
+              aria-label="Select group"
+              title="Select group"
+              className="bg-white/15 border border-white/35 rounded-md px-3 py-1.5 text-xs sm:text-sm font-semibold"
+              value={selectedGroup}
+              onChange={(e) => setSelectedGroup(e.target.value)}
+            >
+              <option value="all">All Groups</option>
+              {groupOptions.map((group) => (
+                <option key={group} value={group}>Group {group}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {liveState && liveState.current_athlete_name && (
+          <div className="px-4 sm:px-6 py-4 bg-gradient-to-r from-[#005787] to-[#00456a] border-b border-white/20">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-[0.14em] text-sky-100">On Platform</p>
+                <p className="text-xl sm:text-2xl font-extrabold">{liveState.current_athlete_name}</p>
+                <p className="text-sm sm:text-base text-sky-100">
+                  {liveState.current_lift_type === 'snatch' ? 'Snatch' : 'Clean & Jerk'} • Attempt {liveState.current_attempt_number} • {liveState.current_weight} kg
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                {liveState.timer_running && (
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white/60 flex items-center justify-center bg-white/10">
+                    <span className="font-mono text-2xl sm:text-3xl font-black">{liveState.timer_remaining}</span>
+                  </div>
+                )}
+                {liveState.next_athlete_name && (
+                  <div className="text-sm text-right">
+                    <p className="uppercase tracking-[0.12em] text-sky-100 text-[10px]">Next</p>
+                    <p className="font-bold">{liveState.next_athlete_name}</p>
+                    <p className="text-sky-100">{liveState.next_weight} kg</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
-      </div>
 
-      {/* Current Lifter Card */}
-      {liveState && liveState.current_athlete_name && (
-        <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6 rounded-xl shadow-lg">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex-1">
-              <div className="text-sm font-medium text-blue-200 mb-1">ON PLATFORM</div>
-              <div className="text-2xl sm:text-3xl font-bold mb-2">{liveState.current_athlete_name}</div>
-              <div className="text-base sm:text-xl">
-                {liveState.current_lift_type === 'snatch' ? 'Snatch' : 'Clean & Jerk'} • 
-                Attempt {liveState.current_attempt_number} • 
-                <span className="font-bold ml-2">{liveState.current_weight} kg</span>
-              </div>
-            </div>
-            
-            {/* Timer */}
-            {liveState.timer_running && (
-              <div className="flex items-center justify-center w-24 h-24 sm:w-32 sm:h-32 bg-white/20 rounded-full">
-                <div className="text-3xl sm:text-5xl font-mono font-bold">
-                  {liveState.timer_remaining}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Referee Decisions */}
-          {liveState.referee_decisions && (
-            <div className="mt-4 flex gap-4">
-              <div className="text-sm">Referees:</div>
-              {Object.entries(liveState.referee_decisions).map(([ref, decision]) => (
-                <div key={ref} className={`px-3 py-1 rounded ${
-                  decision === 'white' ? 'bg-white text-green-600' : 'bg-red-600'
-                }`}>
-                  {ref.charAt(0).toUpperCase()}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Next Up */}
-          {liveState.next_athlete_name && (
-            <div className="mt-4 pt-4 border-t border-blue-400/30">
-              <div className="text-sm text-blue-200">Next:</div>
-              <div className="text-lg font-semibold">
-                {liveState.next_athlete_name} • {liveState.next_weight} kg
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Scoreboard Table */}
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-[900px] w-full">
-            <thead className="bg-gray-50 border-b-2 border-gray-200 sticky top-0 z-10">
-              <tr>
-                <th className="px-3 py-3 text-left text-xs sm:text-sm font-semibold text-gray-700">Rank</th>
-                <th className="px-3 py-3 text-left text-xs sm:text-sm font-semibold text-gray-700">Lot</th>
-                <th className="px-3 py-3 text-left text-xs sm:text-sm font-semibold text-gray-700">Athlete</th>
-                <th className="px-3 py-3 text-left text-xs sm:text-sm font-semibold text-gray-700">Category</th>
-                <th className="hidden lg:table-cell px-3 py-3 text-left text-xs sm:text-sm font-semibold text-gray-700">Club</th>
-                <th className="px-3 py-3 text-center text-xs sm:text-sm font-semibold text-gray-700" colSpan={3}>Snatch</th>
-                <th className="px-3 py-3 text-center text-xs sm:text-sm font-semibold text-gray-700">Best</th>
-                <th className="px-3 py-3 text-center text-xs sm:text-sm font-semibold text-gray-700" colSpan={3}>Clean & Jerk</th>
-                <th className="px-3 py-3 text-center text-xs sm:text-sm font-semibold text-gray-700">Best</th>
-                <th className="px-3 py-3 text-center text-xs sm:text-sm font-semibold text-gray-700">Total</th>
-                <th className="hidden xl:table-cell px-3 py-3 text-center text-xs sm:text-sm font-semibold text-gray-700">Sinclair</th>
+          <table className="min-w-[980px] w-full text-white">
+            <thead className="bg-[#006b39] border-y-2 border-[#0b4f79]">
+              <tr className="text-[11px] sm:text-xs tracking-[0.08em] uppercase">
+                <th className="px-3 py-2.5 text-left">#</th>
+                <th className="px-3 py-2.5 text-left">Athlete</th>
+                <th className="px-2 py-2.5 text-left">Nation/Club</th>
+                <th className="px-2 py-2.5 text-center">1st</th>
+                <th className="px-2 py-2.5 text-center">2nd</th>
+                <th className="px-2 py-2.5 text-center">3rd</th>
+                <th className="px-2 py-2.5 text-center">Best</th>
+                <th className="px-2 py-2.5 text-center">1st</th>
+                <th className="px-2 py-2.5 text-center">2nd</th>
+                <th className="px-2 py-2.5 text-center">3rd</th>
+                <th className="px-2 py-2.5 text-center">Best</th>
+                <th className="px-2 py-2.5 text-center">Total</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
-              {athletes.map((athlete) => (
-                <tr 
-                  key={athlete.registration_id}
-                  className={`hover:bg-gray-50 transition-colors ${
-                    liveState?.current_athlete_name === athlete.athlete_name ? 'bg-blue-50 ring-2 ring-blue-400' : ''
-                  }`}
-                >
-                  <td className="px-3 py-3">
-                    <div className="flex items-center gap-2">
-                      {athlete.category_rank && <span className="font-semibold">{athlete.category_rank}</span>}
-                      {renderMedal(athlete.medals)}
-                    </div>
-                  </td>
-                  <td className="px-3 py-3 text-gray-600">{athlete.lot_number}</td>
-                  <td className="px-3 py-3 font-medium">{athlete.athlete_name}</td>
-                  <td className="px-3 py-3 text-sm text-gray-600">{athlete.weight_category}</td>
-                  <td className="hidden lg:table-cell px-3 py-3 text-sm text-gray-600">{athlete.club_name || '-'}</td>
-                  
-                  {/* Snatch Attempts */}
-                  <td className="px-2 py-3 text-center">{renderAttempt(athlete.snatch_1_weight, athlete.snatch_1_result)}</td>
-                  <td className="px-2 py-3 text-center">{renderAttempt(athlete.snatch_2_weight, athlete.snatch_2_result)}</td>
-                  <td className="px-2 py-3 text-center">{renderAttempt(athlete.snatch_3_weight, athlete.snatch_3_result)}</td>
-                  <td className="px-3 py-3 text-center font-bold text-blue-600">
-                    {athlete.best_snatch || '-'}
-                  </td>
-                  
-                  {/* Clean & Jerk Attempts */}
-                  <td className="px-2 py-3 text-center">{renderAttempt(athlete.clean_jerk_1_weight, athlete.clean_jerk_1_result)}</td>
-                  <td className="px-2 py-3 text-center">{renderAttempt(athlete.clean_jerk_2_weight, athlete.clean_jerk_2_result)}</td>
-                  <td className="px-2 py-3 text-center">{renderAttempt(athlete.clean_jerk_3_weight, athlete.clean_jerk_3_result)}</td>
-                  <td className="px-3 py-3 text-center font-bold text-blue-600">
-                    {athlete.best_clean_jerk || '-'}
-                  </td>
-                  
-                  {/* Total & Sinclair */}
-                  <td className="px-3 py-3 text-center font-bold text-lg">
-                    {athlete.total || '-'}
-                  </td>
-                  <td className="hidden xl:table-cell px-3 py-3 text-center text-sm text-gray-600">
-                    {athlete.sinclair_score ? athlete.sinclair_score.toFixed(2) : '-'}
+            <tbody>
+              {filteredAthletes.length === 0 && (
+                <tr className="bg-[#0b5f95]">
+                  <td colSpan={12} className="px-4 py-8 text-center text-sm text-sky-100">
+                    No attempts recorded for the selected session/group yet.
                   </td>
                 </tr>
-              ))}
+              )}
+
+              {filteredAthletes.map((athlete, index) => {
+                const isCurrent = highlightedAthleteKey === (athlete.athlete_name || '').toLowerCase();
+                const rowClass = isCurrent ? 'bg-[#cab72f] text-[#132130]' : 'bg-[#0b5f95] text-white';
+
+                return (
+                  <tr key={athlete.registration_id} className={`${rowClass} border-b border-[#12496d]`}>
+                    <td className="px-3 py-2 font-bold text-lg">{athlete.category_rank || index + 1}</td>
+                    <td className="px-3 py-2">
+                      <div className="font-semibold text-base leading-tight">{athlete.athlete_name}</div>
+                      <div className={`${isCurrent ? 'text-[#273549]' : 'text-sky-100'} text-xs`}>Lot {athlete.lot_number} • {athlete.weight_category}kg</div>
+                    </td>
+                    <td className={`px-2 py-2 text-sm ${isCurrent ? 'text-[#273549]' : 'text-sky-100'}`}>{athlete.club_name || '-'}</td>
+                    <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_1_weight, athlete.snatch_1_result)}</td>
+                    <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_2_weight, athlete.snatch_2_result)}</td>
+                    <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_3_weight, athlete.snatch_3_result)}</td>
+                    <td className="px-2 py-2 text-center font-black text-lg">{athlete.best_snatch || '-'}</td>
+                    <td className="px-2 py-2 text-center">{renderAttempt(athlete.clean_jerk_1_weight, athlete.clean_jerk_1_result)}</td>
+                    <td className="px-2 py-2 text-center">{renderAttempt(athlete.clean_jerk_2_weight, athlete.clean_jerk_2_result)}</td>
+                    <td className="px-2 py-2 text-center">{renderAttempt(athlete.clean_jerk_3_weight, athlete.clean_jerk_3_result)}</td>
+                    <td className="px-2 py-2 text-center font-black text-lg">{athlete.best_clean_jerk || '-'}</td>
+                    <td className="px-2 py-2 text-center font-black text-xl">{athlete.total || '-'}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
+
+        <div className="px-4 sm:px-6 py-3 text-xs sm:text-sm bg-[#073653] text-sky-100 flex flex-wrap gap-4">
+          <span><span className="font-bold text-white">White box</span>: declared/pending</span>
+          <span><span className="font-bold text-white">Blue box</span>: good lift</span>
+          <span><span className="font-bold text-white">Red box</span>: no lift</span>
+          <span><span className="font-bold text-[#ffe25e]">Gold row</span>: current lifter</span>
+        </div>
       </div>
 
-      {/* Legend */}
-      <div className="bg-gray-50 p-4 rounded-lg text-sm">
-        <div className="font-semibold mb-2">Legend:</div>
-        <div className="flex flex-wrap gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-green-600 font-bold">123</span>
-            <span>Good Lift</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-red-600 line-through">123</span>
-            <span>No Lift</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-gray-400">-</span>
-            <span>Not Attempted</span>
-          </div>
-        </div>
-        <div className="mt-3 text-xs text-gray-500">
-          Tip: Scroll horizontally on mobile to see all attempts.
-        </div>
-      </div>
+      {showControls && (
+        <p className="text-xs text-zinc-500">
+          Debug mode active.
+        </p>
+      )}
     </div>
   );
 }
