@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import LiveScoreboard from '@/components/events/LiveScoreboard';
 import Link from 'next/link';
+import api from '@/lib/api';
 
 export default function LiveScoreboardPage() {
   const params = useParams();
@@ -18,18 +19,24 @@ export default function LiveScoreboardPage() {
 
   const fetchEvent = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/events/${slug}`);
-      
-      if (!response.ok) {
+      const response = await api.get(`/events/${slug}`);
+      const payload = response?.data?.data || response?.data;
+
+      if (!payload?.id) {
         throw new Error('Event not found');
       }
-      
-      const data = await response.json();
-      setEvent(data);
+
+      setEvent(payload);
       setLoading(false);
     } catch (err: any) {
-      console.error('Error fetching event:', err);
-      setError(err.message || 'Failed to load event');
+      const message = err?.response?.data?.message || err?.response?.data?.error || err?.message || 'Failed to load event';
+      console.error('Error fetching event:', {
+        slug,
+        message,
+        status: err?.response?.status,
+        data: err?.response?.data,
+      });
+      setError(message);
       setLoading(false);
     }
   };

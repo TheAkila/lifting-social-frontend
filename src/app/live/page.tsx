@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { Calendar, MapPin, Radio, Clock3, Trophy } from 'lucide-react'
+import { Calendar, MapPin, Radio } from 'lucide-react'
 import api from '@/lib/api'
 
 interface EventItem {
@@ -22,8 +22,6 @@ interface EventItem {
 }
 
 const LIVE_STATUSES = ['in_progress', 'live', 'active', 'ongoing']
-const UPCOMING_STATUSES = ['scheduled', 'registration_open', 'entries_closed', 'upcoming']
-const COMPLETED_STATUSES = ['completed', 'finished']
 
 function getEventStatus(event: EventItem) {
   return (event.competition_status || event.event_status || event.status || '').toLowerCase()
@@ -63,8 +61,6 @@ function formatDate(dateStr: string) {
 export default function LivePage() {
   const [events, setEvents] = useState<EventItem[]>([])
   const [liveNow, setLiveNow] = useState<EventItem[]>([])
-  const [upcoming, setUpcoming] = useState<EventItem[]>([])
-  const [completed, setCompleted] = useState<EventItem[]>([])
   const [loading, setLoading] = useState(true)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
 
@@ -78,8 +74,6 @@ export default function LivePage() {
 
           if (isMounted) {
             setLiveNow(Array.isArray(liveResponse.data?.live_now) ? liveResponse.data.live_now : [])
-            setUpcoming(Array.isArray(liveResponse.data?.upcoming) ? liveResponse.data.upcoming : [])
-            setCompleted(Array.isArray(liveResponse.data?.completed) ? liveResponse.data.completed : [])
             setLastUpdated(liveResponse.data?.last_updated ? new Date(liveResponse.data.last_updated) : new Date())
           }
         } catch {
@@ -95,8 +89,6 @@ export default function LivePage() {
         if (isMounted) {
           setEvents([])
           setLiveNow([])
-          setUpcoming([])
-          setCompleted([])
         }
       } finally {
         if (isMounted) setLoading(false)
@@ -123,15 +115,11 @@ export default function LivePage() {
     })
 
     const live = byDate.filter((e) => LIVE_STATUSES.includes(getEventStatus(e)))
-    const up = byDate.filter((e) => UPCOMING_STATUSES.includes(getEventStatus(e)))
-    const done = byDate.filter((e) => COMPLETED_STATUSES.includes(getEventStatus(e))).reverse()
 
-    return { liveNow: live, upcoming: up, completed: done }
+    return { liveNow: live }
   }, [events])
 
-  const effectiveLiveNow = liveNow.length > 0 || upcoming.length > 0 || completed.length > 0 ? liveNow : fallbackBuckets.liveNow
-  const effectiveUpcoming = liveNow.length > 0 || upcoming.length > 0 || completed.length > 0 ? upcoming : fallbackBuckets.upcoming
-  const effectiveCompleted = liveNow.length > 0 || upcoming.length > 0 || completed.length > 0 ? completed : fallbackBuckets.completed
+  const effectiveLiveNow = liveNow.length > 0 ? liveNow : fallbackBuckets.liveNow
 
   return (
     <div className="min-h-screen pt-20 bg-zinc-50">
@@ -174,7 +162,7 @@ export default function LivePage() {
 
               {effectiveLiveNow.length === 0 ? (
                 <div className="bg-white border border-zinc-200 rounded-xl p-6 text-zinc-600">
-                  No active competition at the moment. Check upcoming sessions below.
+                  No active competition at the moment.
                 </div>
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -196,66 +184,6 @@ export default function LivePage() {
                         )}
                       </div>
                       <p className="text-sm text-blue-600 font-medium mt-4">Watch live scoreboard →</p>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </section>
-
-            <section>
-              <div className="flex items-center gap-2 mb-4">
-                <Clock3 className="w-5 h-5 text-zinc-700" />
-                <h2 className="text-xl sm:text-2xl font-semibold text-zinc-900">Upcoming</h2>
-              </div>
-
-              {effectiveUpcoming.length === 0 ? (
-                <div className="bg-white border border-zinc-200 rounded-xl p-6 text-zinc-600">No upcoming competitions found.</div>
-              ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {effectiveUpcoming.slice(0, 8).map((event) => (
-                    <Link
-                      key={event.id}
-                      href={getEventPath(event, false)}
-                      className="bg-white border border-zinc-200 rounded-xl p-5 hover:shadow-md transition-all"
-                    >
-                      <h3 className="text-lg font-semibold text-zinc-900 mb-2">{getEventTitle(event)}</h3>
-                      <div className="space-y-1.5 text-sm text-zinc-600">
-                        <p className="inline-flex items-center gap-2"><Calendar className="w-4 h-4" />{formatDate(getEventDate(event))}</p>
-                        {(event.location || event.venue) && (
-                          <p className="inline-flex items-center gap-2"><MapPin className="w-4 h-4" />{event.location || event.venue}</p>
-                        )}
-                      </div>
-                      <p className="text-sm text-zinc-700 font-medium mt-4">View event details →</p>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </section>
-
-            <section>
-              <div className="flex items-center gap-2 mb-4">
-                <Trophy className="w-5 h-5 text-zinc-700" />
-                <h2 className="text-xl sm:text-2xl font-semibold text-zinc-900">Recently Completed</h2>
-              </div>
-
-              {effectiveCompleted.length === 0 ? (
-                <div className="bg-white border border-zinc-200 rounded-xl p-6 text-zinc-600">No completed competitions yet.</div>
-              ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {effectiveCompleted.slice(0, 6).map((event) => (
-                    <Link
-                      key={event.id}
-                      href={getEventPath(event, false)}
-                      className="bg-white border border-zinc-200 rounded-xl p-5 hover:shadow-md transition-all"
-                    >
-                      <h3 className="text-lg font-semibold text-zinc-900 mb-2">{getEventTitle(event)}</h3>
-                      <div className="space-y-1.5 text-sm text-zinc-600">
-                        <p className="inline-flex items-center gap-2"><Calendar className="w-4 h-4" />{formatDate(getEventDate(event))}</p>
-                        {(event.location || event.venue) && (
-                          <p className="inline-flex items-center gap-2"><MapPin className="w-4 h-4" />{event.location || event.venue}</p>
-                        )}
-                      </div>
-                      <p className="text-sm text-zinc-700 font-medium mt-4">See results and details →</p>
                     </Link>
                   ))}
                 </div>
