@@ -725,7 +725,7 @@ export default function UserDashboard() {
                           <option value="88">88kg</option>
                           <option value="94">94kg</option>
                           <option value="110">110kg</option>
-                          <option value="+110">+110kg</option>
+                          <option value="110+">110+kg</option>
                         </>
                       ) : updateForm.gender === 'female' ? (
                         <>
@@ -736,7 +736,7 @@ export default function UserDashboard() {
                           <option value="69">69kg</option>
                           <option value="77">77kg</option>
                           <option value="86">86kg</option>
-                          <option value="+86">+86kg</option>
+                          <option value="86+">86+kg</option>
                         </>
                       ) : null}
                     </select>

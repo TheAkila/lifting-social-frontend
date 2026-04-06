@@ -74,8 +74,8 @@ interface Registration {
 }
 
 const WEIGHT_CATEGORIES = {
-  male: ['60kg', '65kg', '71kg', '79kg', '88kg', '94kg', '110kg', '+110kg'],
-  female: ['48kg', '53kg', '58kg', '63kg', '69kg', '77kg', '86kg', '+86kg']
+  male: ['60', '65', '71', '79', '88', '94', '110', '110+'],
+  female: ['48', '53', '58', '63', '69', '77', '86', '86+']
 }
 
 export default function EventDetailPage() {
