@@ -21,6 +21,9 @@ interface Event {
   max_participants?: number
   current_participants?: number
   entry_fee?: number
+  competition_status?: string
+  event_status?: string
+  status?: string
 }
 
 interface EventsGridProps {
@@ -94,6 +97,11 @@ export default function EventsGrid({ events }: EventsGridProps) {
     return labels[type] || type
   }
 
+  const isLiveEvent = (event: Event) => {
+    const status = (event.competition_status || event.event_status || event.status || '').toLowerCase()
+    return ['in_progress', 'live', 'active', 'ongoing'].includes(status)
+  }
+
   if (events.length === 0) {
     return (
       <div className="col-span-full text-center py-16">
@@ -138,6 +146,12 @@ export default function EventsGrid({ events }: EventsGridProps) {
                 <div className="absolute top-3 left-3 bg-blue-600 text-white text-xs font-medium px-3 py-1 rounded-full">
                   {getEventTypeLabel(event.event_type)}
                 </div>
+                {isLiveEvent(event) && (
+                  <div className="absolute top-3 right-3 bg-red-600 text-white text-xs font-semibold px-2.5 py-1 rounded-full inline-flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-white/90 animate-pulse" />
+                    LIVE
+                  </div>
+                )}
               </div>
 
               {/* Content */}
@@ -181,8 +195,11 @@ export default function EventsGrid({ events }: EventsGridProps) {
                 )}
 
                 {/* View Details Link */}
-                <div className="text-sm font-medium text-indigo-600 group-hover:text-indigo-700">
-                  View Details →
+                <div className="text-sm font-medium text-indigo-600 group-hover:text-indigo-700 inline-flex items-center gap-3">
+                  <span>View Details →</span>
+                  {isLiveEvent(event) && (
+                    <span className="text-red-600 font-semibold">Watch Live →</span>
+                  )}
                 </div>
               </div>
             </Link>

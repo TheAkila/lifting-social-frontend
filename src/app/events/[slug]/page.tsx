@@ -402,6 +402,11 @@ export default function EventDetailPage() {
   const canRegister = () => !registration && event && (event.registration_open || event.is_registration_open || getEventPhase() === 'registration')
   const canSubmitPreliminary = () => getEventPhase() === 'preliminary_entries' && registration && ['registered', 'preliminary_submitted'].includes(registration.status)
   const canSubmitFinal = () => getEventPhase() === 'final_entries' && registration && ['preliminary_approved', 'final_submitted'].includes(registration.status)
+  const isLiveEvent = () => {
+    if (!event) return false
+    const status = (event.event_status || event.status || '').toLowerCase()
+    return ['in_progress', 'live', 'active', 'ongoing'].includes(status)
+  }
 
   if (loading) {
     return (
@@ -509,6 +514,17 @@ export default function EventDetailPage() {
                     <button onClick={() => user ? setShowRegisterModal(true) : router.push(`/login?redirect=/events/${params.slug}`)} className="w-full btn-primary">
                       Register for Event
                     </button>
+                  </div>
+                )}
+                {isLiveEvent() && (
+                  <div className="mt-3">
+                    <Link
+                      href={`/events/${params.slug}/live`}
+                      className="w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-red-200 bg-red-50 text-red-700 font-semibold hover:bg-red-100 transition-colors text-xs sm:text-sm"
+                    >
+                      <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                      Watch Live Scoreboard
+                    </Link>
                   </div>
                 )}
                 {!canRegister() && !registration && phase === 'upcoming' && event.registration_start_date && (

@@ -12,6 +12,7 @@ import api from '@/lib/api'
 
 const mainNavLinks = [
   { name: 'Home', href: '/' },
+  { name: 'Live', href: '/live' },
   { name: 'Shop', href: '/shop' },
   { name: 'Media', href: '/sports-media' },
   { name: 'Stories', href: '/stories' },
@@ -32,6 +33,7 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<any[]>([])
   const [searchLoading, setSearchLoading] = useState(false)
+  const [hasLiveEvents, setHasLiveEvents] = useState(false)
   const { totalItems } = useCart()
   const { user, logout } = useAuth()
   const router = useRouter()
@@ -56,6 +58,43 @@ export default function Navbar() {
     }
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Check if any event is currently live to show navbar indicator
+  useEffect(() => {
+    let isMounted = true
+
+    const isLiveStatus = (event: any) => {
+      const status = (
+        event?.competition_status ||
+        event?.event_status ||
+        event?.status ||
+        ''
+      )
+        .toString()
+        .toLowerCase()
+
+      return ['in_progress', 'live', 'active', 'ongoing'].includes(status)
+    }
+
+    const fetchLiveStatus = async () => {
+      try {
+        const response = await api.get('/events')
+        const events = Array.isArray(response.data) ? response.data : []
+        const hasLive = events.some(isLiveStatus)
+        if (isMounted) setHasLiveEvents(hasLive)
+      } catch {
+        if (isMounted) setHasLiveEvents(false)
+      }
+    }
+
+    fetchLiveStatus()
+    const intervalId = setInterval(fetchLiveStatus, 30000)
+
+    return () => {
+      isMounted = false
+      clearInterval(intervalId)
+    }
   }, [])
 
   // Close user menu when clicking outside
@@ -131,7 +170,7 @@ export default function Navbar() {
         <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10">
           <div className="flex items-center justify-between h-14 sm:h-16 md:h-18">
             {/* Logo - Left Corner */}
-            <Link href="/" className="flex items-center group shrink-0 mr-3 sm:mr-4 flex-shrink-0">
+            <Link href="/" className="flex items-center group mr-3 sm:mr-4 shrink-0">
               <Logo />
             </Link>
 
@@ -147,7 +186,12 @@ export default function Navbar() {
                       : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
                   }`}
                 >
-                  {link.name}
+                  <span className="inline-flex items-center gap-1.5">
+                    {link.name}
+                    {link.name === 'Live' && hasLiveEvents && (
+                      <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                    )}
+                  </span>
                 </Link>
               ))}
             </div>
@@ -409,7 +453,12 @@ export default function Navbar() {
                             : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
                         }`}
                       >
-                        {link.name}
+                        <span className="inline-flex items-center gap-2">
+                          {link.name}
+                          {link.name === 'Live' && hasLiveEvents && (
+                            <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                          )}
+                        </span>
                       </Link>
                     ))}
                   </div>
