@@ -100,8 +100,8 @@ export default function DashboardFinalForm({
       // This allows athletes to change their weight class in final entry
       const isActuallyMen = genderToUse?.toLowerCase() === 'men' || genderToUse?.toLowerCase() === 'male' || genderToUse?.toLowerCase() === 'm'
       const allGenderCategories = isActuallyMen
-        ? ['55', '61', '67', '73', '81', '89', '96', '102', '109', '109+']
-        : ['45', '49', '55', '59', '64', '71', '76', '81', '87', '87+']
+        ? ['60', '65', '71', '79', '88', '94', '110', '110+']
+        : ['48', '53', '58', '63', '69', '77', '86', '86+']
       
       console.log('Categories from preliminary data:', prelimCategories)
       console.log('All available categories for this gender:', allGenderCategories)
