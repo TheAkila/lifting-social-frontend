@@ -79,9 +79,18 @@ export default function Navbar() {
 
     const fetchLiveStatus = async () => {
       try {
-        const response = await api.get('/events')
-        const events = Array.isArray(response.data) ? response.data : []
-        const hasLive = events.some(isLiveStatus)
+        let hasLive = false
+
+        try {
+          const liveResponse = await api.get('/wl-system/live/events')
+          const liveNow = Array.isArray(liveResponse.data?.live_now) ? liveResponse.data.live_now : []
+          hasLive = liveNow.length > 0
+        } catch {
+          const response = await api.get('/events')
+          const events = Array.isArray(response.data) ? response.data : []
+          hasLive = events.some(isLiveStatus)
+        }
+
         if (isMounted) setHasLiveEvents(hasLive)
       } catch {
         if (isMounted) setHasLiveEvents(false)

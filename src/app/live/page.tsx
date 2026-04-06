@@ -62,6 +62,9 @@ function formatDate(dateStr: string) {
 
 export default function LivePage() {
   const [events, setEvents] = useState<EventItem[]>([])
+  const [liveNow, setLiveNow] = useState<EventItem[]>([])
+  const [upcoming, setUpcoming] = useState<EventItem[]>([])
+  const [completed, setCompleted] = useState<EventItem[]>([])
   const [loading, setLoading] = useState(true)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
 
@@ -70,14 +73,31 @@ export default function LivePage() {
 
     const load = async () => {
       try {
-        const response = await api.get('/events')
-        const items = Array.isArray(response.data) ? response.data : []
-        if (isMounted) {
-          setEvents(items)
-          setLastUpdated(new Date())
+        try {
+          const liveResponse = await api.get('/wl-system/live/events')
+
+          if (isMounted) {
+            setLiveNow(Array.isArray(liveResponse.data?.live_now) ? liveResponse.data.live_now : [])
+            setUpcoming(Array.isArray(liveResponse.data?.upcoming) ? liveResponse.data.upcoming : [])
+            setCompleted(Array.isArray(liveResponse.data?.completed) ? liveResponse.data.completed : [])
+            setLastUpdated(liveResponse.data?.last_updated ? new Date(liveResponse.data.last_updated) : new Date())
+          }
+        } catch {
+          const response = await api.get('/events')
+          const items = Array.isArray(response.data) ? response.data : []
+
+          if (isMounted) {
+            setEvents(items)
+            setLastUpdated(new Date())
+          }
         }
       } catch {
-        if (isMounted) setEvents([])
+        if (isMounted) {
+          setEvents([])
+          setLiveNow([])
+          setUpcoming([])
+          setCompleted([])
+        }
       } finally {
         if (isMounted) setLoading(false)
       }
@@ -92,7 +112,7 @@ export default function LivePage() {
     }
   }, [])
 
-  const { liveNow, upcoming, completed } = useMemo(() => {
+  const fallbackBuckets = useMemo(() => {
     const byDate = [...events].sort((a, b) => {
       const ad = new Date(getEventDate(a)).getTime()
       const bd = new Date(getEventDate(b)).getTime()
@@ -109,6 +129,10 @@ export default function LivePage() {
     return { liveNow: live, upcoming: up, completed: done }
   }, [events])
 
+  const effectiveLiveNow = liveNow.length > 0 || upcoming.length > 0 || completed.length > 0 ? liveNow : fallbackBuckets.liveNow
+  const effectiveUpcoming = liveNow.length > 0 || upcoming.length > 0 || completed.length > 0 ? upcoming : fallbackBuckets.upcoming
+  const effectiveCompleted = liveNow.length > 0 || upcoming.length > 0 || completed.length > 0 ? completed : fallbackBuckets.completed
+
   return (
     <div className="min-h-screen pt-20 bg-zinc-50">
       <div className="container-custom section-padding">
@@ -123,7 +147,7 @@ export default function LivePage() {
             <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-white border border-zinc-200">
               <Radio className={`w-4 h-4 ${liveNow.length > 0 ? 'text-red-500' : 'text-zinc-400'}`} />
               <span className="text-sm font-medium text-zinc-700">
-                {liveNow.length > 0 ? `${liveNow.length} Live Now` : 'No Live Event'}
+                {effectiveLiveNow.length > 0 ? `${effectiveLiveNow.length} Live Now` : 'No Live Event'}
               </span>
             </div>
           </div>
@@ -148,13 +172,13 @@ export default function LivePage() {
                 <h2 className="text-xl sm:text-2xl font-semibold text-zinc-900">Live Now</h2>
               </div>
 
-              {liveNow.length === 0 ? (
+              {effectiveLiveNow.length === 0 ? (
                 <div className="bg-white border border-zinc-200 rounded-xl p-6 text-zinc-600">
                   No active competition at the moment. Check upcoming sessions below.
                 </div>
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {liveNow.map((event) => (
+                  {effectiveLiveNow.map((event) => (
                     <Link
                       key={event.id}
                       href={getEventPath(event, true)}
@@ -184,11 +208,11 @@ export default function LivePage() {
                 <h2 className="text-xl sm:text-2xl font-semibold text-zinc-900">Upcoming</h2>
               </div>
 
-              {upcoming.length === 0 ? (
+              {effectiveUpcoming.length === 0 ? (
                 <div className="bg-white border border-zinc-200 rounded-xl p-6 text-zinc-600">No upcoming competitions found.</div>
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {upcoming.slice(0, 8).map((event) => (
+                  {effectiveUpcoming.slice(0, 8).map((event) => (
                     <Link
                       key={event.id}
                       href={getEventPath(event, false)}
@@ -214,11 +238,11 @@ export default function LivePage() {
                 <h2 className="text-xl sm:text-2xl font-semibold text-zinc-900">Recently Completed</h2>
               </div>
 
-              {completed.length === 0 ? (
+              {effectiveCompleted.length === 0 ? (
                 <div className="bg-white border border-zinc-200 rounded-xl p-6 text-zinc-600">No completed competitions yet.</div>
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {completed.slice(0, 6).map((event) => (
+                  {effectiveCompleted.slice(0, 6).map((event) => (
                     <Link
                       key={event.id}
                       href={getEventPath(event, false)}
