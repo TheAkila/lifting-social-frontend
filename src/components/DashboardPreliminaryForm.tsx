@@ -141,8 +141,8 @@ export default function DashboardPreliminaryForm({
   }
 
   const weightCategories = menWomen === 'Men'
-    ? ['60', '65', '70', '75', '85', '95', '110', '110+']
-    : ['49', '53', '57', '61', '69', '77', '86', '86+']
+    ? ['55', '61', '67', '73', '81', '89', '96', '102', '109', '109+']
+    : ['45', '49', '55', '59', '64', '71', '76', '81', '87', '87+']
 
   const handleSubmit = async () => {
     // Validate club information
