@@ -71,16 +71,16 @@ export default function LiveScoreboardPage() {
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
               <Link
                 href={`/events/${slug}`}
                 className="text-sm text-blue-600 hover:text-blue-800 mb-2 inline-block"
               >
                 ← Back to Event Details
               </Link>
-              <h1 className="text-3xl font-bold text-gray-900">{event.title}</h1>
-              <p className="text-gray-600 mt-1">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 break-words">{event.title}</h1>
+              <p className="text-gray-600 mt-1 text-sm sm:text-base">
                 {new Date(event.start_date).toLocaleDateString('en-US', {
                   weekday: 'long',
                   year: 'numeric',
@@ -89,16 +89,16 @@ export default function LiveScoreboardPage() {
                 })}
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-gray-700">LIVE</span>
+            <div className="flex items-center gap-2 shrink-0">
+              <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></div>
+              <span className="text-xs sm:text-sm font-medium text-gray-700">LIVE</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Live Scoreboard */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <LiveScoreboard eventId={event.id} />
       </div>
     </div>

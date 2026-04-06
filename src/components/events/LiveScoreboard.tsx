@@ -175,7 +175,7 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
   return (
     <div className="space-y-6">
       {/* Connection Status */}
-      <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-gray-50 p-4 rounded-lg">
         <div className="flex items-center gap-3">
           <div className={`w-3 h-3 rounded-full ${
             connectionStatus === 'connected' ? 'bg-green-500 animate-pulse' :
@@ -198,11 +198,11 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
       {/* Current Lifter Card */}
       {liveState && liveState.current_athlete_name && (
         <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6 rounded-xl shadow-lg">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex-1">
               <div className="text-sm font-medium text-blue-200 mb-1">ON PLATFORM</div>
-              <div className="text-3xl font-bold mb-2">{liveState.current_athlete_name}</div>
-              <div className="text-xl">
+              <div className="text-2xl sm:text-3xl font-bold mb-2">{liveState.current_athlete_name}</div>
+              <div className="text-base sm:text-xl">
                 {liveState.current_lift_type === 'snatch' ? 'Snatch' : 'Clean & Jerk'} • 
                 Attempt {liveState.current_attempt_number} • 
                 <span className="font-bold ml-2">{liveState.current_weight} kg</span>
@@ -211,8 +211,8 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
             
             {/* Timer */}
             {liveState.timer_running && (
-              <div className="flex items-center justify-center w-32 h-32 bg-white/20 rounded-full">
-                <div className="text-5xl font-mono font-bold">
+              <div className="flex items-center justify-center w-24 h-24 sm:w-32 sm:h-32 bg-white/20 rounded-full">
+                <div className="text-3xl sm:text-5xl font-mono font-bold">
                   {liveState.timer_remaining}
                 </div>
               </div>
@@ -248,20 +248,20 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
       {/* Scoreboard Table */}
       <div className="bg-white rounded-xl shadow-lg overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b-2 border-gray-200">
+          <table className="min-w-[900px] w-full">
+            <thead className="bg-gray-50 border-b-2 border-gray-200 sticky top-0 z-10">
               <tr>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Rank</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Lot</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Athlete</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Category</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Club</th>
-                <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700" colSpan={3}>Snatch</th>
-                <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Best</th>
-                <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700" colSpan={3}>Clean & Jerk</th>
-                <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Best</th>
-                <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Total</th>
-                <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Sinclair</th>
+                <th className="px-3 py-3 text-left text-xs sm:text-sm font-semibold text-gray-700">Rank</th>
+                <th className="px-3 py-3 text-left text-xs sm:text-sm font-semibold text-gray-700">Lot</th>
+                <th className="px-3 py-3 text-left text-xs sm:text-sm font-semibold text-gray-700">Athlete</th>
+                <th className="px-3 py-3 text-left text-xs sm:text-sm font-semibold text-gray-700">Category</th>
+                <th className="hidden lg:table-cell px-3 py-3 text-left text-xs sm:text-sm font-semibold text-gray-700">Club</th>
+                <th className="px-3 py-3 text-center text-xs sm:text-sm font-semibold text-gray-700" colSpan={3}>Snatch</th>
+                <th className="px-3 py-3 text-center text-xs sm:text-sm font-semibold text-gray-700">Best</th>
+                <th className="px-3 py-3 text-center text-xs sm:text-sm font-semibold text-gray-700" colSpan={3}>Clean & Jerk</th>
+                <th className="px-3 py-3 text-center text-xs sm:text-sm font-semibold text-gray-700">Best</th>
+                <th className="px-3 py-3 text-center text-xs sm:text-sm font-semibold text-gray-700">Total</th>
+                <th className="hidden xl:table-cell px-3 py-3 text-center text-xs sm:text-sm font-semibold text-gray-700">Sinclair</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -272,16 +272,16 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
                     liveState?.current_athlete_name === athlete.athlete_name ? 'bg-blue-50 ring-2 ring-blue-400' : ''
                   }`}
                 >
-                  <td className="px-4 py-3">
+                  <td className="px-3 py-3">
                     <div className="flex items-center gap-2">
                       {athlete.category_rank && <span className="font-semibold">{athlete.category_rank}</span>}
                       {renderMedal(athlete.medals)}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-gray-600">{athlete.lot_number}</td>
-                  <td className="px-4 py-3 font-medium">{athlete.athlete_name}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{athlete.weight_category}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{athlete.club_name || '-'}</td>
+                  <td className="px-3 py-3 text-gray-600">{athlete.lot_number}</td>
+                  <td className="px-3 py-3 font-medium">{athlete.athlete_name}</td>
+                  <td className="px-3 py-3 text-sm text-gray-600">{athlete.weight_category}</td>
+                  <td className="hidden lg:table-cell px-3 py-3 text-sm text-gray-600">{athlete.club_name || '-'}</td>
                   
                   {/* Snatch Attempts */}
                   <td className="px-2 py-3 text-center">{renderAttempt(athlete.snatch_1_weight, athlete.snatch_1_result)}</td>
@@ -300,10 +300,10 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
                   </td>
                   
                   {/* Total & Sinclair */}
-                  <td className="px-4 py-3 text-center font-bold text-lg">
+                  <td className="px-3 py-3 text-center font-bold text-lg">
                     {athlete.total || '-'}
                   </td>
-                  <td className="px-4 py-3 text-center text-sm text-gray-600">
+                  <td className="hidden xl:table-cell px-3 py-3 text-center text-sm text-gray-600">
                     {athlete.sinclair_score ? athlete.sinclair_score.toFixed(2) : '-'}
                   </td>
                 </tr>
@@ -329,6 +329,9 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
             <span className="text-gray-400">-</span>
             <span>Not Attempted</span>
           </div>
+        </div>
+        <div className="mt-3 text-xs text-gray-500">
+          Tip: Scroll horizontally on mobile to see all attempts.
         </div>
       </div>
     </div>
