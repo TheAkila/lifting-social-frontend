@@ -385,36 +385,39 @@ const renderSessionTable = (session: any, isLive: boolean) => {
           <p className="mt-1 text-sm sm:text-base font-semibold">{boardLabel}</p>
         </div>
 
-        <div className="px-4 sm:px-6 py-3 bg-[#00a651] text-white flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-center gap-3 text-sm font-semibold">
-            <span className={`inline-block w-2.5 h-2.5 rounded-full ${
-              connectionStatus === 'connected' ? 'bg-white animate-pulse' :
-              connectionStatus === 'connecting' ? 'bg-yellow-200 animate-pulse' :
-              'bg-red-200'
-            }`} />
-            <span>
-              {connectionStatus === 'connected' ? 'Broadcast Connected' :
-               connectionStatus === 'connecting' ? 'Connecting...' :
-               'Disconnected'}
-            </span>
-          </div>
+        <div className="px-4 sm:px-6 py-3 bg-[#00a651] text-white flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-start">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative inline-flex items-center">
+              <select
+                aria-label="Select session view"
+                title="Select session view"
+                className="appearance-none bg-white/15 border border-white/35 rounded-md pl-3 pr-8 py-1.5 text-xs sm:text-sm font-semibold text-white"
+                value={selectedSession}
+                onChange={(e) => setSelectedSession(e.target.value)}
+              >
+                <option value="live" className="text-[#0b4f79]">Live Session</option>
+                <option value="all" className="text-[#0b4f79]">All Sessions</option>
+                {sessionButtons.map((session) => (
+                  <option key={session.value} value={session.value} className="text-[#0b4f79]">
+                    {session.label}
+                  </option>
+                ))}
+              </select>
+              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-white/90 text-[10px]">▼</span>
+            </div>
 
-          <div className="flex flex-wrap gap-2">
-            <select
-              aria-label="Select session view"
-              title="Select session view"
-              className="bg-white/15 border border-white/35 rounded-md px-3 py-1.5 text-xs sm:text-sm font-semibold text-white"
-              value={selectedSession}
-              onChange={(e) => setSelectedSession(e.target.value)}
-            >
-              <option value="live" className="text-[#0b4f79]">Live Session</option>
-              <option value="all" className="text-[#0b4f79]">All Sessions</option>
-              {sessionButtons.map((session) => (
-                <option key={session.value} value={session.value} className="text-[#0b4f79]">
-                  {session.label}
-                </option>
-              ))}
-            </select>
+            <div className="flex items-center gap-3 text-sm font-semibold">
+              <span className={`inline-block w-2.5 h-2.5 rounded-full ${
+                connectionStatus === 'connected' ? 'bg-white animate-pulse' :
+                connectionStatus === 'connecting' ? 'bg-yellow-200 animate-pulse' :
+                'bg-red-200'
+              }`} />
+              <span>
+                {connectionStatus === 'connected' ? 'Broadcast Connected' :
+                 connectionStatus === 'connecting' ? 'Connecting...' :
+                 'Disconnected'}
+              </span>
+            </div>
           </div>
         </div>
 
