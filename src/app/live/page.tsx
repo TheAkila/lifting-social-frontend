@@ -96,8 +96,8 @@ export default function LivePage() {
   const effectiveLiveNow = liveNow
 
   return (
-    <div className="min-h-screen pt-20 bg-zinc-50">
-      <div className="container-custom section-padding">
+    <div className="min-h-screen pt-28 pb-20 bg-zinc-50">
+      <div className="container-custom">
         <div className="mb-8 sm:mb-10">
           <div className="flex items-start sm:items-center justify-between flex-col sm:flex-row gap-3">
             <div>
