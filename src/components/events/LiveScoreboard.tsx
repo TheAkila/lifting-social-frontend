@@ -102,10 +102,6 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
     return { scheduledSessions: scheduled, inProgressSessions: inProgress, completedSessions: completed };
   }, [athletes, availableSessionsDetails, liveState]);
 
-  const unassignedAthletes = useMemo(() => {
-    return athletes.filter((a) => !a.session_number);
-  }, [athletes]);
-
   const sessionOptions = useMemo(() => {
     return availableSessionsDetails.map(s => s.session_number).sort((a, b) => a - b);
   }, [availableSessionsDetails]);
@@ -262,9 +258,9 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
 
     const normalized = (result || '').toLowerCase();
     const attemptClass =
-      normalized === 'good_lift'
-        ? 'bg-[#0f6ca8] text-white border-[#8fd5ff]'
-        : normalized === 'no_lift'
+      normalized === 'good_lift' || normalized === 'good' || normalized === 'success'
+        ? 'bg-[#0f8f3c] text-white border-[#8fe2ae]'
+        : normalized === 'no_lift' || normalized === 'bad' || normalized === 'fail' || normalized === 'failed'
         ? 'bg-[#d02e2e] text-white border-[#ff8d8d]'
         : 'bg-white text-[#182532] border-[#aeb7c2]';
 
@@ -452,51 +448,6 @@ const renderSessionTable = (session: any, isLive: boolean) => {
             </div>
           )}
 
-          {unassignedAthletes.length > 0 && (
-            <div className="overflow-x-auto">
-              <h3 className="px-4 sm:px-6 py-2 text-lg font-bold bg-[#4a2b0a]/70">Unassigned Athletes</h3>
-              <table className="min-w-[980px] w-full text-white">
-                <thead className="bg-[#6b3f0d] border-y-2 border-[#0b4f79]">
-                  <tr className="text-[11px] sm:text-xs tracking-[0.08em] uppercase">
-                    <th className="px-3 py-2.5 text-left">#</th>
-                    <th className="px-3 py-2.5 text-left">Athlete</th>
-                    <th className="px-2 py-2.5 text-left">Nation/Club</th>
-                    <th className="px-2 py-2.5 text-center">1st</th>
-                    <th className="px-2 py-2.5 text-center">2nd</th>
-                    <th className="px-2 py-2.5 text-center">3rd</th>
-                    <th className="px-2 py-2.5 text-center">Best</th>
-                    <th className="px-2 py-2.5 text-center">1st</th>
-                    <th className="px-2 py-2.5 text-center">2nd</th>
-                    <th className="px-2 py-2.5 text-center">3rd</th>
-                    <th className="px-2 py-2.5 text-center">Best</th>
-                    <th className="px-2 py-2.5 text-center">Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {unassignedAthletes.map((athlete, index) => (
-                    <tr key={athlete.registration_id} className="bg-[#8d5312] text-white border-b border-[#6e420f]">
-                      <td className="px-3 py-2 font-bold text-lg">{athlete.category_rank || index + 1}</td>
-                      <td className="px-3 py-2">
-                        <div className="font-semibold text-base leading-tight">{athlete.athlete_name || 'Unknown Athlete'}</div>
-                        <div className="text-amber-100 text-xs">Lot {athlete.lot_number || '-'} • {athlete.weight_category || '-'}kg</div>
-                      </td>
-                      <td className="px-2 py-2 text-sm text-amber-100">{athlete.club_name || '-'}</td>
-                      <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_1_weight, athlete.snatch_1_result)}</td>
-                      <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_2_weight, athlete.snatch_2_result)}</td>
-                      <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_3_weight, athlete.snatch_3_result)}</td>
-                      <td className="px-2 py-2 text-center font-black text-lg">{athlete.best_snatch || '-'}</td>
-                      <td className="px-2 py-2 text-center">{renderAttempt(athlete.clean_jerk_1_weight, athlete.clean_jerk_1_result)}</td>
-                      <td className="px-2 py-2 text-center">{renderAttempt(athlete.clean_jerk_2_weight, athlete.clean_jerk_2_result)}</td>
-                      <td className="px-2 py-2 text-center">{renderAttempt(athlete.clean_jerk_3_weight, athlete.clean_jerk_3_result)}</td>
-                      <td className="px-2 py-2 text-center font-black text-lg">{athlete.best_clean_jerk || '-'}</td>
-                      <td className="px-2 py-2 text-center font-black text-xl">{athlete.total || '-'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
           {inProgressSessions.length === 0 && scheduledSessions.length === 0 && completedSessions.length === 0 && (
              <div className="px-4 py-8 text-center text-sm text-sky-100">
                 No sessions found for this competition yet.
@@ -506,7 +457,7 @@ const renderSessionTable = (session: any, isLive: boolean) => {
 
         <div className="px-4 sm:px-6 py-3 text-xs sm:text-sm bg-[#073653] text-sky-100 flex flex-wrap gap-4">
           <span><span className="font-bold text-white">White box</span>: declared/pending</span>
-          <span><span className="font-bold text-white">Blue box</span>: good lift</span>
+          <span><span className="font-bold text-white">Green box</span>: good lift</span>
           <span><span className="font-bold text-white">Red box</span>: no lift</span>
           <span><span className="font-bold text-[#ffe25e]">Gold row</span>: current lifter</span>
         </div>
