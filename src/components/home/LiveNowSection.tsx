@@ -142,7 +142,7 @@ export default function LiveNowSection() {
                   {getTitle(featuredEvent)}
                 </h3>
 
-                <div className="space-y-3 text-sm text-zinc-600 bg-zinc-50 rounded-[12px] p-4 border border-zinc-100">
+                <div className="hidden md:block space-y-3 text-sm text-zinc-600 bg-zinc-50 rounded-[12px] p-4 border border-zinc-100">
                   {getDate(featuredEvent) && (
                     <div className="flex items-center gap-3">
                       <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-sm">
