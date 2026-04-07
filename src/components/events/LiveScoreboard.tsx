@@ -391,7 +391,13 @@ const renderSessionTable = (session: any, isLive: boolean) => {
               <select
                 aria-label="Select session view"
                 title="Select session view"
-                className="appearance-none bg-white/15 border border-white/35 rounded-md pl-3 pr-8 py-1.5 text-xs sm:text-sm font-semibold text-white [-webkit-appearance:none] [&::-webkit-outer-spin-button]:hidden [&::-webkit-inner-spin-button]:hidden"
+                className="appearance-none bg-white/15 border border-white/35 rounded-md pl-3 pr-8 py-1.5 text-xs sm:text-sm font-semibold text-white"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                  backgroundPosition: 'right 0.5rem center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '1.5em 1.5em',
+                }}
                 value={selectedSession}
                 onChange={(e) => setSelectedSession(e.target.value)}
               >
@@ -403,7 +409,6 @@ const renderSessionTable = (session: any, isLive: boolean) => {
                   </option>
                 ))}
               </select>
-              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-white/90 text-sm font-bold">▼</span>
             </div>
 
             <div className="flex items-center gap-3 text-sm font-semibold">

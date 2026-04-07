@@ -73,12 +73,6 @@ export default function LiveScoreboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
-              <Link
-                href={`/events/${slug}`}
-                className="text-sm text-blue-600 hover:text-blue-800 mb-2 inline-block"
-              >
-                ← Back to Event Details
-              </Link>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 break-words">{event.title}</h1>
               <p className="text-gray-600 mt-1 text-sm sm:text-base">
                 {new Date(event.start_date).toLocaleDateString('en-US', {
