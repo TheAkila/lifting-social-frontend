@@ -391,7 +391,7 @@ const renderSessionTable = (session: any, isLive: boolean) => {
               <select
                 aria-label="Select session view"
                 title="Select session view"
-                className="appearance-none bg-white/15 border border-white/35 rounded-md pl-3 pr-8 py-1.5 text-xs sm:text-sm font-semibold text-white"
+                className="appearance-none bg-white/15 border border-white/35 rounded-md pl-3 pr-8 py-1.5 text-xs sm:text-sm font-semibold text-white [-webkit-appearance:none] [&::-webkit-outer-spin-button]:hidden [&::-webkit-inner-spin-button]:hidden"
                 value={selectedSession}
                 onChange={(e) => setSelectedSession(e.target.value)}
               >
@@ -403,7 +403,7 @@ const renderSessionTable = (session: any, isLive: boolean) => {
                   </option>
                 ))}
               </select>
-              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-white/90 text-[10px]">▼</span>
+              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-white/90 text-sm font-bold">▼</span>
             </div>
 
             <div className="flex items-center gap-3 text-sm font-semibold">
