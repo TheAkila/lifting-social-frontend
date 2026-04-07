@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { Calendar, MapPin, Radio } from 'lucide-react'
+import Image from 'next/image'
+import { Calendar, MapPin, Radio, Trophy } from 'lucide-react'
 import api from '@/lib/api'
 
 interface EventItem {
@@ -120,9 +121,9 @@ export default function LivePage() {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-36 bg-white border border-zinc-200 rounded-xl animate-pulse" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="h-72 bg-white border border-zinc-200 rounded-xl animate-pulse" />
             ))}
           </div>
         ) : (
@@ -138,25 +139,49 @@ export default function LivePage() {
                   No active competition at the moment.
                 </div>
               ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {effectiveLiveNow.map((event) => (
                     <Link
                       key={event.id}
                       href={getEventPath(event, true)}
-                      className="bg-white border border-red-200 rounded-xl p-5 hover:shadow-md transition-all"
+                      className="group flex flex-col bg-white rounded-xl overflow-hidden border border-zinc-200 shadow-sm hover:shadow-md transition-all duration-300"
                     >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded-full">LIVE</span>
-                        <span className="text-xs text-zinc-500">{getEventStatus(event) || 'in progress'}</span>
-                      </div>
-                      <h3 className="text-lg font-semibold text-zinc-900 mb-2">{getEventTitle(event)}</h3>
-                      <div className="space-y-1.5 text-sm text-zinc-600">
-                        <p className="inline-flex items-center gap-2"><Calendar className="w-4 h-4" />{formatDate(getEventDate(event))}</p>
-                        {(event.location || event.venue) && (
-                          <p className="inline-flex items-center gap-2"><MapPin className="w-4 h-4" />{event.location || event.venue}</p>
+                      {/* Image */}
+                      <div className="relative w-full overflow-hidden bg-zinc-100 border-b border-zinc-200 aspect-[16/9] flex-shrink-0">
+                        {event.cover_image ? (
+                          <Image
+                            src={event.cover_image}
+                            alt={getEventTitle(event)}
+                            fill
+                            className="object-contain"
+                            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 flex items-center justify-center bg-zinc-200">
+                            <Trophy className="w-16 h-16 text-zinc-400" />
+                          </div>
                         )}
+                        <div className="absolute top-3 right-3 bg-red-600 text-white text-xs font-semibold px-2.5 py-1 rounded-full inline-flex items-center gap-1.5 shadow-sm">
+                          <span className="w-2 h-2 rounded-full bg-white/90 animate-pulse" />
+                          LIVE
+                        </div>
                       </div>
-                      <p className="text-sm text-blue-600 font-medium mt-4">Watch live scoreboard →</p>
+
+                      {/* Content */}
+                      <div className="p-5 flex flex-col flex-1 justify-between bg-white">
+                        <div className="mb-4">
+                          <h3 className="text-lg font-bold text-zinc-900 group-hover:text-indigo-600 transition-colors line-clamp-2 leading-tight">
+                            {getEventTitle(event)}
+                          </h3>
+                        </div>
+
+                        <div className="text-sm font-medium text-red-600 group-hover:text-red-700 inline-flex items-center gap-2 mt-auto">
+                          <div className="w-6 h-6 rounded-full bg-red-50 flex items-center justify-center group-hover:bg-red-100 transition-colors">
+                            <Radio className="w-3.5 h-3.5 text-red-600" />
+                          </div>
+                          <span className="font-semibold group-hover:underline underline-offset-2">Watch live scoreboard →</span>
+                        </div>
+                      </div>
                     </Link>
                   ))}
                 </div>
