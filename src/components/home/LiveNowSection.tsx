@@ -49,7 +49,9 @@ export default function LiveNowSection() {
 
     const load = async () => {
       try {
-        const liveResponse = await api.get('/wl-system/live/events')
+        const liveResponse = await api.get('/wl-system/live/events', {
+          headers: { 'X-Suppress-Global-Error': '1' }
+        })
         const items = Array.isArray(liveResponse.data?.live_now) ? liveResponse.data.live_now : []
 
         if (isMounted) setEvents(items)
@@ -106,7 +108,7 @@ export default function LiveNowSection() {
 
         <Link
           href={getEventPath(featuredEvent, true)}
-          className="group block bg-white rounded-2xl overflow-hidden border border-zinc-100 shadow-sm hover:shadow-md transition-all duration-300 relative max-w-[1200px] mx-auto flex flex-col md:flex-row"
+          className="group bg-white rounded-2xl overflow-hidden border border-zinc-100 shadow-sm hover:shadow-md transition-all duration-300 relative max-w-[1200px] mx-auto flex flex-col md:flex-row"
         >
           <div className="relative w-full md:w-[55%] lg:w-[60%] aspect-video md:aspect-auto overflow-hidden bg-zinc-100">
             {featuredEvent.cover_image ? (

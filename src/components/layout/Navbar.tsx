@@ -71,7 +71,9 @@ export default function Navbar() {
         let hasLive = false
 
         try {
-          const liveResponse = await api.get('/wl-system/live/events')
+          const liveResponse = await api.get('/wl-system/live/events', {
+            headers: { 'X-Suppress-Global-Error': '1' }
+          })
           const liveNow = Array.isArray(liveResponse.data?.live_now) ? liveResponse.data.live_now : []
           hasLive = liveNow.some(hasOngoingSessions)
         } catch {

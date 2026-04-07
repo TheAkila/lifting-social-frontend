@@ -21,7 +21,7 @@ export default function LatestStories() {
         setLoading(false)
       })
       .catch((err) => {
-        console.error('Failed to fetch stories', err)
+        console.warn('Failed to fetch stories:', err)
         setLoading(false)
       })
     return () => {

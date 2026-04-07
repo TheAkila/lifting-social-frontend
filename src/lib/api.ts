@@ -32,6 +32,12 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    const suppressGlobalError = error.config?.headers?.['X-Suppress-Global-Error'] === '1'
+
+    if (suppressGlobalError) {
+      return Promise.reject(error)
+    }
+
     // Don't log 404 errors as they're expected for missing resources
     const is404 = error.response?.status === 404
     const isAbortError = error.name === 'AbortError' || error.code === 'ECONNABORTED'
@@ -43,7 +49,7 @@ api.interceptors.response.use(
     
     // Log errors with detailed information
     if (isAbortError) {
-      console.error('🚨 Request Timeout or Aborted:', {
+      console.warn('⚠️ Request Timeout or Aborted:', {
         url: error.config?.url || 'unknown',
         method: error.config?.method || 'unknown',
         timeout: error.config?.timeout || 'unknown',
@@ -51,7 +57,7 @@ api.interceptors.response.use(
       })
     } else if (error.response) {
       // Server responded with error status
-      console.error('🚨 API Error:', {
+      console.warn('⚠️ API Error:', {
         url: error.config?.url || 'unknown',
         method: error.config?.method || 'unknown',
         status: error.response?.status || 'unknown',
@@ -61,14 +67,14 @@ api.interceptors.response.use(
       })
     } else if (error.request) {
       // Request made but no response
-      console.error('🚨 Network Error - No response:', {
+      console.warn('⚠️ Network Error - No response:', {
         url: error.config?.url,
         method: error.config?.method,
         message: error.message
       })
     } else {
       // Error in request setup
-      console.error('🚨 Request Setup Error:', error.message || error)
+      console.warn('⚠️ Request Setup Error:', error.message || error)
     }
     
     if (error.response?.status === 401) {

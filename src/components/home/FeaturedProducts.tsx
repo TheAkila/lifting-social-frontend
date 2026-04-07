@@ -109,7 +109,7 @@ export default function FeaturedProducts() {
           setSections(newSections)
         }
       } catch (err) {
-        console.error('Failed to fetch products', err)
+        console.warn('Failed to fetch products:', err)
       }
     }
 

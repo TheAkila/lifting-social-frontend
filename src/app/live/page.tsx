@@ -69,7 +69,9 @@ export default function LivePage() {
 
     const load = async () => {
       try {
-        const liveResponse = await api.get('/wl-system/live/events')
+        const liveResponse = await api.get('/wl-system/live/events', {
+          headers: { 'X-Suppress-Global-Error': '1' }
+        })
 
         if (isMounted) {
           setLiveNow(Array.isArray(liveResponse.data?.live_now) ? liveResponse.data.live_now : [])
