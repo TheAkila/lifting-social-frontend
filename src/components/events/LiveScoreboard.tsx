@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import api from '@/lib/api';
 
@@ -52,6 +52,7 @@ interface AthleteResult {
   total: number;
   sinclair_score: number;
   category_rank: number;
+  is_dq?: boolean;
   medals: {
     gold: boolean;
     silver: boolean;
@@ -194,7 +195,20 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
 
     const refreshId = setInterval(() => {
       fetchScoreboard();
-    }, 15000);
+    }, 5000);
+
+    const handleWindowFocus = () => {
+      fetchScoreboard();
+    };
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchScoreboard();
+      }
+    };
+
+    window.addEventListener('focus', handleWindowFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     const socketBaseUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000').replace(/\/api\/?$/, '');
 
@@ -221,6 +235,8 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
 
     return () => {
       clearInterval(refreshId);
+      window.removeEventListener('focus', handleWindowFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (newSocket) {
         newSocket.emit('leave-competition', resolvedEventId || eventId);
         newSocket.close();
@@ -279,17 +295,34 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
       case 'attempt_update':
         fetchScoreboard(); // Keep live board in sync with technical panel attempt edits
         break;
+
+      case 'athlete_update':
+      case 'dq_update':
+        fetchScoreboard();
+        break;
     }
   };
 
-  const renderAttempt = (weight: number | null, result: string | null) => {
+  const renderAttempt = (weight: number | null, result: string | null, isDq = false) => {
+    const normalized = (result || '').toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_');
+    const isPendingOrEmpty = !normalized || normalized === 'pending' || normalized === 'not_attempted';
+
+    // Mirror admin session sheet behavior: when athlete is DQ, pending/not-attempted attempts appear red.
+    // Keep declared weight visible when available.
+    if (isDq && isPendingOrEmpty) {
+      return (
+        <span className="inline-flex min-w-[52px] justify-center px-1.5 py-0.5 border-2 font-bold tracking-wide bg-[#d02e2e] text-white border-[#ff8d8d]">
+          {weight || '-'}
+        </span>
+      );
+    }
+
     if (!weight) return <span className="inline-flex w-12 justify-center text-slate-400">-</span>;
 
-    const normalized = (result || '').toLowerCase();
     const attemptClass =
       normalized === 'good_lift' || normalized === 'good' || normalized === 'success'
         ? 'bg-[#0f8f3c] text-white border-[#8fe2ae]'
-        : normalized === 'no_lift' || normalized === 'no-lift' || normalized === 'bad' || normalized === 'fail' || normalized === 'failed'
+        : normalized === 'no_lift' || normalized === 'bad' || normalized === 'fail' || normalized === 'failed'
         ? 'bg-[#d02e2e] text-white border-[#ff8d8d]'
         : 'bg-[#f3c74a] text-[#2d1f06] border-[#ffe18b]';
 
@@ -308,12 +341,48 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
   };
 
 const renderSessionTable = (session: any, isLive: boolean) => {
-    const athletes = session.athletes.sort((a: AthleteResult, b: AthleteResult) => (a.lot_number || 0) - (b.lot_number || 0));
+    const sessionAthletes = [...(session.athletes || [])];
+  const isSessionCompleted = session?.status === 'completed';
+
+    const groupedByClass = sessionAthletes.reduce<Record<string, AthleteResult[]>>((acc, athlete) => {
+      const classKey = (athlete.weight_category || 'Unclassified').toString().trim() || 'Unclassified';
+      if (!acc[classKey]) {
+        acc[classKey] = [];
+      }
+      acc[classKey].push(athlete);
+      return acc;
+    }, {});
+
+    const sortedClasses = Object.keys(groupedByClass).sort((a, b) => {
+      const numA = parseFloat(a.replace(/[^0-9.]/g, ''));
+      const numB = parseFloat(b.replace(/[^0-9.]/g, ''));
+
+      if (!Number.isNaN(numA) && !Number.isNaN(numB) && numA !== numB) {
+        return numA - numB;
+      }
+
+      return a.localeCompare(b);
+    });
+
+    const shouldShowClassHeaders = sortedClasses.length > 1;
+
+    const getClassAthletes = (classKey: string) => {
+      return [...groupedByClass[classKey]].sort((a, b) => {
+        const dqA = a.is_dq === true;
+        const dqB = b.is_dq === true;
+        if (dqA !== dqB) return dqA ? 1 : -1;
+
+        const lotA = a.lot_number ?? Number.MAX_SAFE_INTEGER;
+        const lotB = b.lot_number ?? Number.MAX_SAFE_INTEGER;
+        if (lotA !== lotB) return lotA - lotB;
+        return (a.athlete_name || '').localeCompare(b.athlete_name || '');
+      });
+    };
 
     return (
       <div key={session.id} className="overflow-x-auto">
         <h3 className="px-4 sm:px-6 py-2 text-lg font-bold bg-[#0a395a]/50">{session.name || `Session ${session.session_number}`}</h3>
-        <table className="min-w-[980px] w-full text-white">
+        <table className="min-w-[1140px] w-full text-white">
           <thead className="bg-[#006b39] border-y-2 border-[#0b4f79]">
             <tr className="text-[11px] sm:text-xs tracking-[0.08em] uppercase">
               <th className="px-3 py-2.5 text-left">#</th>
@@ -328,37 +397,101 @@ const renderSessionTable = (session: any, isLive: boolean) => {
               <th className="px-2 py-2.5 text-center">3rd</th>
               <th className="px-2 py-2.5 text-center">Best</th>
               <th className="px-2 py-2.5 text-center">Total</th>
+              <th className="px-2 py-2.5 text-center">Rank</th>
+              <th className="px-2 py-2.5 text-center">DQ</th>
             </tr>
           </thead>
           <tbody>
-            {athletes.length === 0 && (
+            {sessionAthletes.length === 0 && (
               <tr className="bg-[#0b5f95]">
-                <td colSpan={12} className="px-4 py-8 text-center text-sm text-sky-100">
+                <td colSpan={14} className="px-4 py-8 text-center text-sm text-sky-100">
                   No athletes in this session yet.
                 </td>
               </tr>
             )}
-            {athletes.map((athlete: AthleteResult, index: number) => {
-              const isCurrent = isLive && highlightedAthleteKey === (athlete.athlete_name || '').toLowerCase();
-              const rowClass = isCurrent ? 'bg-[#cab72f] text-[#132130]' : 'bg-[#0b5f95] text-white';
+            {sortedClasses.map((classKey) => {
+              const classAthletes = getClassAthletes(classKey);
+              const classRankMap = new Map<string, number>();
+
+              if (isSessionCompleted) {
+                const rankedAthletes = classAthletes
+                  .filter((athlete) => athlete.is_dq !== true && (athlete.total || 0) > 0)
+                  .slice()
+                  .sort((a, b) => {
+                    if ((a.total || 0) !== (b.total || 0)) {
+                      return (b.total || 0) - (a.total || 0);
+                    }
+
+                    const lotA = a.lot_number ?? Number.MAX_SAFE_INTEGER;
+                    const lotB = b.lot_number ?? Number.MAX_SAFE_INTEGER;
+                    if (lotA !== lotB) return lotA - lotB;
+
+                    return (a.athlete_name || '').localeCompare(b.athlete_name || '');
+                  });
+
+                rankedAthletes.forEach((athlete, rankIndex) => {
+                  classRankMap.set(
+                    String(athlete.registration_id || athlete.athlete_id || athlete.source_registration_id),
+                    rankIndex + 1
+                  );
+                });
+              }
 
               return (
-                <tr key={athlete.registration_id} className={`${rowClass} border-b border-[#12496d]`}>
-                  <td className="px-3 py-2 font-bold text-lg">{athlete.category_rank || index + 1}</td>
-                  <td className="px-3 py-2">
-                    <div className="font-semibold text-base leading-tight">{athlete.athlete_name || 'Unknown Athlete'}</div>
-                  </td>
-                  <td className={`px-2 py-2 text-sm ${isCurrent ? 'text-[#273549]' : 'text-sky-100'}`}>{athlete.club_name || '-'}</td>
-                  <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_1_weight, athlete.snatch_1_result)}</td>
-                  <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_2_weight, athlete.snatch_2_result)}</td>
-                  <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_3_weight, athlete.snatch_3_result)}</td>
-                  <td className="px-2 py-2 text-center font-black text-lg">{athlete.best_snatch || '-'}</td>
-                  <td className="px-2 py-2 text-center">{renderAttempt(athlete.clean_jerk_1_weight, athlete.clean_jerk_1_result)}</td>
-                  <td className="px-2 py-2 text-center">{renderAttempt(athlete.clean_jerk_2_weight, athlete.clean_jerk_2_result)}</td>
-                  <td className="px-2 py-2 text-center">{renderAttempt(athlete.clean_jerk_3_weight, athlete.clean_jerk_3_result)}</td>
-                  <td className="px-2 py-2 text-center font-black text-lg">{athlete.best_clean_jerk || '-'}</td>
-                  <td className="px-2 py-2 text-center font-black text-xl">{athlete.total || '-'}</td>
-                </tr>
+                <Fragment key={`class-${session.id}-${classKey}`}>
+                  {shouldShowClassHeaders && (
+                    <tr className="bg-[#073653] border-y border-[#12496d]">
+                      <td colSpan={14} className="px-3 py-2 text-sm font-bold tracking-wide text-[#ffe25e]">
+                        {classKey.toLowerCase().includes('kg') ? classKey : `${classKey}kg`} Weight Class
+                      </td>
+                    </tr>
+                  )}
+                  {classAthletes.map((athlete: AthleteResult, index: number) => {
+                    const isCurrent = isLive && highlightedAthleteKey === (athlete.athlete_name || '').toLowerCase();
+                    const isDq = athlete.is_dq === true;
+                    const rowClass = isCurrent
+                      ? 'bg-[#cab72f] text-[#132130]'
+                      : isDq
+                      ? 'bg-[#0b3550] text-slate-300'
+                      : 'bg-[#0b5f95] text-white';
+                    const athleteKey = String(athlete.registration_id || athlete.athlete_id || athlete.source_registration_id);
+                    const rankValue = isSessionCompleted && !isDq && (athlete.total || 0) > 0
+                      ? classRankMap.get(athleteKey) || athlete.category_rank || null
+                      : null;
+
+                    return (
+                      <tr key={`${athlete.registration_id}-${classKey}`} className={`${rowClass} border-b border-[#12496d]`}>
+                        <td className="px-3 py-2 font-bold text-lg">{athlete.lot_number || index + 1}</td>
+                        <td className="px-3 py-2">
+                          <div className="font-semibold text-base leading-tight">
+                            {athlete.athlete_name || 'Unknown Athlete'}
+                            {isDq && <span className="ml-2 text-xs font-bold uppercase text-red-300">DQ</span>}
+                          </div>
+                        </td>
+                        <td className={`px-2 py-2 text-sm ${isCurrent ? 'text-[#273549]' : isDq ? 'text-slate-300' : 'text-sky-100'}`}>{athlete.club_name || '-'}</td>
+                        <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_1_weight, athlete.snatch_1_result, isDq)}</td>
+                        <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_2_weight, athlete.snatch_2_result, isDq)}</td>
+                        <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_3_weight, athlete.snatch_3_result, isDq)}</td>
+                        <td className="px-2 py-2 text-center font-black text-lg">{athlete.best_snatch || '-'}</td>
+                        <td className="px-2 py-2 text-center">{renderAttempt(athlete.clean_jerk_1_weight, athlete.clean_jerk_1_result, isDq)}</td>
+                        <td className="px-2 py-2 text-center">{renderAttempt(athlete.clean_jerk_2_weight, athlete.clean_jerk_2_result, isDq)}</td>
+                        <td className="px-2 py-2 text-center">{renderAttempt(athlete.clean_jerk_3_weight, athlete.clean_jerk_3_result, isDq)}</td>
+                        <td className="px-2 py-2 text-center font-black text-lg">{athlete.best_clean_jerk || '-'}</td>
+                        <td className="px-2 py-2 text-center font-black text-xl">{athlete.total || '-'}</td>
+                        <td className="px-2 py-2 text-center font-black text-lg">{rankValue || '-'}</td>
+                        <td className="px-2 py-2 text-center">
+                          {isDq ? (
+                            <span className="inline-flex items-center justify-center min-w-[44px] px-2 py-0.5 rounded border border-red-300 bg-red-700 text-white text-xs font-black">
+                              DQ
+                            </span>
+                          ) : (
+                            <span className="text-slate-300">-</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </Fragment>
               );
             })}
           </tbody>
@@ -391,7 +524,6 @@ const renderSessionTable = (session: any, isLive: boolean) => {
                 aria-label="Select session view"
                 title="Select session view"
                 className="appearance-none !bg-none bg-white/15 border border-white/35 rounded-md pl-3 pr-8 py-1.5 text-xs sm:text-sm font-semibold text-white cursor-pointer"
-                style={{ backgroundImage: 'none' }}
                 value={selectedSession}
                 onChange={(e) => setSelectedSession(e.target.value)}
               >
