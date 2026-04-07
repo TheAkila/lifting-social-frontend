@@ -64,18 +64,7 @@ export default function Navbar() {
   useEffect(() => {
     let isMounted = true
 
-    const isLiveStatus = (event: any) => {
-      const status = (
-        event?.competition_status ||
-        event?.event_status ||
-        event?.status ||
-        ''
-      )
-        .toString()
-        .toLowerCase()
-
-      return ['in_progress', 'live', 'active', 'ongoing'].includes(status)
-    }
+    const hasOngoingSessions = (event: any) => event?.has_ongoing_sessions === true
 
     const fetchLiveStatus = async () => {
       try {
@@ -84,11 +73,11 @@ export default function Navbar() {
         try {
           const liveResponse = await api.get('/wl-system/live/events')
           const liveNow = Array.isArray(liveResponse.data?.live_now) ? liveResponse.data.live_now : []
-          hasLive = liveNow.length > 0
+          hasLive = liveNow.some(hasOngoingSessions)
         } catch {
           const response = await api.get('/events')
           const events = Array.isArray(response.data) ? response.data : []
-          hasLive = events.some(isLiveStatus)
+          hasLive = events.some(hasOngoingSessions)
         }
 
         if (isMounted) setHasLiveEvents(hasLive)
