@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Radio, Calendar, MapPin, Trophy } from 'lucide-react'
+import { Radio, Calendar, MapPin, Trophy, ArrowRight } from 'lucide-react'
 import api from '@/lib/api'
 
 interface EventItem {
@@ -85,77 +85,107 @@ export default function LiveNowSection() {
   const featuredEvent = liveEvents[0]
 
   return (
-    <section className="bg-white">
-      <div className="container-custom py-10 sm:py-12">
-        <div className="flex items-center gap-2 mb-5">
-          <Radio className="w-5 h-5 text-red-600" />
-          <h2 className="text-lg sm:text-xl font-semibold text-zinc-900">Live Right Now</h2>
+    <section className="bg-zinc-50 border-y border-zinc-100">
+      <div className="container mx-auto px-4 py-8 sm:py-10 md:py-12">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center relative">
+              <span className="absolute inset-0 rounded-full bg-red-100 animate-ping opacity-75" />
+              <Radio className="w-5 h-5 text-red-600 relative z-10" />
+            </div>
+            <div>
+              <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-zinc-900">
+                Live Right Now
+              </h2>
+              <p className="text-zinc-500 mt-1.5 text-sm sm:text-base font-medium">
+                Tune in to the action happening straight from the platform
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/live"
+            className="inline-flex items-center gap-2 text-zinc-600 hover:text-zinc-900 text-sm font-medium transition-colors group"
+          >
+            <span>View All Live Events</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+          </Link>
         </div>
 
         <Link
           href={getEventPath(featuredEvent, true)}
-          className="group block rounded-2xl overflow-hidden border border-zinc-200 bg-white shadow-sm hover:shadow-md transition-all duration-300"
+          className="group block bg-white rounded-2xl overflow-hidden border border-zinc-100 shadow-sm hover:shadow-md transition-all duration-300 relative max-w-5xl mx-auto"
         >
-          <div className="grid grid-cols-1 md:grid-cols-12">
-            <div className="relative md:col-span-5 min-h-[220px] bg-zinc-100">
+          <div className="grid grid-cols-1 md:grid-cols-12 max-h-[400px]">
+            <div className="relative md:col-span-5 min-h-[220px] md:min-h-[300px] overflow-hidden bg-zinc-100">
               {featuredEvent.cover_image ? (
-                <Image
-                  src={featuredEvent.cover_image}
-                  alt={getTitle(featuredEvent)}
-                  fill
-                  className="object-cover"
-                  sizes="(min-width: 768px) 40vw, 100vw"
+                <div 
+                  className="absolute inset-0 bg-cover bg-center" 
+                  style={{ backgroundImage: `url(${featuredEvent.cover_image})` }} 
                 />
               ) : (
-                <div className="absolute inset-0 flex items-center justify-center bg-zinc-200">
-                  <Trophy className="w-14 h-14 text-zinc-400" />
+                <div className="absolute inset-0 bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
+                  <Trophy className="w-12 h-12 text-zinc-700" />
                 </div>
               )}
-              <div className="absolute top-3 left-3 bg-red-600 text-white text-xs font-semibold px-2.5 py-1 rounded-full inline-flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-white/90 animate-pulse" />
+              {/* Fade Overlay for Text Readability */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/10 md:to-transparent" />
+              
+              <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider shadow-sm flex items-center gap-1.5 backdrop-blur-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                 LIVE
               </div>
             </div>
 
-            <div className="md:col-span-7 p-5 sm:p-6 flex flex-col justify-between">
-              <div>
-                <h3 className="text-xl sm:text-2xl font-semibold text-zinc-900 group-hover:text-indigo-600 transition-colors leading-tight mb-3">
+            <div className="md:col-span-7 p-6 sm:p-8 flex flex-col justify-center bg-white relative z-10">
+              <div className="mb-auto">
+                <div className="flex items-center gap-2 text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">
+                  <span className="text-red-600 font-bold">Currently Happening</span>
+                  <span>•</span>
+                  <span>{getStatus(featuredEvent) || 'In Progress'}</span>
+                </div>
+                <h3 className="font-display text-xl sm:text-2xl lg:text-3xl font-bold text-zinc-900 leading-tight mb-5">
                   {getTitle(featuredEvent)}
                 </h3>
 
-                <div className="space-y-2 text-sm text-zinc-600">
+                <div className="space-y-3 text-sm text-zinc-600 bg-zinc-50 rounded-[12px] p-4 border border-zinc-100">
                   {getDate(featuredEvent) && (
-                    <p className="inline-flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
-                      {new Date(getDate(featuredEvent)).toLocaleString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        hour: 'numeric',
-                        minute: '2-digit'
-                      })}
-                    </p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-sm">
+                        <Calendar className="w-3.5 h-3.5 text-zinc-400" />
+                      </div>
+                      <span className="font-medium text-zinc-700">
+                        {new Date(getDate(featuredEvent)).toLocaleString('en-US', {
+                          weekday: 'long',
+                          month: 'long',
+                          day: 'numeric',
+                          hour: 'numeric',
+                          minute: '2-digit'
+                        })}
+                      </span>
+                    </div>
                   )}
                   {(featuredEvent.location || featuredEvent.venue) && (
-                    <p className="inline-flex items-center gap-2">
-                      <MapPin className="w-4 h-4" />
-                      {featuredEvent.location || featuredEvent.venue}
-                    </p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-sm">
+                        <MapPin className="w-3.5 h-3.5 text-zinc-400" />
+                      </div>
+                      <span className="font-medium text-zinc-700 line-clamp-1">
+                        {featuredEvent.location || featuredEvent.venue}
+                      </span>
+                    </div>
                   )}
                 </div>
               </div>
 
-              <p className="text-sm sm:text-base font-semibold text-red-700 group-hover:text-red-800 mt-6">
-                Watch live scoreboard →
-              </p>
+              <div className="mt-6 flex items-center">
+                <div className="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold w-full sm:w-auto text-center flex items-center justify-center gap-2 transition-colors shadow-sm">
+                  <span>Enter Scoreboard</span>
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+              </div>
             </div>
           </div>
         </Link>
-
-        <div className="mt-4">
-          <Link href="/live" className="text-sm font-medium text-red-700 hover:text-red-800">
-            View all live and upcoming events →
-          </Link>
-        </div>
       </div>
     </section>
   )
