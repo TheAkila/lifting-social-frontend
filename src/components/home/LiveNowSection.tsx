@@ -115,11 +115,14 @@ export default function LiveNowSection() {
           href={getEventPath(featuredEvent, true)}
           className="group block bg-white rounded-2xl overflow-hidden border border-zinc-100 shadow-sm hover:shadow-md transition-all duration-300 relative max-w-5xl mx-auto flex flex-col md:flex-row"
         >
-          <div className="relative w-full md:w-[45%] lg:w-[40%] aspect-video md:aspect-auto overflow-hidden bg-zinc-100">
+          <div className="relative w-full md:w-[45%] lg:w-[40%] aspect-video md:aspect-auto overflow-hidden bg-zinc-900">
             {featuredEvent.cover_image ? (
-              <div 
-                className="absolute inset-0 bg-cover bg-center" 
-                style={{ backgroundImage: `url(${featuredEvent.cover_image})` }} 
+              <Image
+                src={featuredEvent.cover_image}
+                alt={getTitle(featuredEvent)}
+                fill
+                className="object-contain"
+                sizes="(min-width: 768px) 45vw, 100vw"
               />
             ) : (
               <div className="absolute inset-0 bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
