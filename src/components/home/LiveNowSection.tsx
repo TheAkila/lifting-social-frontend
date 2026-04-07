@@ -104,7 +104,7 @@ export default function LiveNowSection() {
           </div>
           <Link
             href="/live"
-            className="inline-flex items-center gap-2 text-zinc-600 hover:text-zinc-900 text-sm font-medium transition-colors group"
+            className="hidden md:inline-flex items-center gap-2 text-zinc-600 hover:text-zinc-900 text-sm font-medium transition-colors group"
           >
             <span>View All Live Events</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
@@ -113,31 +113,30 @@ export default function LiveNowSection() {
 
         <Link
           href={getEventPath(featuredEvent, true)}
-          className="group block bg-white rounded-2xl overflow-hidden border border-zinc-100 shadow-sm hover:shadow-md transition-all duration-300 relative max-w-5xl mx-auto"
+          className="group block bg-white rounded-2xl overflow-hidden border border-zinc-100 shadow-sm hover:shadow-md transition-all duration-300 relative max-w-5xl mx-auto flex flex-col md:flex-row"
         >
-          <div className="grid grid-cols-1 md:grid-cols-12 max-h-[400px]">
-            <div className="relative md:col-span-5 min-h-[220px] md:min-h-[300px] overflow-hidden bg-zinc-100">
-              {featuredEvent.cover_image ? (
-                <div 
-                  className="absolute inset-0 bg-cover bg-center" 
-                  style={{ backgroundImage: `url(${featuredEvent.cover_image})` }} 
-                />
-              ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
-                  <Trophy className="w-12 h-12 text-zinc-700" />
-                </div>
-              )}
-              {/* Fade Overlay for Text Readability */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/10 md:to-transparent" />
-              
-              <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider shadow-sm flex items-center gap-1.5 backdrop-blur-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                LIVE
+          <div className="relative w-full md:w-[45%] lg:w-[40%] aspect-video md:aspect-auto overflow-hidden bg-zinc-100">
+            {featuredEvent.cover_image ? (
+              <div 
+                className="absolute inset-0 bg-cover bg-center" 
+                style={{ backgroundImage: `url(${featuredEvent.cover_image})` }} 
+              />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
+                <Trophy className="w-12 h-12 text-zinc-700" />
               </div>
+            )}
+            {/* Fade Overlay for Text Readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent md:bg-gradient-to-r md:from-transparent to-black/10 md:to-transparent" />
+            
+            <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider shadow-sm flex items-center gap-1.5 backdrop-blur-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              LIVE
             </div>
+          </div>
 
-            <div className="md:col-span-7 p-6 sm:p-8 flex flex-col justify-center bg-white relative z-10">
-              <div className="mb-auto">
+          <div className="w-full md:w-[55%] lg:w-[60%] p-5 sm:p-6 md:p-8 flex flex-col justify-center bg-white relative z-10">
+            <div className="mb-auto">
                 <div className="flex items-center gap-2 text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">
                   <span className="text-red-600 font-bold">Currently Happening</span>
                   <span>•</span>
@@ -177,15 +176,20 @@ export default function LiveNowSection() {
                 </div>
               </div>
 
-              <div className="mt-6 flex items-center">
-                <div className="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold w-full sm:w-auto text-center flex items-center justify-center gap-2 transition-colors shadow-sm">
-                  <span>Enter Scoreboard</span>
-                  <ArrowRight className="w-4 h-4" />
-                </div>
+            <div className="mt-8 flex items-center">
+              <div className="bg-red-600 hover:bg-red-700 text-white px-5 py-3 md:py-2.5 rounded-lg text-sm font-semibold w-full sm:w-auto text-center flex items-center justify-center gap-2 transition-colors shadow-sm">
+                <span>Enter Scoreboard</span>
+                <ArrowRight className="w-4 h-4" />
               </div>
             </div>
           </div>
         </Link>
+
+        <div className="mt-6 md:mt-8 flex justify-center md:hidden">
+          <Link href="/live" className="text-sm font-medium text-red-600 hover:text-red-700">
+            View all live and upcoming events →
+          </Link>
+        </div>
       </div>
     </section>
   )
