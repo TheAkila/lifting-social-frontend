@@ -298,18 +298,22 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
 
       case 'athlete_update':
       case 'dq_update':
-        fetchScoreboard();
+        setAthletes(prev => prev.map(athlete => {
+          const matches = athlete.registration_id === update.data.registration_id ||
+            athlete.athlete_id === update.data.athlete_id ||
+            athlete.source_registration_id === update.data.registration_id;
+
+          return matches ? { ...athlete, ...update.data } : athlete;
+        }));
         break;
     }
   };
 
   const renderAttempt = (weight: number | null, result: string | null, isDq = false) => {
     const normalized = (result || '').toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_');
-    const isPendingOrEmpty = !normalized || normalized === 'pending' || normalized === 'not_attempted';
 
-    // Mirror admin session sheet behavior: when athlete is DQ, pending/not-attempted attempts appear red.
-    // Keep declared weight visible when available.
-    if (isDq && isPendingOrEmpty) {
+    // Match SessionSheet behavior: DQ athletes show red pending/empty cells.
+    if (isDq && (!normalized || normalized === 'pending' || normalized === 'not_attempted')) {
       return (
         <span className="inline-flex min-w-[52px] justify-center px-1.5 py-0.5 border-2 font-bold tracking-wide bg-[#d02e2e] text-white border-[#ff8d8d]">
           {weight || '-'}
@@ -317,7 +321,17 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
       );
     }
 
-    if (!weight) return <span className="inline-flex w-12 justify-center text-slate-400">-</span>;
+    if (normalized === 'not_attempted') {
+      return (
+        <span className="inline-flex min-w-[52px] justify-center px-1.5 py-0.5 border-2 font-bold tracking-wide bg-gray-300 text-gray-700 border-gray-400">
+          N/A
+        </span>
+      );
+    }
+
+    if (!weight) {
+      return <span className="inline-flex w-12 justify-center text-slate-400">-</span>;
+    }
 
     const attemptClass =
       normalized === 'good_lift' || normalized === 'good' || normalized === 'success'
