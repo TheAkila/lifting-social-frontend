@@ -22,6 +22,8 @@ interface LiveState {
 
 interface AthleteResult {
   registration_id: string;
+  athlete_id?: string;
+  source_registration_id?: string;
   athlete_name: string;
   weight_category: string;
   lot_number: number;
@@ -175,8 +177,10 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
       fetchScoreboard();
     }, 15000);
 
+    const socketBaseUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000').replace(/\/api\/?$/, '');
+
     // Initialize WebSocket connection
-    const newSocket = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000', {
+    const newSocket = io(socketBaseUrl, {
       transports: ['websocket', 'polling']
     });
 
@@ -233,7 +237,9 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
       case 'result_update':
         // Update specific athlete's result
         setAthletes(prev => prev.map(athlete => 
-          athlete.registration_id === update.data.registration_id
+          athlete.registration_id === update.data.registration_id ||
+          athlete.athlete_id === update.data.athlete_id ||
+          athlete.source_registration_id === update.data.registration_id
             ? { ...athlete, ...update.data }
             : athlete
         ));
@@ -250,6 +256,10 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
       case 'session_complete':
         fetchScoreboard(); // Refresh to get final rankings
         break;
+
+      case 'attempt_update':
+        fetchScoreboard(); // Keep live board in sync with technical panel attempt edits
+        break;
     }
   };
 
@@ -260,9 +270,9 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
     const attemptClass =
       normalized === 'good_lift' || normalized === 'good' || normalized === 'success'
         ? 'bg-[#0f8f3c] text-white border-[#8fe2ae]'
-        : normalized === 'no_lift' || normalized === 'bad' || normalized === 'fail' || normalized === 'failed'
+        : normalized === 'no_lift' || normalized === 'no-lift' || normalized === 'bad' || normalized === 'fail' || normalized === 'failed'
         ? 'bg-[#d02e2e] text-white border-[#ff8d8d]'
-        : 'bg-white text-[#182532] border-[#aeb7c2]';
+        : 'bg-[#f3c74a] text-[#2d1f06] border-[#ffe18b]';
 
     return (
       <span className={`inline-flex min-w-[52px] justify-center px-1.5 py-0.5 border-2 font-bold tracking-wide ${attemptClass}`}>
@@ -456,7 +466,7 @@ const renderSessionTable = (session: any, isLive: boolean) => {
         </div>
 
         <div className="px-4 sm:px-6 py-3 text-xs sm:text-sm bg-[#073653] text-sky-100 flex flex-wrap gap-4">
-          <span><span className="font-bold text-white">White box</span>: declared/pending</span>
+          <span><span className="font-bold text-white">Yellow box</span>: declared/pending</span>
           <span><span className="font-bold text-white">Green box</span>: good lift</span>
           <span><span className="font-bold text-white">Red box</span>: no lift</span>
           <span><span className="font-bold text-[#ffe25e]">Gold row</span>: current lifter</span>
