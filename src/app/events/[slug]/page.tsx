@@ -46,6 +46,7 @@ interface Event {
   require_qualifying_total?: boolean
   require_medical_clearance?: boolean
   is_registration_open?: boolean  // Mapped field
+  has_ongoing_sessions?: boolean
 }
 
 interface Registration {
@@ -404,8 +405,7 @@ export default function EventDetailPage() {
   const canSubmitFinal = () => getEventPhase() === 'final_entries' && registration && ['preliminary_approved', 'final_submitted'].includes(registration.status)
   const isLiveEvent = () => {
     if (!event) return false
-    const status = (event.event_status || event.status || '').toLowerCase()
-    return ['in_progress', 'live', 'active', 'ongoing'].includes(status)
+    return event.has_ongoing_sessions === true
   }
 
   if (loading) {

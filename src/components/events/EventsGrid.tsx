@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Calendar, MapPin, Users, Trophy, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
@@ -24,6 +25,7 @@ interface Event {
   competition_status?: string
   event_status?: string
   status?: string
+  has_ongoing_sessions?: boolean
 }
 
 interface EventsGridProps {
@@ -31,6 +33,7 @@ interface EventsGridProps {
 }
 
 export default function EventsGrid({ events }: EventsGridProps) {
+  const router = useRouter()
   const [currentPage, setCurrentPage] = useState(1)
   const eventsPerPage = 9
 
@@ -98,8 +101,7 @@ export default function EventsGrid({ events }: EventsGridProps) {
   }
 
   const isLiveEvent = (event: Event) => {
-    const status = (event.competition_status || event.event_status || event.status || '').toLowerCase()
-    return ['in_progress', 'live', 'active', 'ongoing'].includes(status)
+    return event.has_ongoing_sessions === true
   }
 
   if (events.length === 0) {
@@ -198,7 +200,25 @@ export default function EventsGrid({ events }: EventsGridProps) {
                 <div className="text-sm font-medium text-indigo-600 group-hover:text-indigo-700 inline-flex items-center gap-3">
                   <span>View Details →</span>
                   {isLiveEvent(event) && (
-                    <span className="text-red-600 font-semibold">Watch Live →</span>
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      className="text-red-600 font-semibold cursor-pointer"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        router.push(`/events/${event.slug}/live`)
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          router.push(`/events/${event.slug}/live`)
+                        }
+                      }}
+                    >
+                      Watch Live →
+                    </span>
                   )}
                 </div>
               </div>
