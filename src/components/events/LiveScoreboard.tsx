@@ -70,8 +70,7 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
   const [loading, setLoading] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
   const [resolvedEventId, setResolvedEventId] = useState<string | null>(null);
-  const [selectedSession, setSelectedSession] = useState<string>('all');
-  const [selectedGroup, setSelectedGroup] = useState<string>('all');
+  const [selectedSession, setSelectedSession] = useState<string>('live');
   const [availableSessionsDetails, setAvailableSessionsDetails] = useState<any[]>([]);
 
   const { scheduledSessions, inProgressSessions, completedSessions } = useMemo(() => {
@@ -104,53 +103,73 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
     return { scheduledSessions: scheduled, inProgressSessions: inProgress, completedSessions: completed };
   }, [athletes, availableSessionsDetails, liveState]);
 
-  const sessionOptions = useMemo(() => {
-    return availableSessionsDetails.map(s => s.session_number).sort((a, b) => a - b);
+  const sessionButtons = useMemo(() => {
+    return availableSessionsDetails
+      .slice()
+      .sort((a, b) => (a.session_number || 0) - (b.session_number || 0))
+      .map((s) => ({
+        value: String(s.session_number),
+        label: s.name || `Session ${s.session_number}`,
+      }));
   }, [availableSessionsDetails]);
 
-  const groupOptions = useMemo(() => {
-    const values = new Set<string>();
-    const selectedSessionNum = selectedSession === 'all' ? null : parseInt(selectedSession, 10);
-
-    athletes.forEach((a) => {
-      if (selectedSessionNum === null || a.session_number === selectedSessionNum) {
-        if (a.group_number) values.add(a.group_number);
-      }
-    });
-    return Array.from(values).sort((a, b) => a.localeCompare(b));
-  }, [athletes, selectedSession]);
-
-  const filteredAthletes = useMemo(() => {
-    if (selectedSession === 'all' && selectedGroup === 'all') {
-        // No filtering, but maybe we want to show in-progress by default if any
-        const inProgressAthletes = inProgressSessions.flatMap(s => s.athletes);
-        if (inProgressAthletes.length > 0) return inProgressAthletes;
-        return athletes;
+  const visibleSessions = useMemo(() => {
+    if (selectedSession === 'all') {
+      return {
+        visibleInProgress: inProgressSessions,
+        visibleScheduled: scheduledSessions,
+        visibleCompleted: completedSessions,
+      };
     }
 
-    return athletes.filter((a) => {
-      const sessionMatch = selectedSession === 'all' || String(a.session_number) === selectedSession;
-      const groupMatch = selectedGroup === 'all' || a.group_number === selectedGroup;
-      return sessionMatch && groupMatch;
-    });
-  }, [athletes, selectedSession, selectedGroup, inProgressSessions]);
+    if (selectedSession === 'live') {
+      if (inProgressSessions.length > 0) {
+        return {
+          visibleInProgress: inProgressSessions,
+          visibleScheduled: [],
+          visibleCompleted: [],
+        };
+      }
+
+      return {
+        visibleInProgress: [],
+        visibleScheduled: scheduledSessions.slice(0, 1),
+        visibleCompleted: [],
+      };
+    }
+
+    const sessionNum = parseInt(selectedSession, 10);
+    return {
+      visibleInProgress: inProgressSessions.filter((s) => s.session_number === sessionNum),
+      visibleScheduled: scheduledSessions.filter((s) => s.session_number === sessionNum),
+      visibleCompleted: completedSessions.filter((s) => s.session_number === sessionNum),
+    };
+  }, [selectedSession, inProgressSessions, scheduledSessions, completedSessions]);
 
   const boardLabel = useMemo(() => {
-    if (selectedSession !== 'all') {
-        const session = availableSessionsDetails.find(s => String(s.session_number) === selectedSession);
-        if (session) {
-            const groupText = selectedGroup === 'all' ? '' : ` - Group ${selectedGroup}`;
-            return `${session.name || `Session ${session.session_number}`}${groupText}`;
-        }
-    }
-    if (inProgressSessions.length > 0) {
+    if (selectedSession === 'live') {
+      if (inProgressSessions.length > 0) {
         return inProgressSessions[0].name || `Session ${inProgressSessions[0].session_number} - In Progress`;
+      }
+      if (scheduledSessions.length > 0) {
+        return `${scheduledSessions[0].name || `Session ${scheduledSessions[0].session_number}`} - Next Session`;
+      }
+      return 'Live Session';
     }
+
+    if (selectedSession !== 'all') {
+      const session = availableSessionsDetails.find((s) => String(s.session_number) === selectedSession);
+      if (session) {
+        return session.name || `Session ${session.session_number}`;
+      }
+    }
+
     if (scheduledSessions.length > 0) {
-        return 'Upcoming Sessions';
+      return 'All Sessions';
     }
+
     return 'Competition Scoreboard';
-  }, [inProgressSessions, scheduledSessions, selectedSession, selectedGroup, availableSessionsDetails]);
+  }, [inProgressSessions, scheduledSessions, selectedSession, availableSessionsDetails]);
 
   const highlightedAthleteKey = useMemo(() => {
     if (!liveState?.current_athlete_name) return null;
@@ -158,16 +177,16 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
   }, [liveState]);
 
   useEffect(() => {
-    if (selectedSession !== 'all' && !sessionOptions.includes(parseInt(selectedSession, 10))) {
-      setSelectedSession('all');
-    }
-  }, [selectedSession, sessionOptions]);
+    if (selectedSession === 'live' || selectedSession === 'all') return;
 
-  useEffect(() => {
-    if (selectedGroup !== 'all' && !groupOptions.includes(selectedGroup)) {
-      setSelectedGroup('all');
+    const selectedExists = availableSessionsDetails.some(
+      (s) => String(s.session_number) === selectedSession
+    );
+
+    if (!selectedExists) {
+      setSelectedSession('live');
     }
-  }, [selectedGroup, groupOptions]);
+  }, [selectedSession, availableSessionsDetails]);
 
   useEffect(() => {
     // Fetch initial scoreboard data
@@ -382,31 +401,18 @@ const renderSessionTable = (session: any, isLive: boolean) => {
 
           <div className="flex flex-wrap gap-2">
             <select
-              aria-label="Select session"
-              title="Select session"
-              className="bg-white/15 border border-white/35 rounded-md px-3 py-1.5 text-xs sm:text-sm font-semibold"
+              aria-label="Select session view"
+              title="Select session view"
+              className="bg-white/15 border border-white/35 rounded-md px-3 py-1.5 text-xs sm:text-sm font-semibold text-white"
               value={selectedSession}
-              onChange={(e) => {
-                setSelectedSession(e.target.value);
-                setSelectedGroup('all');
-              }}
+              onChange={(e) => setSelectedSession(e.target.value)}
             >
-              <option value="all">All Sessions</option>
-              {sessionOptions.map((session) => (
-                <option key={session} value={String(session)}>Session {session}</option>
-              ))}
-            </select>
-
-            <select
-              aria-label="Select group"
-              title="Select group"
-              className="bg-white/15 border border-white/35 rounded-md px-3 py-1.5 text-xs sm:text-sm font-semibold"
-              value={selectedGroup}
-              onChange={(e) => setSelectedGroup(e.target.value)}
-            >
-              <option value="all">All Groups</option>
-              {groupOptions.map((group) => (
-                <option key={group} value={group}>Group {group}</option>
+              <option value="live" className="text-[#0b4f79]">Live Session</option>
+              <option value="all" className="text-[#0b4f79]">All Sessions</option>
+              {sessionButtons.map((session) => (
+                <option key={session.value} value={session.value} className="text-[#0b4f79]">
+                  {session.label}
+                </option>
               ))}
             </select>
           </div>
@@ -442,23 +448,23 @@ const renderSessionTable = (session: any, isLive: boolean) => {
         )}
 
         <div className="space-y-4">
-          {inProgressSessions.map(session => renderSessionTable(session, true))}
+          {visibleSessions.visibleInProgress.map(session => renderSessionTable(session, true))}
           
-          {scheduledSessions.length > 0 && (
+          {visibleSessions.visibleScheduled.length > 0 && (
             <div>
               <h3 className="px-4 sm:px-6 py-2 text-lg font-bold bg-[#0a395a]/80">Upcoming Sessions</h3>
-              {scheduledSessions.map(session => renderSessionTable(session, false))}
+              {visibleSessions.visibleScheduled.map(session => renderSessionTable(session, false))}
             </div>
           )}
 
-          {completedSessions.length > 0 && (
+          {visibleSessions.visibleCompleted.length > 0 && (
             <div>
               <h3 className="px-4 sm:px-6 py-2 text-lg font-bold bg-[#0a395a]/60">Completed Sessions</h3>
-              {completedSessions.map(session => renderSessionTable(session, false))}
+              {visibleSessions.visibleCompleted.map(session => renderSessionTable(session, false))}
             </div>
           )}
 
-          {inProgressSessions.length === 0 && scheduledSessions.length === 0 && completedSessions.length === 0 && (
+          {visibleSessions.visibleInProgress.length === 0 && visibleSessions.visibleScheduled.length === 0 && visibleSessions.visibleCompleted.length === 0 && (
              <div className="px-4 py-8 text-center text-sm text-sky-100">
                 No sessions found for this competition yet.
               </div>
