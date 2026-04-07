@@ -347,7 +347,6 @@ const renderSessionTable = (session: any, isLive: boolean) => {
                   <td className="px-3 py-2 font-bold text-lg">{athlete.category_rank || index + 1}</td>
                   <td className="px-3 py-2">
                     <div className="font-semibold text-base leading-tight">{athlete.athlete_name || 'Unknown Athlete'}</div>
-                    <div className={`${isCurrent ? 'text-[#273549]' : 'text-sky-100'} text-xs`}>Lot {athlete.lot_number} • {athlete.weight_category}kg</div>
                   </td>
                   <td className={`px-2 py-2 text-sm ${isCurrent ? 'text-[#273549]' : 'text-sky-100'}`}>{athlete.club_name || '-'}</td>
                   <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_1_weight, athlete.snatch_1_result)}</td>
