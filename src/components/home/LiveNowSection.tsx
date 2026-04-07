@@ -47,15 +47,8 @@ export default function LiveNowSection() {
 
     const load = async () => {
       try {
-        let items: EventItem[] = []
-
-        try {
-          const liveResponse = await api.get('/wl-system/live/events')
-          items = Array.isArray(liveResponse.data?.live_now) ? liveResponse.data.live_now : []
-        } catch {
-          const response = await api.get('/events')
-          items = Array.isArray(response.data) ? response.data : []
-        }
+        const liveResponse = await api.get('/wl-system/live/events')
+        const items = Array.isArray(liveResponse.data?.live_now) ? liveResponse.data.live_now : []
 
         if (isMounted) setEvents(items)
       } catch {

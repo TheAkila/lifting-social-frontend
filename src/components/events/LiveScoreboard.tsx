@@ -70,59 +70,89 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
   const [resolvedEventId, setResolvedEventId] = useState<string | null>(null);
   const [selectedSession, setSelectedSession] = useState<string>('all');
   const [selectedGroup, setSelectedGroup] = useState<string>('all');
-  const [availableSessionsFromApi, setAvailableSessionsFromApi] = useState<number[]>([]);
-  const [availableGroupsBySessionFromApi, setAvailableGroupsBySessionFromApi] = useState<Record<string, string[]>>({});
+  const [availableSessionsDetails, setAvailableSessionsDetails] = useState<any[]>([]);
 
-  const selectedSessionNumber = selectedSession === 'all' ? null : parseInt(selectedSession, 10);
+  const { scheduledSessions, inProgressSessions, completedSessions } = useMemo(() => {
+    const scheduled: any[] = [];
+    const inProgress: any[] = [];
+    const completed: any[] = [];
+
+    availableSessionsDetails.forEach(session => {
+      const sessionAthletes = athletes.filter(a => a.session_number === session.session_number);
+      const sessionData = { ...session, athletes: sessionAthletes };
+
+      if (session.status === 'in-progress' || session.status === 'in_progress') {
+        inProgress.push(sessionData);
+      } else if (session.status === 'completed') {
+        completed.push(sessionData);
+      } else {
+        scheduled.push(sessionData);
+      }
+    });
+
+    // If nothing is in progress, check for a live state override
+    if (inProgress.length === 0 && liveState?.current_session) {
+        const sessionToMove = scheduled.findIndex(s => s.session_number === liveState.current_session);
+        if (sessionToMove > -1) {
+            const [session] = scheduled.splice(sessionToMove, 1);
+            inProgress.push(session);
+        }
+    }
+
+    return { scheduledSessions: scheduled, inProgressSessions: inProgress, completedSessions: completed };
+  }, [athletes, availableSessionsDetails, liveState]);
+
+  const unassignedAthletes = useMemo(() => {
+    return athletes.filter((a) => !a.session_number);
+  }, [athletes]);
 
   const sessionOptions = useMemo(() => {
-    const values = new Set<number>();
-    availableSessionsFromApi.forEach((value) => values.add(value));
-    athletes.forEach((a) => {
-      if (a.session_number) values.add(a.session_number);
-    });
-    if (liveState?.current_session) values.add(liveState.current_session);
-    return Array.from(values).sort((a, b) => a - b);
-  }, [availableSessionsFromApi, athletes, liveState]);
+    return availableSessionsDetails.map(s => s.session_number).sort((a, b) => a - b);
+  }, [availableSessionsDetails]);
 
   const groupOptions = useMemo(() => {
     const values = new Set<string>();
-
-    if (selectedSession !== 'all') {
-      const apiGroups = availableGroupsBySessionFromApi[selectedSession] || [];
-      apiGroups.forEach((group) => values.add(group));
-    }
+    const selectedSessionNum = selectedSession === 'all' ? null : parseInt(selectedSession, 10);
 
     athletes.forEach((a) => {
-      if (selectedSessionNumber === null || a.session_number === selectedSessionNumber) {
+      if (selectedSessionNum === null || a.session_number === selectedSessionNum) {
         if (a.group_number) values.add(a.group_number);
       }
     });
-    if ((selectedSessionNumber === null || liveState?.current_session === selectedSessionNumber) && liveState?.current_group) {
-      values.add(liveState.current_group);
-    }
     return Array.from(values).sort((a, b) => a.localeCompare(b));
-  }, [athletes, availableGroupsBySessionFromApi, liveState, selectedSession, selectedSessionNumber]);
+  }, [athletes, selectedSession]);
 
   const filteredAthletes = useMemo(() => {
+    if (selectedSession === 'all' && selectedGroup === 'all') {
+        // No filtering, but maybe we want to show in-progress by default if any
+        const inProgressAthletes = inProgressSessions.flatMap(s => s.athletes);
+        if (inProgressAthletes.length > 0) return inProgressAthletes;
+        return athletes;
+    }
+
     return athletes.filter((a) => {
-      const sessionMatch = selectedSessionNumber === null || a.session_number === selectedSessionNumber;
+      const sessionMatch = selectedSession === 'all' || String(a.session_number) === selectedSession;
       const groupMatch = selectedGroup === 'all' || a.group_number === selectedGroup;
       return sessionMatch && groupMatch;
     });
-  }, [athletes, selectedSessionNumber, selectedGroup]);
+  }, [athletes, selectedSession, selectedGroup, inProgressSessions]);
 
   const boardLabel = useMemo(() => {
-    const first = filteredAthletes[0];
-    const category = first?.weight_category ? `${first.weight_category}kg` : 'Competition';
-    const sessionText = selectedSession === 'all'
-      ? (liveState?.current_session ? `Session ${liveState.current_session}` : 'All Sessions')
-      : `Session ${selectedSession}`;
-    const groupText = selectedGroup === 'all'
-      ? (liveState?.current_group ? `Group ${liveState.current_group}` : 'All Groups')
-      : `Group ${selectedGroup}`;
-    return `${category} ${groupText} • ${sessionText}`;
-  }, [filteredAthletes, liveState, selectedGroup, selectedSession]);
+    if (selectedSession !== 'all') {
+        const session = availableSessionsDetails.find(s => String(s.session_number) === selectedSession);
+        if (session) {
+            const groupText = selectedGroup === 'all' ? '' : ` - Group ${selectedGroup}`;
+            return `${session.name || `Session ${session.session_number}`}${groupText}`;
+        }
+    }
+    if (inProgressSessions.length > 0) {
+        return inProgressSessions[0].name || `Session ${inProgressSessions[0].session_number} - In Progress`;
+    }
+    if (scheduledSessions.length > 0) {
+        return 'Upcoming Sessions';
+    }
+    return 'Competition Scoreboard';
+  }, [inProgressSessions, scheduledSessions, selectedSession, selectedGroup, availableSessionsDetails]);
 
   const highlightedAthleteKey = useMemo(() => {
     if (!liveState?.current_athlete_name) return null;
@@ -187,8 +217,8 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
       if (payload.event_id) {
         setResolvedEventId(payload.event_id);
       }
-      setAvailableSessionsFromApi(Array.isArray(payload.available_sessions) ? payload.available_sessions : []);
-      setAvailableGroupsBySessionFromApi(payload.available_groups_by_session || {});
+      
+      setAvailableSessionsDetails(payload.available_sessions_details || []);
       setAthletes(payload.scoreboard || []);
       setLiveState(payload.live_state);
       setLoading(false);
@@ -250,6 +280,67 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
     if (medals?.silver) return <span className="text-gray-400 text-xl">🥈</span>;
     if (medals?.bronze) return <span className="text-amber-600 text-xl">🥉</span>;
     return null;
+  };
+
+const renderSessionTable = (session: any, isLive: boolean) => {
+    const athletes = session.athletes.sort((a: AthleteResult, b: AthleteResult) => (a.lot_number || 0) - (b.lot_number || 0));
+
+    return (
+      <div key={session.id} className="overflow-x-auto">
+        <h3 className="px-4 sm:px-6 py-2 text-lg font-bold bg-[#0a395a]/50">{session.name || `Session ${session.session_number}`}</h3>
+        <table className="min-w-[980px] w-full text-white">
+          <thead className="bg-[#006b39] border-y-2 border-[#0b4f79]">
+            <tr className="text-[11px] sm:text-xs tracking-[0.08em] uppercase">
+              <th className="px-3 py-2.5 text-left">#</th>
+              <th className="px-3 py-2.5 text-left">Athlete</th>
+              <th className="px-2 py-2.5 text-left">Nation/Club</th>
+              <th className="px-2 py-2.5 text-center">1st</th>
+              <th className="px-2 py-2.5 text-center">2nd</th>
+              <th className="px-2 py-2.5 text-center">3rd</th>
+              <th className="px-2 py-2.5 text-center">Best</th>
+              <th className="px-2 py-2.5 text-center">1st</th>
+              <th className="px-2 py-2.5 text-center">2nd</th>
+              <th className="px-2 py-2.5 text-center">3rd</th>
+              <th className="px-2 py-2.5 text-center">Best</th>
+              <th className="px-2 py-2.5 text-center">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {athletes.length === 0 && (
+              <tr className="bg-[#0b5f95]">
+                <td colSpan={12} className="px-4 py-8 text-center text-sm text-sky-100">
+                  No athletes in this session yet.
+                </td>
+              </tr>
+            )}
+            {athletes.map((athlete: AthleteResult, index: number) => {
+              const isCurrent = isLive && highlightedAthleteKey === (athlete.athlete_name || '').toLowerCase();
+              const rowClass = isCurrent ? 'bg-[#cab72f] text-[#132130]' : 'bg-[#0b5f95] text-white';
+
+              return (
+                <tr key={athlete.registration_id} className={`${rowClass} border-b border-[#12496d]`}>
+                  <td className="px-3 py-2 font-bold text-lg">{athlete.category_rank || index + 1}</td>
+                  <td className="px-3 py-2">
+                    <div className="font-semibold text-base leading-tight">{athlete.athlete_name || 'Unknown Athlete'}</div>
+                    <div className={`${isCurrent ? 'text-[#273549]' : 'text-sky-100'} text-xs`}>Lot {athlete.lot_number} • {athlete.weight_category}kg</div>
+                  </td>
+                  <td className={`px-2 py-2 text-sm ${isCurrent ? 'text-[#273549]' : 'text-sky-100'}`}>{athlete.club_name || '-'}</td>
+                  <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_1_weight, athlete.snatch_1_result)}</td>
+                  <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_2_weight, athlete.snatch_2_result)}</td>
+                  <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_3_weight, athlete.snatch_3_result)}</td>
+                  <td className="px-2 py-2 text-center font-black text-lg">{athlete.best_snatch || '-'}</td>
+                  <td className="px-2 py-2 text-center">{renderAttempt(athlete.clean_jerk_1_weight, athlete.clean_jerk_1_result)}</td>
+                  <td className="px-2 py-2 text-center">{renderAttempt(athlete.clean_jerk_2_weight, athlete.clean_jerk_2_result)}</td>
+                  <td className="px-2 py-2 text-center">{renderAttempt(athlete.clean_jerk_3_weight, athlete.clean_jerk_3_result)}</td>
+                  <td className="px-2 py-2 text-center font-black text-lg">{athlete.best_clean_jerk || '-'}</td>
+                  <td className="px-2 py-2 text-center font-black text-xl">{athlete.total || '-'}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    );
   };
 
   if (loading) {
@@ -344,59 +435,73 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
           </div>
         )}
 
-        <div className="overflow-x-auto">
-          <table className="min-w-[980px] w-full text-white">
-            <thead className="bg-[#006b39] border-y-2 border-[#0b4f79]">
-              <tr className="text-[11px] sm:text-xs tracking-[0.08em] uppercase">
-                <th className="px-3 py-2.5 text-left">#</th>
-                <th className="px-3 py-2.5 text-left">Athlete</th>
-                <th className="px-2 py-2.5 text-left">Nation/Club</th>
-                <th className="px-2 py-2.5 text-center">1st</th>
-                <th className="px-2 py-2.5 text-center">2nd</th>
-                <th className="px-2 py-2.5 text-center">3rd</th>
-                <th className="px-2 py-2.5 text-center">Best</th>
-                <th className="px-2 py-2.5 text-center">1st</th>
-                <th className="px-2 py-2.5 text-center">2nd</th>
-                <th className="px-2 py-2.5 text-center">3rd</th>
-                <th className="px-2 py-2.5 text-center">Best</th>
-                <th className="px-2 py-2.5 text-center">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredAthletes.length === 0 && (
-                <tr className="bg-[#0b5f95]">
-                  <td colSpan={12} className="px-4 py-8 text-center text-sm text-sky-100">
-                    No attempts recorded for the selected session/group yet.
-                  </td>
-                </tr>
-              )}
+        <div className="space-y-4">
+          {inProgressSessions.map(session => renderSessionTable(session, true))}
+          
+          {scheduledSessions.length > 0 && (
+            <div>
+              <h3 className="px-4 sm:px-6 py-2 text-lg font-bold bg-[#0a395a]/80">Upcoming Sessions</h3>
+              {scheduledSessions.map(session => renderSessionTable(session, false))}
+            </div>
+          )}
 
-              {filteredAthletes.map((athlete, index) => {
-                const isCurrent = highlightedAthleteKey === (athlete.athlete_name || '').toLowerCase();
-                const rowClass = isCurrent ? 'bg-[#cab72f] text-[#132130]' : 'bg-[#0b5f95] text-white';
+          {completedSessions.length > 0 && (
+            <div>
+              <h3 className="px-4 sm:px-6 py-2 text-lg font-bold bg-[#0a395a]/60">Completed Sessions</h3>
+              {completedSessions.map(session => renderSessionTable(session, false))}
+            </div>
+          )}
 
-                return (
-                  <tr key={athlete.registration_id} className={`${rowClass} border-b border-[#12496d]`}>
-                    <td className="px-3 py-2 font-bold text-lg">{athlete.category_rank || index + 1}</td>
-                    <td className="px-3 py-2">
-                      <div className="font-semibold text-base leading-tight">{athlete.athlete_name}</div>
-                      <div className={`${isCurrent ? 'text-[#273549]' : 'text-sky-100'} text-xs`}>Lot {athlete.lot_number} • {athlete.weight_category}kg</div>
-                    </td>
-                    <td className={`px-2 py-2 text-sm ${isCurrent ? 'text-[#273549]' : 'text-sky-100'}`}>{athlete.club_name || '-'}</td>
-                    <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_1_weight, athlete.snatch_1_result)}</td>
-                    <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_2_weight, athlete.snatch_2_result)}</td>
-                    <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_3_weight, athlete.snatch_3_result)}</td>
-                    <td className="px-2 py-2 text-center font-black text-lg">{athlete.best_snatch || '-'}</td>
-                    <td className="px-2 py-2 text-center">{renderAttempt(athlete.clean_jerk_1_weight, athlete.clean_jerk_1_result)}</td>
-                    <td className="px-2 py-2 text-center">{renderAttempt(athlete.clean_jerk_2_weight, athlete.clean_jerk_2_result)}</td>
-                    <td className="px-2 py-2 text-center">{renderAttempt(athlete.clean_jerk_3_weight, athlete.clean_jerk_3_result)}</td>
-                    <td className="px-2 py-2 text-center font-black text-lg">{athlete.best_clean_jerk || '-'}</td>
-                    <td className="px-2 py-2 text-center font-black text-xl">{athlete.total || '-'}</td>
+          {unassignedAthletes.length > 0 && (
+            <div className="overflow-x-auto">
+              <h3 className="px-4 sm:px-6 py-2 text-lg font-bold bg-[#4a2b0a]/70">Unassigned Athletes</h3>
+              <table className="min-w-[980px] w-full text-white">
+                <thead className="bg-[#6b3f0d] border-y-2 border-[#0b4f79]">
+                  <tr className="text-[11px] sm:text-xs tracking-[0.08em] uppercase">
+                    <th className="px-3 py-2.5 text-left">#</th>
+                    <th className="px-3 py-2.5 text-left">Athlete</th>
+                    <th className="px-2 py-2.5 text-left">Nation/Club</th>
+                    <th className="px-2 py-2.5 text-center">1st</th>
+                    <th className="px-2 py-2.5 text-center">2nd</th>
+                    <th className="px-2 py-2.5 text-center">3rd</th>
+                    <th className="px-2 py-2.5 text-center">Best</th>
+                    <th className="px-2 py-2.5 text-center">1st</th>
+                    <th className="px-2 py-2.5 text-center">2nd</th>
+                    <th className="px-2 py-2.5 text-center">3rd</th>
+                    <th className="px-2 py-2.5 text-center">Best</th>
+                    <th className="px-2 py-2.5 text-center">Total</th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {unassignedAthletes.map((athlete, index) => (
+                    <tr key={athlete.registration_id} className="bg-[#8d5312] text-white border-b border-[#6e420f]">
+                      <td className="px-3 py-2 font-bold text-lg">{athlete.category_rank || index + 1}</td>
+                      <td className="px-3 py-2">
+                        <div className="font-semibold text-base leading-tight">{athlete.athlete_name || 'Unknown Athlete'}</div>
+                        <div className="text-amber-100 text-xs">Lot {athlete.lot_number || '-'} • {athlete.weight_category || '-'}kg</div>
+                      </td>
+                      <td className="px-2 py-2 text-sm text-amber-100">{athlete.club_name || '-'}</td>
+                      <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_1_weight, athlete.snatch_1_result)}</td>
+                      <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_2_weight, athlete.snatch_2_result)}</td>
+                      <td className="px-2 py-2 text-center">{renderAttempt(athlete.snatch_3_weight, athlete.snatch_3_result)}</td>
+                      <td className="px-2 py-2 text-center font-black text-lg">{athlete.best_snatch || '-'}</td>
+                      <td className="px-2 py-2 text-center">{renderAttempt(athlete.clean_jerk_1_weight, athlete.clean_jerk_1_result)}</td>
+                      <td className="px-2 py-2 text-center">{renderAttempt(athlete.clean_jerk_2_weight, athlete.clean_jerk_2_result)}</td>
+                      <td className="px-2 py-2 text-center">{renderAttempt(athlete.clean_jerk_3_weight, athlete.clean_jerk_3_result)}</td>
+                      <td className="px-2 py-2 text-center font-black text-lg">{athlete.best_clean_jerk || '-'}</td>
+                      <td className="px-2 py-2 text-center font-black text-xl">{athlete.total || '-'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {inProgressSessions.length === 0 && scheduledSessions.length === 0 && completedSessions.length === 0 && (
+             <div className="px-4 py-8 text-center text-sm text-sky-100">
+                No sessions found for this competition yet.
+              </div>
+          )}
         </div>
 
         <div className="px-4 sm:px-6 py-3 text-xs sm:text-sm bg-[#073653] text-sky-100 flex flex-wrap gap-4">

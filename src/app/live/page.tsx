@@ -59,7 +59,6 @@ function formatDate(dateStr: string) {
 }
 
 export default function LivePage() {
-  const [events, setEvents] = useState<EventItem[]>([])
   const [liveNow, setLiveNow] = useState<EventItem[]>([])
   const [loading, setLoading] = useState(true)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
@@ -69,25 +68,14 @@ export default function LivePage() {
 
     const load = async () => {
       try {
-        try {
-          const liveResponse = await api.get('/wl-system/live/events')
+        const liveResponse = await api.get('/wl-system/live/events')
 
-          if (isMounted) {
-            setLiveNow(Array.isArray(liveResponse.data?.live_now) ? liveResponse.data.live_now : [])
-            setLastUpdated(liveResponse.data?.last_updated ? new Date(liveResponse.data.last_updated) : new Date())
-          }
-        } catch {
-          const response = await api.get('/events')
-          const items = Array.isArray(response.data) ? response.data : []
-
-          if (isMounted) {
-            setEvents(items)
-            setLastUpdated(new Date())
-          }
+        if (isMounted) {
+          setLiveNow(Array.isArray(liveResponse.data?.live_now) ? liveResponse.data.live_now : [])
+          setLastUpdated(liveResponse.data?.last_updated ? new Date(liveResponse.data.last_updated) : new Date())
         }
       } catch {
         if (isMounted) {
-          setEvents([])
           setLiveNow([])
         }
       } finally {
@@ -104,22 +92,7 @@ export default function LivePage() {
     }
   }, [])
 
-  const fallbackBuckets = useMemo(() => {
-    const byDate = [...events].sort((a, b) => {
-      const ad = new Date(getEventDate(a)).getTime()
-      const bd = new Date(getEventDate(b)).getTime()
-      if (Number.isNaN(ad) && Number.isNaN(bd)) return 0
-      if (Number.isNaN(ad)) return 1
-      if (Number.isNaN(bd)) return -1
-      return ad - bd
-    })
-
-    const live = byDate.filter((e) => LIVE_STATUSES.includes(getEventStatus(e)))
-
-    return { liveNow: live }
-  }, [events])
-
-  const effectiveLiveNow = liveNow.length > 0 ? liveNow : fallbackBuckets.liveNow
+  const effectiveLiveNow = liveNow
 
   return (
     <div className="min-h-screen pt-20 bg-zinc-50">
