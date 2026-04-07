@@ -67,9 +67,9 @@ export default function LiveScoreboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-14 sm:pt-16 md:pt-20">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white border-b border-gray-200 pt-20 md:pt-24 lg:pt-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
@@ -83,9 +83,10 @@ export default function LiveScoreboardPage() {
                 })}
               </p>
             </div>
+            {/* The LiveScoreboard displays its own connection status, but we can keep a general indicator here if desired */}
             <div className="flex items-center gap-2 shrink-0">
               <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></div>
-              <span className="text-xs sm:text-sm font-medium text-gray-700">LIVE</span>
+              <span className="text-xs sm:text-sm font-medium text-gray-700">LIVE SCOREBOARD</span>
             </div>
           </div>
         </div>
