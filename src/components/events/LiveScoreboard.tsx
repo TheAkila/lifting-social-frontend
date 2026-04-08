@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import api from '@/lib/api';
 
@@ -75,6 +75,7 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
   const [resolvedEventId, setResolvedEventId] = useState<string | null>(null);
   const [selectedSession, setSelectedSession] = useState<string>('live');
   const [availableSessionsDetails, setAvailableSessionsDetails] = useState<any[]>([]);
+  const fetchSequenceRef = useRef(0);
 
   const { scheduledSessions, inProgressSessions, completedSessions } = useMemo(() => {
     const scheduled: any[] = [];
@@ -247,9 +248,16 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
   }, [eventId, resolvedEventId]);
 
   const fetchScoreboard = async () => {
+    const requestId = ++fetchSequenceRef.current;
+
     try {
-      const response = await api.get(`/wl-system/scoreboard/${eventId}`);
+      const response = await api.get(`/wl-system/scoreboard/${eventId}`, {
+        params: { _t: Date.now() }
+      });
       const payload = response?.data || {};
+
+      // Ignore stale responses from older in-flight requests.
+      if (requestId !== fetchSequenceRef.current) return;
 
       if (payload.event_id) {
         setResolvedEventId(payload.event_id);
@@ -260,6 +268,7 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
       setLiveState(payload.live_state);
       setLoading(false);
     } catch (error) {
+      if (requestId !== fetchSequenceRef.current) return;
       console.error('Error fetching scoreboard:', error);
       setLoading(false);
     }
@@ -294,19 +303,15 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
 
       case 'athlete_update':
       case 'dq_update':
-        setAthletes(prev => prev.map(athlete => {
-          const matches = athlete.registration_id === update.data.registration_id ||
-            athlete.athlete_id === update.data.athlete_id ||
-            athlete.source_registration_id === update.data.registration_id;
-
-          return matches ? { ...athlete, ...update.data } : athlete;
-        }));
+        fetchScoreboard(); // Keep DQ/lot/status changes canonical with backend ranking output
         break;
     }
   };
 
   const renderAttempt = (weight: number | null, result: string | null, isDq = false) => {
     const normalized = (result || '').toLowerCase().trim().replace(/\s+/g, '_').replace(/-/g, '_');
+    const isGood = normalized === 'good_lift' || normalized === 'good' || normalized === 'success' || normalized === 'pass';
+    const isNoLift = normalized === 'no_lift' || normalized === 'bad' || normalized === 'fail' || normalized === 'failed' || normalized === 'reject';
 
     // Match SessionSheet behavior: DQ athletes show red pending/empty cells.
     if (isDq && (!normalized || normalized === 'pending' || normalized === 'not_attempted')) {
@@ -330,9 +335,9 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
     }
 
     const attemptClass =
-      normalized === 'good_lift' || normalized === 'good' || normalized === 'success'
+      isGood
         ? 'bg-[#0f8f3c] text-white border-[#8fe2ae]'
-        : normalized === 'no_lift' || normalized === 'bad' || normalized === 'fail' || normalized === 'failed'
+        : isNoLift
         ? 'bg-[#d02e2e] text-white border-[#ff8d8d]'
         : 'bg-[#f3c74a] text-[#2d1f06] border-[#ffe18b]';
 
