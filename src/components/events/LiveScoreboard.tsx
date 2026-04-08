@@ -310,7 +310,7 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
   };
 
   const renderAttempt = (weight: number | null, result: string | null, isDq = false) => {
-    const normalized = (result || '').toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_');
+    const normalized = (result || '').toLowerCase().trim().replace(/\s+/g, '_').replace(/-/g, '_');
 
     // Match SessionSheet behavior: DQ athletes show red pending/empty cells.
     if (isDq && (!normalized || normalized === 'pending' || normalized === 'not_attempted')) {
@@ -427,29 +427,27 @@ const renderSessionTable = (session: any, isLive: boolean) => {
               const classAthletes = getClassAthletes(classKey);
               const classRankMap = new Map<string, number>();
 
-              if (isSessionCompleted) {
-                const rankedAthletes = classAthletes
-                  .filter((athlete) => athlete.is_dq !== true && (athlete.total || 0) > 0)
-                  .slice()
-                  .sort((a, b) => {
-                    if ((a.total || 0) !== (b.total || 0)) {
-                      return (b.total || 0) - (a.total || 0);
-                    }
+              const rankedAthletes = classAthletes
+                .filter((athlete) => athlete.is_dq !== true && (athlete.total || 0) > 0)
+                .slice()
+                .sort((a, b) => {
+                  if ((a.total || 0) !== (b.total || 0)) {
+                    return (b.total || 0) - (a.total || 0);
+                  }
 
-                    const lotA = a.lot_number ?? Number.MAX_SAFE_INTEGER;
-                    const lotB = b.lot_number ?? Number.MAX_SAFE_INTEGER;
-                    if (lotA !== lotB) return lotA - lotB;
+                  const lotA = a.lot_number ?? Number.MAX_SAFE_INTEGER;
+                  const lotB = b.lot_number ?? Number.MAX_SAFE_INTEGER;
+                  if (lotA !== lotB) return lotA - lotB;
 
-                    return (a.athlete_name || '').localeCompare(b.athlete_name || '');
-                  });
-
-                rankedAthletes.forEach((athlete, rankIndex) => {
-                  classRankMap.set(
-                    String(athlete.registration_id || athlete.athlete_id || athlete.source_registration_id),
-                    rankIndex + 1
-                  );
+                  return (a.athlete_name || '').localeCompare(b.athlete_name || '');
                 });
-              }
+
+              rankedAthletes.forEach((athlete, rankIndex) => {
+                classRankMap.set(
+                  String(athlete.registration_id || athlete.athlete_id || athlete.source_registration_id),
+                  rankIndex + 1
+                );
+              });
 
               return (
                 <Fragment key={`class-${session.id}-${classKey}`}>
@@ -469,7 +467,7 @@ const renderSessionTable = (session: any, isLive: boolean) => {
                       ? 'bg-[#0b3550] text-slate-300'
                       : 'bg-[#0b5f95] text-white';
                     const athleteKey = String(athlete.registration_id || athlete.athlete_id || athlete.source_registration_id);
-                    const rankValue = isSessionCompleted && !isDq && (athlete.total || 0) > 0
+                    const rankValue = !isDq && (athlete.total || 0) > 0
                       ? classRankMap.get(athleteKey) || athlete.category_rank || null
                       : null;
 
