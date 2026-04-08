@@ -27,6 +27,8 @@ interface AthleteResult {
   athlete_name: string;
   weight_category: string;
   lot_number: number;
+  start_number?: number;
+  body_weight?: number;
   session_number: number;
   group_number: string;
   club_name: string;
@@ -270,14 +272,8 @@ export default function LiveScoreboard({ eventId, showControls = false }: LiveSc
         break;
       
       case 'result_update':
-        // Update specific athlete's result
-        setAthletes(prev => prev.map(athlete => 
-          athlete.registration_id === update.data.registration_id ||
-          athlete.athlete_id === update.data.athlete_id ||
-          athlete.source_registration_id === update.data.registration_id
-            ? { ...athlete, ...update.data }
-            : athlete
-        ));
+        // Refresh full dataset so totals/ranks remain canonical after each decision.
+        fetchScoreboard();
         break;
       
       case 'timer_update':
@@ -386,6 +382,10 @@ const renderSessionTable = (session: any, isLive: boolean) => {
         const dqB = b.is_dq === true;
         if (dqA !== dqB) return dqA ? 1 : -1;
 
+        const startA = a.start_number ?? Number.MAX_SAFE_INTEGER;
+        const startB = b.start_number ?? Number.MAX_SAFE_INTEGER;
+        if (startA !== startB) return startA - startB;
+
         const lotA = a.lot_number ?? Number.MAX_SAFE_INTEGER;
         const lotB = b.lot_number ?? Number.MAX_SAFE_INTEGER;
         if (lotA !== lotB) return lotA - lotB;
@@ -425,29 +425,6 @@ const renderSessionTable = (session: any, isLive: boolean) => {
             )}
             {sortedClasses.map((classKey) => {
               const classAthletes = getClassAthletes(classKey);
-              const classRankMap = new Map<string, number>();
-
-              const rankedAthletes = classAthletes
-                .filter((athlete) => athlete.is_dq !== true && (athlete.total || 0) > 0)
-                .slice()
-                .sort((a, b) => {
-                  if ((a.total || 0) !== (b.total || 0)) {
-                    return (b.total || 0) - (a.total || 0);
-                  }
-
-                  const lotA = a.lot_number ?? Number.MAX_SAFE_INTEGER;
-                  const lotB = b.lot_number ?? Number.MAX_SAFE_INTEGER;
-                  if (lotA !== lotB) return lotA - lotB;
-
-                  return (a.athlete_name || '').localeCompare(b.athlete_name || '');
-                });
-
-              rankedAthletes.forEach((athlete, rankIndex) => {
-                classRankMap.set(
-                  String(athlete.registration_id || athlete.athlete_id || athlete.source_registration_id),
-                  rankIndex + 1
-                );
-              });
 
               return (
                 <Fragment key={`class-${session.id}-${classKey}`}>
@@ -466,9 +443,8 @@ const renderSessionTable = (session: any, isLive: boolean) => {
                       : isDq
                       ? 'bg-[#0b3550] text-slate-300'
                       : 'bg-[#0b5f95] text-white';
-                    const athleteKey = String(athlete.registration_id || athlete.athlete_id || athlete.source_registration_id);
                     const rankValue = !isDq && (athlete.total || 0) > 0
-                      ? classRankMap.get(athleteKey) || athlete.category_rank || null
+                      ? athlete.category_rank || null
                       : null;
 
                     return (
