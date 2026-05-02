@@ -13,14 +13,7 @@ const categories = [
     color: 'from-slate-900 to-black',
     accent: 'red'
   },
-  {
-    name: 'Stories',
-    icon: BookOpen,
-    href: '/stories',
-    description: 'Inspiring athlete journeys & updates',
-    color: 'from-blue-500 to-blue-700',
-    accent: 'white'
-  },
+
   {
     name: 'Events',
     icon: Calendar,
@@ -79,7 +72,7 @@ export default function CategorySection() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="font-ibm-plex text-xl text-slate-600 leading-relaxed"
           >
-            From premium gear to inspiring stories, discover the complete weightlifting lifestyle
+            Explore our complete weightlifting community ecosystem
           </motion.p>
         </div>
 

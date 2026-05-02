@@ -102,11 +102,6 @@ api.interceptors.response.use(
 )
 
 // API Functions
-export const getStories = async () => {
-  const response = await api.get('/stories')
-  return response.data
-}
-
 export const getCoaches = async () => {
   const response = await api.get('/coaches')
   return response.data

@@ -27,8 +27,8 @@ const ibmPlexSans = IBM_Plex_Sans({
 
 export const metadata: Metadata = {
   title: 'Lifting Social',
-  description: 'A lifestyle brand fusing Olympic weightlifting culture, Sri Lankan athletic pride, and modern fitness fashion. Shop apparel, watch athlete stories, join the movement.',
-  keywords: 'Olympic weightlifting, Sri Lanka, fitness apparel, athlete stories, weightlifting culture',
+  description: 'A lifestyle brand fusing Olympic weightlifting culture, Sri Lankan athletic pride, and modern fitness fashion. Shop apparel, join the movement.',
+  keywords: 'Olympic weightlifting, Sri Lanka, fitness apparel, weightlifting culture',
   authors: [{ name: 'Lifting Social' }],
   icons: {
     icon: '/logo.svg',

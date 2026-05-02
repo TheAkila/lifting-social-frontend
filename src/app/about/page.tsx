@@ -69,7 +69,7 @@ export default function AboutPage() {
             
             <p className="text-base sm:text-lg">
               Today, Lifting Social is proud to be Sri Lanka's premier Olympic weightlifting platform, 
-              offering premium apparel, telling inspiring athlete stories, connecting coaches with students, 
+              offering premium apparel, connecting coaches with students, 
               and building a community that celebrates every lift, every achievement, and every dream.
             </p>
             

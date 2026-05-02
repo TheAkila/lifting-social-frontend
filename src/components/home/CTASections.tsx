@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { ShoppingBag, BookOpen, Users, ArrowRight } from 'lucide-react'
+import { ShoppingBag, Users, ArrowRight } from 'lucide-react'
 
 const ctaSections = [
   {
@@ -13,16 +13,6 @@ const ctaSections = [
     bgColor: 'bg-black',
     iconBg: 'bg-white',
     iconColor: 'text-black',
-  },
-  {
-    icon: BookOpen,
-    title: 'Watch Stories',
-    description: 'Inspiring journeys of Sri Lankan weightlifting champions',
-    href: '/stories',
-    bgColor: 'bg-white border-2 border-black',
-    iconBg: 'bg-black',
-    iconColor: 'text-white',
-    textColor: 'text-black',
   },
   {
     icon: Users,

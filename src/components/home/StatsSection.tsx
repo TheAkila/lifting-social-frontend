@@ -7,7 +7,6 @@ import api from '@/lib/api'
 
 interface Stats {
   athletes: number
-  stories: number
   events: number
   products: number
   users: number
@@ -17,7 +16,6 @@ interface Stats {
     silver: number
     bronze: number
   }
-  storyViews: number
 }
 
 export default function StatsSection() {
@@ -36,12 +34,10 @@ export default function StatsSection() {
       console.error('Error fetching stats:', error)
       setStats({
         athletes: 0,
-        stories: 0,
         events: 0,
         products: 0,
         users: 0,
         medals: { total: 0, gold: 0, silver: 0, bronze: 0 },
-        storyViews: 0,
       })
     } finally {
       setLoading(false)
@@ -63,13 +59,7 @@ export default function StatsSection() {
       label: 'Championship Medals',
       color: 'bg-amber-500',
     },
-    {
-      icon: Heart,
-      value: stats?.stories || 0,
-      suffix: '+',
-      label: 'Athlete Stories',
-      color: 'bg-violet-500',
-    },
+
     {
       icon: Flame,
       value: stats?.athletes || 0,

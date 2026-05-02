@@ -201,21 +201,6 @@ export default function AdminDashboard() {
             </div>
           </Link>
 
-          {/* RSS Feeds Card */}
-          <Link href="/admin/stories">
-            <div className="bg-white rounded-[12px] p-6 hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200 shadow-sm">
-              <div className="flex items-center space-x-4">
-                <div className="w-14 h-14 rounded-[10px] bg-pink-500/10 flex items-center justify-center">
-                  <FaNewspaper className="text-xl text-pink-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Stories</h3>
-                  <p className="text-gray-600 text-sm">Manage content</p>
-                </div>
-              </div>
-            </div>
-          </Link>
-
           {/* Orders Card */}
           <Link href="/admin/orders">
             <div className="bg-white rounded-[12px] p-6 hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200 shadow-sm">

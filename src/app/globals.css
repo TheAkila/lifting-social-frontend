@@ -102,10 +102,6 @@
     @apply bg-indigo-100 text-indigo-700;
   }
 
-  .badge-stories {
-    @apply bg-violet-100 text-violet-700;
-  }
-
   .badge-events {
     @apply bg-amber-100 text-amber-800;
   }
