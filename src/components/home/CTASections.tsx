@@ -47,13 +47,13 @@ export default function CTASections() {
 
                   {/* Content */}
                   <div>
-                    <h3 className={`text-2xl font-display font-bold ${cta.textColor || 'text-white'} mb-2`}>
+                    <h3 className="text-2xl font-display font-bold text-white mb-2">
                       {cta.title}
                     </h3>
-                    <p className={`${cta.textColor ? 'text-gray-600' : 'text-white/80'} text-sm mb-4`}>
+                    <p className="text-white/80 text-sm mb-4">
                       {cta.description}
                     </p>
-                    <div className={`inline-flex items-center gap-2 ${cta.textColor || 'text-white'} text-sm font-medium group-hover:gap-3 transition-all`}>
+                    <div className="inline-flex items-center gap-2 text-white text-sm font-medium group-hover:gap-3 transition-all">
                       <span>Learn More</span>
                       <ArrowRight className="w-4 h-4" />
                     </div>
