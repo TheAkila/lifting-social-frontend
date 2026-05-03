@@ -10,6 +10,7 @@ import {
   FaSearch, 
   FaEye, 
   FaTimes,
+  FaTrash,
   FaTruck,
   FaClock,
   FaCheckCircle,
@@ -54,6 +55,7 @@ export default function AdminOrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [showOrderModal, setShowOrderModal] = useState(false)
   const [updating, setUpdating] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   
   // Filters
   const [statusFilter, setStatusFilter] = useState<string>('all')
@@ -159,6 +161,43 @@ export default function AdminOrdersPage() {
       alert('Failed to update order')
     } finally {
       setUpdating(false)
+    }
+  }
+
+  const handleDeleteOrder = async () => {
+    if (!selectedOrder) return
+
+    const confirmed = window.confirm(
+      `Delete order ${selectedOrder.order_number}? This action cannot be undone.`
+    )
+
+    if (!confirmed) return
+
+    setDeleting(true)
+    try {
+      const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken')
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/orders/${selectedOrder.id}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      )
+
+      if (response.ok) {
+        await fetchOrders()
+        setShowOrderModal(false)
+        setSelectedOrder(null)
+      } else {
+        alert('Failed to delete order')
+      }
+    } catch (error) {
+      console.error('Failed to delete order:', error)
+      alert('Failed to delete order')
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -573,14 +612,23 @@ export default function AdminOrdersPage() {
                   <div className="flex gap-3">
                     <button
                       onClick={handleUpdateOrder}
-                      disabled={updating}
+                      disabled={updating || deleting}
                       className="flex-1 px-6 py-3 bg-blue-600 text-white font-semibold rounded-[10px] hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                     >
                       {updating ? 'Updating...' : 'Update Order'}
                     </button>
                     <button
+                      onClick={handleDeleteOrder}
+                      disabled={updating || deleting}
+                      className="px-6 py-3 bg-red-600 text-white font-semibold rounded-[10px] hover:bg-red-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                    >
+                      <FaTrash />
+                      {deleting ? 'Deleting...' : 'Delete'}
+                    </button>
+                    <button
                       onClick={() => setShowOrderModal(false)}
-                      className="px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-[10px] hover:bg-gray-300 transition-colors"
+                      className="px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-[10px] hover:bg-gray-300 transition-colors disabled:cursor-not-allowed"
+                      disabled={updating || deleting}
                     >
                       Cancel
                     </button>
