@@ -11,7 +11,7 @@ interface HeroSlide {
   link_url?: string | null
 }
 
-const AUTOPLAY_MS = 5000
+const AUTOPLAY_MS = 3000
 
 interface StageMetrics {
   tx: number      // peek horizontal offset (% of slide width)
