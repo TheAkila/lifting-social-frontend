@@ -115,7 +115,7 @@ export default function Hero() {
 
   return (
     <section
-      className="relative overflow-hidden bg-gradient-to-b from-zinc-50 via-white to-zinc-100 h-[100svh] flex flex-col items-center justify-between sm:justify-center pt-20 pb-4 sm:pt-20 sm:pb-6 px-4 sm:px-6"
+      className="relative overflow-hidden bg-gradient-to-b from-zinc-50 via-white to-zinc-100 h-[100svh] flex flex-col items-center justify-between sm:justify-start pt-20 pb-4 sm:pt-20 sm:pb-6 px-4 sm:px-6"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       aria-roledescription="carousel"
@@ -137,21 +137,22 @@ export default function Hero() {
         </div>
       ) : (
         <>
-          {/* Premium minimal header — centered and compact, sits above the full-width carousel. */}
-          <div className="w-full max-w-2xl mx-auto px-2 sm:px-0 text-center mb-4 sm:mb-5">
+          {/* Premium minimal header — centered, compact. Sits right under the navbar with
+              minimal breathing space so the carousel can fit in the viewport below it. */}
+          <div className="w-full max-w-2xl mx-auto px-2 sm:px-0 text-center mb-3 sm:mb-4">
             <p className="text-[10px] font-bold uppercase tracking-[0.32em] sm:tracking-[0.4em] text-zinc-400">
               Lifting Social
             </p>
-            <h1 className="mt-2 sm:mt-3 font-display text-[28px] sm:text-3xl lg:text-4xl xl:text-5xl leading-[1.05] font-bold tracking-tight text-zinc-900">
+            <h1 className="mt-2 font-display text-[28px] sm:text-3xl lg:text-4xl xl:text-5xl leading-[1.05] font-bold tracking-tight text-zinc-900">
               Built for Champions
             </h1>
-            <p className="mt-1.5 sm:mt-2 text-zinc-500 text-xs sm:text-sm font-medium">
+            <p className="mt-1.5 text-zinc-500 text-xs sm:text-sm font-medium">
               Engineered for Performance
             </p>
-            <p className="mt-2 sm:mt-3 mx-auto max-w-[280px] sm:max-w-md text-zinc-500 text-[11px] sm:text-[13px] leading-relaxed">
+            <p className="mt-2 mx-auto max-w-[280px] sm:max-w-md text-zinc-500 text-[11px] sm:text-[13px] leading-relaxed">
               Sri Lanka&apos;s home for weightlifting — premium gear, elite coaching, and live competition coverage in one place.
             </p>
-            <nav className="mt-4 sm:mt-5 flex items-center justify-center gap-6 sm:gap-8 text-[11px] sm:text-xs font-semibold uppercase tracking-[0.18em] sm:tracking-[0.22em] text-zinc-700">
+            <nav className="mt-3 sm:mt-4 flex items-center justify-center gap-6 sm:gap-8 text-[11px] sm:text-xs font-semibold uppercase tracking-[0.18em] sm:tracking-[0.22em] text-zinc-700">
               <Link href="/shop" className="hover:text-accent active:text-accent transition-colors">Shop</Link>
               <Link href="/coaching" className="hover:text-accent active:text-accent transition-colors">Coach</Link>
               <Link href="/events" className="hover:text-accent active:text-accent transition-colors">Events</Link>
@@ -159,10 +160,10 @@ export default function Hero() {
             </nav>
           </div>
 
-          {/* 3D stage — perspective on outer, preserve-3d on inner so child rotateY renders in depth.
-              Heights tuned to fit intro + carousel + dots in a single viewport. */}
+          {/* 3D stage — heights sized to consume the remaining viewport below the intro.
+              flex-1 grows to fill all available space within the section. */}
           <div
-            className="relative mx-auto w-full max-w-7xl h-[70vw] max-h-[380px] sm:max-h-none sm:h-[42vh] lg:h-[48vh] xl:h-[55vh]"
+            className="relative mx-auto w-full max-w-7xl flex-1 min-h-0 h-[70vw] max-h-[380px] sm:h-auto sm:max-h-none"
             style={{ perspective: `${stage.perspective}px` }}
           >
             <div
