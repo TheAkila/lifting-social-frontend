@@ -115,7 +115,7 @@ export default function Hero() {
 
   return (
     <section
-      className="relative overflow-hidden bg-gradient-to-b from-zinc-50 via-white to-zinc-100 min-h-[100svh] flex flex-col items-center justify-between sm:justify-center pt-20 pb-6 sm:py-10"
+      className="relative overflow-hidden bg-gradient-to-b from-zinc-50 via-white to-zinc-100 min-h-[100svh] flex flex-col items-center justify-between sm:justify-center pt-20 pb-6 sm:pt-24 sm:pb-10"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       aria-roledescription="carousel"
@@ -137,23 +137,26 @@ export default function Hero() {
         </div>
       ) : (
         <>
-          {/* Mobile-only intro — minimal, premium-feel header.
-              Eyebrow → headline → tagline → text-only nav row. */}
-          <div className="sm:hidden w-full px-6 text-center">
-            <p className="text-[10px] font-bold uppercase tracking-[0.32em] text-zinc-400">
+          {/* Premium minimal header — same on mobile and desktop, sizes scale up.
+              Eyebrow → headline → tagline → subtitle → text-only nav row. */}
+          <div className="w-full px-6 text-center mb-0 sm:mb-8">
+            <p className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.32em] sm:tracking-[0.5em] text-zinc-400">
               Lifting Social
             </p>
-            <h1 className="mt-3 font-display text-[32px] leading-[1.05] font-bold tracking-tight text-zinc-900">
+            <h1 className="mt-3 sm:mt-4 font-display text-[32px] sm:text-5xl lg:text-6xl leading-[1.05] font-bold tracking-tight text-zinc-900">
               Built for Champions
             </h1>
-            <p className="mt-2 text-zinc-500 text-xs font-medium">
+            <p className="mt-2 sm:mt-3 text-zinc-500 text-xs sm:text-base font-medium">
               Engineered for Performance
             </p>
-            <nav className="mt-5 flex items-center justify-center gap-6 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-700">
-              <Link href="/shop" className="active:text-accent">Shop</Link>
-              <Link href="/coaching" className="active:text-accent">Coach</Link>
-              <Link href="/events" className="active:text-accent">Events</Link>
-              <Link href="/sports-media" className="active:text-accent">Media</Link>
+            <p className="mt-3 sm:mt-4 mx-auto max-w-[280px] sm:max-w-xl text-zinc-500 text-[11px] sm:text-sm leading-relaxed">
+              Sri Lanka&apos;s home for weightlifting — premium gear, elite coaching, and live competition coverage in one place.
+            </p>
+            <nav className="mt-5 sm:mt-6 flex items-center justify-center gap-6 sm:gap-10 text-[11px] sm:text-xs font-semibold uppercase tracking-[0.18em] sm:tracking-[0.22em] text-zinc-700">
+              <Link href="/shop" className="hover:text-accent active:text-accent transition-colors">Shop</Link>
+              <Link href="/coaching" className="hover:text-accent active:text-accent transition-colors">Coach</Link>
+              <Link href="/events" className="hover:text-accent active:text-accent transition-colors">Events</Link>
+              <Link href="/sports-media" className="hover:text-accent active:text-accent transition-colors">Media</Link>
             </nav>
           </div>
 
@@ -161,7 +164,7 @@ export default function Hero() {
               Heights scale with viewport so the active square card feels full-screen on desktop
               while staying contained on mobile. */}
           <div
-            className="relative mx-auto w-full max-w-7xl px-3 sm:px-6 h-[80vw] max-h-[440px] sm:max-h-none sm:h-[60vh] lg:h-[70vh] xl:h-[78vh]"
+            className="relative mx-auto w-full max-w-7xl px-3 sm:px-6 h-[80vw] max-h-[440px] sm:max-h-none sm:h-[52vh] lg:h-[60vh] xl:h-[66vh]"
             style={{ perspective: `${stage.perspective}px` }}
           >
             <div
@@ -276,7 +279,7 @@ function Slide({
         alt=""
         fill
         aria-hidden
-        sizes="(min-width: 1280px) 78vh, (min-width: 1024px) 70vh, (min-width: 640px) 60vh, 72vw"
+        sizes="(min-width: 1280px) 66vh, (min-width: 1024px) 60vh, (min-width: 640px) 52vh, 80vw"
         className="object-cover scale-110 blur-2xl opacity-60"
         draggable={false}
       />
@@ -285,7 +288,7 @@ function Slide({
         alt="Hero slide"
         fill
         priority={isActive}
-        sizes="(min-width: 1280px) 78vh, (min-width: 1024px) 70vh, (min-width: 640px) 60vh, 72vw"
+        sizes="(min-width: 1280px) 66vh, (min-width: 1024px) 60vh, (min-width: 640px) 52vh, 80vw"
         className="object-contain"
         draggable={false}
       />
