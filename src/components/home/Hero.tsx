@@ -4,7 +4,7 @@ import * as React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Camera, ChevronLeft, ChevronRight, Dumbbell, ShoppingBag, Trophy } from 'lucide-react'
+import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface HeroSlide {
   id: string
@@ -115,7 +115,7 @@ export default function Hero() {
 
   return (
     <section
-      className="relative overflow-hidden bg-gradient-to-b from-zinc-50 via-white to-zinc-100 min-h-screen flex flex-col items-center justify-start sm:justify-center pt-24 pb-10 sm:py-10"
+      className="relative overflow-hidden bg-gradient-to-b from-zinc-50 via-white to-zinc-100 min-h-[100svh] flex flex-col items-center justify-between sm:justify-center pt-20 pb-6 sm:py-10"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       aria-roledescription="carousel"
@@ -137,52 +137,31 @@ export default function Hero() {
         </div>
       ) : (
         <>
-          {/* Mobile-only intro — fills the navbar→carousel gap on small screens.
-              Hidden on sm+ where the centered carousel naturally fills the viewport. */}
-          <div className="sm:hidden w-full max-w-md px-5 mb-6 text-center">
-            <h1 className="font-display text-3xl font-bold text-zinc-900 leading-tight">
+          {/* Mobile-only intro — minimal, premium-feel header.
+              Eyebrow → headline → tagline → text-only nav row. */}
+          <div className="sm:hidden w-full px-6 text-center">
+            <p className="text-[10px] font-bold uppercase tracking-[0.32em] text-zinc-400">
+              Lifting Social
+            </p>
+            <h1 className="mt-3 font-display text-[32px] leading-[1.05] font-bold tracking-tight text-zinc-900">
               Built for Champions
             </h1>
-            <p className="mt-2 text-zinc-600 text-sm">
+            <p className="mt-2 text-zinc-500 text-xs font-medium">
               Engineered for Performance
             </p>
-            <div className="mt-4 flex flex-wrap justify-center gap-2">
-              <Link
-                href="/shop"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-zinc-200 text-zinc-800 text-xs font-semibold shadow-sm active:bg-zinc-100"
-              >
-                <ShoppingBag className="w-3.5 h-3.5" />
-                Shop
-              </Link>
-              <Link
-                href="/coaching"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-zinc-200 text-zinc-800 text-xs font-semibold shadow-sm active:bg-zinc-100"
-              >
-                <Dumbbell className="w-3.5 h-3.5" />
-                Coaching
-              </Link>
-              <Link
-                href="/events"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-zinc-200 text-zinc-800 text-xs font-semibold shadow-sm active:bg-zinc-100"
-              >
-                <Trophy className="w-3.5 h-3.5" />
-                Events
-              </Link>
-              <Link
-                href="/sports-media"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-zinc-200 text-zinc-800 text-xs font-semibold shadow-sm active:bg-zinc-100"
-              >
-                <Camera className="w-3.5 h-3.5" />
-                Media
-              </Link>
-            </div>
+            <nav className="mt-5 flex items-center justify-center gap-6 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-700">
+              <Link href="/shop" className="active:text-accent">Shop</Link>
+              <Link href="/coaching" className="active:text-accent">Coach</Link>
+              <Link href="/events" className="active:text-accent">Events</Link>
+              <Link href="/sports-media" className="active:text-accent">Media</Link>
+            </nav>
           </div>
 
           {/* 3D stage — perspective on outer, preserve-3d on inner so child rotateY renders in depth.
               Heights scale with viewport so the active square card feels full-screen on desktop
               while staying contained on mobile. */}
           <div
-            className="relative mx-auto w-full max-w-7xl px-3 sm:px-6 h-[72vw] max-h-[420px] sm:max-h-none sm:h-[60vh] lg:h-[70vh] xl:h-[78vh]"
+            className="relative mx-auto w-full max-w-7xl px-3 sm:px-6 h-[80vw] max-h-[440px] sm:max-h-none sm:h-[60vh] lg:h-[70vh] xl:h-[78vh]"
             style={{ perspective: `${stage.perspective}px` }}
           >
             <div
@@ -223,7 +202,7 @@ export default function Hero() {
           </div>
 
           {count > 1 && (
-            <div className="mt-6 flex items-center justify-center gap-2">
+            <div className="mt-5 flex items-center justify-center gap-2">
               {slides.map((_, i) => (
                 <button
                   key={i}
@@ -231,15 +210,21 @@ export default function Hero() {
                   onClick={() => go(i)}
                   aria-label={`Go to slide ${i + 1}`}
                   aria-current={i === index}
-                  className={`h-1 rounded-full transition-all ${
+                  className={`h-2 rounded-full transition-all duration-500 ${
                     i === index
-                      ? 'w-8 bg-accent'
-                      : 'w-5 bg-zinc-300 hover:bg-zinc-400'
+                      ? 'w-8 bg-zinc-900'
+                      : 'w-2 bg-zinc-300 hover:bg-zinc-500'
                   }`}
                 />
               ))}
             </div>
           )}
+
+          {/* Mobile-only scroll cue — anchors the layout, signals more content below */}
+          <div className="sm:hidden flex flex-col items-center gap-1.5 text-zinc-400">
+            <span className="text-[9px] font-semibold uppercase tracking-[0.32em]">Scroll</span>
+            <ChevronDown className="w-3.5 h-3.5 animate-bounce" strokeWidth={2.5} />
+          </div>
         </>
       )}
     </section>
