@@ -13,13 +13,37 @@ interface HeroSlide {
 
 const AUTOPLAY_MS = 5000
 
+interface StageMetrics {
+  tx: number      // peek horizontal offset (% of slide width)
+  tz: number      // peek depth recession (px, applied as negative)
+  ry: number      // peek tilt angle (deg, applied with sign per side)
+  scale: number   // peek scale factor (active is always 1)
+  perspective: number
+}
+
+const STAGE_DESKTOP: StageMetrics = { tx: 58, tz: 220, ry: 32, scale: 0.85, perspective: 1600 }
+const STAGE_TABLET: StageMetrics = { tx: 52, tz: 200, ry: 28, scale: 0.82, perspective: 1500 }
+const STAGE_MOBILE: StageMetrics = { tx: 38, tz: 140, ry: 22, scale: 0.72, perspective: 1200 }
+
 export default function Hero() {
   const router = useRouter()
   const [slides, setSlides] = React.useState<HeroSlide[]>([])
   const [loaded, setLoaded] = React.useState(false)
   const [index, setIndex] = React.useState(0)
   const [paused, setPaused] = React.useState(false)
+  const [stage, setStage] = React.useState<StageMetrics>(STAGE_DESKTOP)
   const count = slides.length
+
+  React.useEffect(() => {
+    const compute = () => {
+      if (window.matchMedia('(max-width: 639px)').matches) setStage(STAGE_MOBILE)
+      else if (window.matchMedia('(max-width: 1023px)').matches) setStage(STAGE_TABLET)
+      else setStage(STAGE_DESKTOP)
+    }
+    compute()
+    window.addEventListener('resize', compute)
+    return () => window.removeEventListener('resize', compute)
+  }, [])
 
   React.useEffect(() => {
     let cancelled = false
@@ -116,8 +140,8 @@ export default function Hero() {
               Heights scale with viewport so the active square card feels full-screen on desktop
               while staying contained on mobile. */}
           <div
-            className="relative mx-auto w-full max-w-7xl px-3 sm:px-6 h-[55vh] sm:h-[60vh] lg:h-[70vh] xl:h-[78vh]"
-            style={{ perspective: '1600px' }}
+            className="relative mx-auto w-full max-w-7xl px-3 sm:px-6 h-[72vw] max-h-[420px] sm:max-h-none sm:h-[60vh] lg:h-[70vh] xl:h-[78vh]"
+            style={{ perspective: `${stage.perspective}px` }}
           >
             <div
               className="relative h-full w-full"
@@ -128,6 +152,7 @@ export default function Hero() {
                   key={slide.id}
                   slide={slide}
                   offset={offsetOf(i)}
+                  stage={stage}
                   onClick={() => handleSlideClick(slide, i)}
                 />
               ))}
@@ -182,10 +207,12 @@ export default function Hero() {
 function Slide({
   slide,
   offset,
+  stage,
   onClick,
 }: {
   slide: HeroSlide
   offset: number
+  stage: StageMetrics
   onClick: () => void
 }) {
   const abs = Math.abs(offset)
@@ -193,13 +220,10 @@ function Slide({
   const isAdjacent = abs === 1
   const visible = abs <= 1
 
-  // Horizontal travel grows past the center so peek cards sit just inside the edges.
-  const translateX = offset === 0 ? 0 : offset * 58
-  // Active sits forward; peeks recede into the scene.
-  const translateZ = isActive ? 0 : -220
-  // Coverflow tilt — angle the side cards toward the viewer.
-  const rotateY = offset === 0 ? 0 : offset > 0 ? -32 : 32
-  const scale = isActive ? 1 : 0.85
+  const translateX = offset === 0 ? 0 : offset * stage.tx
+  const translateZ = isActive ? 0 : -stage.tz
+  const rotateY = offset === 0 ? 0 : offset > 0 ? -stage.ry : stage.ry
+  const scale = isActive ? 1 : stage.scale
   const opacity = isActive ? 1 : isAdjacent ? 0.6 : 0
   const zIndex = isActive ? 30 : isAdjacent ? 20 : 0
 
@@ -208,7 +232,7 @@ function Slide({
       type="button"
       onClick={onClick}
       aria-label={isActive ? 'Featured slide' : 'Go to slide'}
-      aria-hidden={!visible}
+      aria-hidden={visible ? 'false' : 'true'}
       tabIndex={isActive ? 0 : -1}
       className="absolute left-1/2 top-1/2 aspect-square h-full overflow-hidden rounded-2xl shadow-2xl ring-1 ring-black/10 transition-all duration-700 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-accent bg-zinc-900"
       style={{
@@ -226,7 +250,7 @@ function Slide({
         alt=""
         fill
         aria-hidden
-        sizes="(min-width: 1280px) 78vh, (min-width: 1024px) 70vh, (min-width: 640px) 60vh, 55vh"
+        sizes="(min-width: 1280px) 78vh, (min-width: 1024px) 70vh, (min-width: 640px) 60vh, 72vw"
         className="object-cover scale-110 blur-2xl opacity-60"
         draggable={false}
       />
@@ -235,7 +259,7 @@ function Slide({
         alt="Hero slide"
         fill
         priority={isActive}
-        sizes="(min-width: 1280px) 78vh, (min-width: 1024px) 70vh, (min-width: 640px) 60vh, 55vh"
+        sizes="(min-width: 1280px) 78vh, (min-width: 1024px) 70vh, (min-width: 640px) 60vh, 72vw"
         className="object-contain"
         draggable={false}
       />
