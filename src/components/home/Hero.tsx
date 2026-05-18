@@ -115,7 +115,7 @@ export default function Hero() {
 
   return (
     <section
-      className="relative overflow-hidden bg-gradient-to-b from-zinc-50 via-white to-zinc-100 min-h-[100svh] flex flex-col items-center justify-between sm:justify-center pt-20 pb-6 sm:pt-24 sm:pb-10"
+      className="relative overflow-hidden bg-gradient-to-b from-zinc-50 via-white to-zinc-100 h-[100svh] flex flex-col items-center justify-between sm:justify-center pt-20 pb-4 sm:pt-20 sm:pb-6 px-4 sm:px-6"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       aria-roledescription="carousel"
@@ -137,22 +137,21 @@ export default function Hero() {
         </div>
       ) : (
         <>
-          {/* Premium minimal header — same on mobile and desktop, sizes scale up.
-              Eyebrow → headline → tagline → subtitle → text-only nav row. */}
-          <div className="w-full px-6 text-center mb-0 sm:mb-8">
-            <p className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.32em] sm:tracking-[0.5em] text-zinc-400">
+          {/* Premium minimal header — centered and compact, sits above the full-width carousel. */}
+          <div className="w-full max-w-2xl mx-auto px-2 sm:px-0 text-center mb-4 sm:mb-5">
+            <p className="text-[10px] font-bold uppercase tracking-[0.32em] sm:tracking-[0.4em] text-zinc-400">
               Lifting Social
             </p>
-            <h1 className="mt-3 sm:mt-4 font-display text-[32px] sm:text-5xl lg:text-6xl leading-[1.05] font-bold tracking-tight text-zinc-900">
+            <h1 className="mt-2 sm:mt-3 font-display text-[28px] sm:text-3xl lg:text-4xl xl:text-5xl leading-[1.05] font-bold tracking-tight text-zinc-900">
               Built for Champions
             </h1>
-            <p className="mt-2 sm:mt-3 text-zinc-500 text-xs sm:text-base font-medium">
+            <p className="mt-1.5 sm:mt-2 text-zinc-500 text-xs sm:text-sm font-medium">
               Engineered for Performance
             </p>
-            <p className="mt-3 sm:mt-4 mx-auto max-w-[280px] sm:max-w-xl text-zinc-500 text-[11px] sm:text-sm leading-relaxed">
+            <p className="mt-2 sm:mt-3 mx-auto max-w-[280px] sm:max-w-md text-zinc-500 text-[11px] sm:text-[13px] leading-relaxed">
               Sri Lanka&apos;s home for weightlifting — premium gear, elite coaching, and live competition coverage in one place.
             </p>
-            <nav className="mt-5 sm:mt-6 flex items-center justify-center gap-6 sm:gap-10 text-[11px] sm:text-xs font-semibold uppercase tracking-[0.18em] sm:tracking-[0.22em] text-zinc-700">
+            <nav className="mt-4 sm:mt-5 flex items-center justify-center gap-6 sm:gap-8 text-[11px] sm:text-xs font-semibold uppercase tracking-[0.18em] sm:tracking-[0.22em] text-zinc-700">
               <Link href="/shop" className="hover:text-accent active:text-accent transition-colors">Shop</Link>
               <Link href="/coaching" className="hover:text-accent active:text-accent transition-colors">Coach</Link>
               <Link href="/events" className="hover:text-accent active:text-accent transition-colors">Events</Link>
@@ -161,10 +160,9 @@ export default function Hero() {
           </div>
 
           {/* 3D stage — perspective on outer, preserve-3d on inner so child rotateY renders in depth.
-              Heights scale with viewport so the active square card feels full-screen on desktop
-              while staying contained on mobile. */}
+              Heights tuned to fit intro + carousel + dots in a single viewport. */}
           <div
-            className="relative mx-auto w-full max-w-7xl px-3 sm:px-6 h-[80vw] max-h-[440px] sm:max-h-none sm:h-[52vh] lg:h-[60vh] xl:h-[66vh]"
+            className="relative mx-auto w-full max-w-7xl h-[70vw] max-h-[380px] sm:max-h-none sm:h-[42vh] lg:h-[48vh] xl:h-[55vh]"
             style={{ perspective: `${stage.perspective}px` }}
           >
             <div
@@ -205,7 +203,7 @@ export default function Hero() {
           </div>
 
           {count > 1 && (
-            <div className="mt-5 flex items-center justify-center gap-2">
+            <div className="mt-3 sm:mt-4 flex items-center justify-center gap-2">
               {slides.map((_, i) => (
                 <button
                   key={i}
@@ -279,7 +277,7 @@ function Slide({
         alt=""
         fill
         aria-hidden
-        sizes="(min-width: 1280px) 66vh, (min-width: 1024px) 60vh, (min-width: 640px) 52vh, 80vw"
+        sizes="(min-width: 1280px) 55vh, (min-width: 1024px) 48vh, (min-width: 640px) 42vh, 70vw"
         className="object-cover scale-110 blur-2xl opacity-60"
         draggable={false}
       />
@@ -288,7 +286,7 @@ function Slide({
         alt="Hero slide"
         fill
         priority={isActive}
-        sizes="(min-width: 1280px) 66vh, (min-width: 1024px) 60vh, (min-width: 640px) 52vh, 80vw"
+        sizes="(min-width: 1280px) 55vh, (min-width: 1024px) 48vh, (min-width: 640px) 42vh, 70vw"
         className="object-contain"
         draggable={false}
       />
