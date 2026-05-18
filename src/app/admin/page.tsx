@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { FaBox, FaNewspaper, FaChartBar, FaCalendar, FaRss, FaShoppingCart, FaStar, FaHeart, FaDollarSign, FaImages, FaGift } from 'react-icons/fa'
+import { FaBox, FaNewspaper, FaChartBar, FaCalendar, FaRss, FaShoppingCart, FaStar, FaHeart, FaDollarSign, FaImages, FaGift, FaPhotoVideo } from 'react-icons/fa'
 import api from '@/lib/api'
 
 interface ShopStats {
@@ -80,22 +80,22 @@ export default function AdminDashboard() {
   }, [])
 
   const loadStats = async () => {
-    try {
-      const [productsRes, rssFeedsRes, eventsRes] = await Promise.all([
-        api.get('/products'),
-        api.get('/rss-feeds'),
-        api.get('/events'),
-      ])
-      setStats({
-        products: productsRes.data.length,
-        rssFeeds: rssFeedsRes.data.length,
-        events: eventsRes.data.length,
-      })
-      setLoading(false)
-    } catch (err) {
-      console.error('Failed to load stats', err)
-      setLoading(false)
-    }
+    const suppress = { headers: { 'X-Suppress-Global-Error': '1' } }
+    const [productsRes, rssFeedsRes, eventsRes] = await Promise.allSettled([
+      api.get('/products', suppress),
+      api.get('/rss-feeds', suppress),
+      api.get('/events', suppress),
+    ])
+
+    const lenOf = (r: PromiseSettledResult<any>) =>
+      r.status === 'fulfilled' && Array.isArray(r.value?.data) ? r.value.data.length : 0
+
+    setStats({
+      products: lenOf(productsRes),
+      rssFeeds: lenOf(rssFeedsRes),
+      events: lenOf(eventsRes),
+    })
+    setLoading(false)
   }
 
   const loadShopStats = async () => {
@@ -181,6 +181,21 @@ export default function AdminDashboard() {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">Events</h3>
                   <p className="text-gray-600 text-sm">Manage events</p>
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          {/* Hero Carousel Card */}
+          <Link href="/admin/hero-carousel">
+            <div className="bg-white rounded-[12px] p-6 hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200 shadow-sm">
+              <div className="flex items-center space-x-4">
+                <div className="w-14 h-14 rounded-[10px] bg-pink-500/10 flex items-center justify-center">
+                  <FaPhotoVideo className="text-xl text-pink-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Hero Carousel</h3>
+                  <p className="text-gray-600 text-sm">Home page hero slides</p>
                 </div>
               </div>
             </div>

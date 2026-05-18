@@ -168,12 +168,23 @@ export default function CheckoutPage() {
         throw new Error('Failed to initiate payment')
       }
 
-      const { paymentData, paymentUrl } = await paymentResponse.json()
+      const { paymentData, paymentUrl, isMockMode } = await paymentResponse.json()
 
-      // Clear cart before redirecting to payment
-      clearCart()
+      console.log('[Checkout Debug] Payment Data received:', paymentData)
+      console.log('[Checkout Debug] Payment URL:', paymentUrl)
+      console.log('[Checkout Debug] Mock Mode:', isMockMode)
 
-      // Submit payment form to PayHere
+      // Handle mock payment mode (development/testing without real PayHere credentials)
+      if (isMockMode) {
+        console.log('[Checkout Debug] Redirecting to mock payment page')
+        // Store order ID in session for mock payment page
+        sessionStorage.setItem('mockOrderId', order.id)
+        // Redirect to mock payment page
+        router.push(`/mock-payment?order_id=${order.id}`)
+        return
+      }
+
+      // Submit payment form to PayHere (real payment)
       const form = document.createElement('form')
       form.method = 'POST'
       form.action = paymentUrl
@@ -186,7 +197,13 @@ export default function CheckoutPage() {
         form.appendChild(input)
       })
 
+      console.log('[Checkout Debug] Form fields:', Array.from(form.elements).map(el => ({
+        name: (el as any).name,
+        value: (el as any).value
+      })))
+
       document.body.appendChild(form)
+      console.log('[Checkout Debug] Submitting form to PayHere...')
       form.submit()
     } catch (error: any) {
       console.error('Checkout error:', error)

@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { FaCheckCircle, FaBox, FaTruck, FaEnvelope } from 'react-icons/fa'
 import { motion } from 'framer-motion'
+import { useCart } from '@/contexts/CartContext'
 
 interface Order {
   id: string
@@ -38,6 +39,7 @@ interface Order {
 export default function OrderConfirmationPage() {
   const params = useParams()
   const router = useRouter()
+  const { clearCart } = useCart()
   const [order, setOrder] = useState<Order | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -46,9 +48,15 @@ export default function OrderConfirmationPage() {
     fetchOrder()
   }, [params.orderId])
 
+  useEffect(() => {
+    if (order) {
+      clearCart()
+    }
+  }, [order, clearCart])
+
   const fetchOrder = async () => {
     try {
-      const token = localStorage.getItem('token')
+      const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken')
       if (!token) {
         router.push('/login')
         return
