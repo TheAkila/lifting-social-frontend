@@ -1,11 +1,20 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useAuth } from '@/contexts/AuthContext'
-import { useRouter } from 'next/navigation'
-import api from '@/lib/api'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
-import { FaPlus, FaEdit, FaTrash, FaArrowLeft, FaStar, FaMedal, FaEnvelope, FaPhone, FaUpload, FaTimes, FaImage } from 'react-icons/fa'
+import { useRouter } from 'next/navigation'
+import {
+  ArrowLeft,
+  Edit2,
+  Loader2,
+  Plus,
+  Star,
+  Trash2,
+  User2,
+  X,
+} from 'lucide-react'
+import api from '@/lib/api'
 
 interface Coach {
   id: string
@@ -20,583 +29,264 @@ interface Coach {
   phone: string
   image?: string
   featured: boolean
-  championsCount: number
+  champions_count: number
 }
 
 export default function AdminCoachesPage() {
-  const { user } = useAuth()
   const router = useRouter()
+  const [authChecked, setAuthChecked] = useState(false)
   const [coaches, setCoaches] = useState<Coach[]>([])
   const [loading, setLoading] = useState(true)
-  const [showForm, setShowForm] = useState(false)
-  const [editingCoach, setEditingCoach] = useState<Coach | null>(null)
-  const [uploading, setUploading] = useState(false)
-  const [formData, setFormData] = useState({
-    name: '',
-    title: '',
-    bio: '',
-    specializations: '',
-    certifications: '',
-    experience: '',
-    availability: '',
-    email: '',
-    phone: '',
-    image: '',
-    featured: false,
-    championsCount: '',
-  })
+  const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
   useEffect(() => {
-    if (user === null) {
+    const userData =
+      sessionStorage.getItem('userData') || localStorage.getItem('userData')
+    const token =
+      sessionStorage.getItem('authToken') || localStorage.getItem('authToken')
+    if (!userData || !token) {
       router.push('/login?redirect=/admin/coaches')
-    } else if (user && user.role !== 'admin') {
-      alert('Access denied. Admin privileges required.')
-      router.push('/')
-    } else if (user) {
-      loadCoaches()
+      return
     }
-  }, [user, router])
-
-  const loadCoaches = async () => {
     try {
+      if (JSON.parse(userData).role !== 'admin') {
+        router.push('/')
+        return
+      }
+      setAuthChecked(true)
+    } catch {
+      router.push('/login?redirect=/admin/coaches')
+    }
+  }, [router])
+
+  const loadCoaches = useCallback(async () => {
+    try {
+      setLoading(true)
       const res = await api.get('/coaches')
-      setCoaches(res.data)
-      setLoading(false)
-    } catch (err) {
-      console.error('Failed to load coaches', err)
-      setLoading(false)
-    }
-  }
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    setUploading(true)
-    try {
-      const formDataUpload = new FormData()
-      formDataUpload.append('file', file)
-      
-      const response = await api.post('/uploads', formDataUpload, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-
-      if (response.data.url) {
-        setFormData({ ...formData, image: response.data.url })
-        alert('Image uploaded successfully!')
-      }
+      setCoaches(Array.isArray(res.data) ? res.data : [])
     } catch (err: any) {
-      console.error('Upload failed:', err)
-      alert(err.response?.data?.message || 'Failed to upload image')
+      setError(err?.response?.data?.message || 'Failed to load coaches')
     } finally {
-      setUploading(false)
+      setLoading(false)
     }
-  }
+  }, [])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    try {
-      const payload = {
-        name: formData.name,
-        title: formData.title,
-        bio: formData.bio,
-        specializations: formData.specializations.split(',').map(s => s.trim()).filter(s => s),
-        certifications: formData.certifications.split(',').map(c => c.trim()).filter(c => c),
-        experience: Number(formData.experience),
-        availability: formData.availability,
-        email: formData.email,
-        phone: formData.phone,
-        image: formData.image || undefined,
-        featured: formData.featured,
-        championsCount: Number(formData.championsCount) || 0,
-      }
-
-      if (editingCoach) {
-        await api.put(`/coaches/${editingCoach.id}`, payload)
-      } else {
-        await api.post('/coaches', payload)
-      }
-
-      setShowForm(false)
-      setEditingCoach(null)
-      resetForm()
-      loadCoaches()
-      alert(editingCoach ? 'Coach updated successfully!' : 'Coach created successfully!')
-    } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to save coach')
-    }
-  }
+  useEffect(() => {
+    if (authChecked) loadCoaches()
+  }, [authChecked, loadCoaches])
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this coach?')) return
     try {
+      setDeleting(true)
       await api.delete(`/coaches/${id}`)
-      loadCoaches()
-      alert('Coach deleted successfully!')
-    } catch (err) {
-      alert('Failed to delete coach')
+      setDeleteId(null)
+      setSuccess('Coach deleted')
+      setTimeout(() => setSuccess(''), 2500)
+      await loadCoaches()
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Failed to delete coach')
+    } finally {
+      setDeleting(false)
     }
   }
 
-  const handleEdit = (coach: Coach) => {
-    setEditingCoach(coach)
-    setFormData({
-      name: coach.name,
-      title: coach.title,
-      bio: coach.bio,
-      specializations: coach.specializations.join(', '),
-      certifications: coach.certifications.join(', '),
-      experience: coach.experience.toString(),
-      availability: coach.availability,
-      email: coach.email,
-      phone: coach.phone,
-      image: coach.image || '',
-      featured: coach.featured,
-      championsCount: coach.championsCount.toString(),
+  const orderedCoaches = useMemo(() => {
+    return [...coaches].sort((a, b) => {
+      if (a.featured !== b.featured) return a.featured ? -1 : 1
+      return a.name.localeCompare(b.name)
     })
-    setShowForm(true)
-  }
+  }, [coaches])
 
-  const resetForm = () => {
-    setFormData({
-      name: '',
-      title: '',
-      bio: '',
-      specializations: '',
-      certifications: '',
-      experience: '',
-      availability: '',
-      email: '',
-      phone: '',
-      image: '',
-      featured: false,
-      championsCount: '',
-    })
-  }
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
-    }))
-  }
-
-  if (!user || user.role !== 'admin') {
+  if (!authChecked) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-600">Loading...</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500">Checking access…</p>
       </div>
     )
   }
 
   return (
     <div className="min-h-screen bg-gray-50 pt-28 pb-12">
-      <div className="container mx-auto px-4 max-w-7xl">
+      <div className="container mx-auto px-4 max-w-4xl">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-4">
-            <Link href="/admin" className="text-gray-600 hover:text-gray-900">
-              <FaArrowLeft className="text-2xl" />
+        <div className="flex items-start justify-between gap-4 mb-6">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/admin"
+              aria-label="Back to admin"
+              className="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+            >
+              <ArrowLeft className="w-4 h-4" />
             </Link>
             <div>
-              <h1 className="text-4xl font-display font-bold text-gray-900">Manage Coaches</h1>
-              <p className="text-gray-600">Add, edit, or remove coaching staff</p>
+              <h1 className="text-2xl font-bold text-gray-900">Coaches</h1>
+              <p className="text-sm text-gray-500 mt-0.5">
+                Manage the public coaching team displayed on /coaching.
+              </p>
             </div>
           </div>
-          <button
-            onClick={() => {
-              setShowForm(!showForm)
-              setEditingCoach(null)
-              resetForm()
-            }}
-            className="btn-primary flex items-center space-x-2"
+          <Link
+            href="/admin/coaches/new"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold"
           >
-            <FaPlus />
-            <span>Add Coach</span>
-          </button>
+            <Plus className="w-4 h-4" />
+            New coach
+          </Link>
         </div>
 
-        {/* Form */}
-        {showForm && (
-          <div className="card mb-8">
-            <h2 className="text-2xl font-bold mb-6">
-              {editingCoach ? 'Edit Coach' : 'Add New Coach'}
-            </h2>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Basic Info */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Name *</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="input"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Title *</label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    className="input"
-                    placeholder="e.g., Head Coach & Technical Director"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Email *</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="input"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Phone *</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="input"
-                    placeholder="+94 77 123 4567"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Years of Experience *</label>
-                  <input
-                    type="number"
-                    name="experience"
-                    value={formData.experience}
-                    onChange={handleInputChange}
-                    className="input"
-                    min="0"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Champions Trained</label>
-                  <input
-                    type="number"
-                    name="championsCount"
-                    value={formData.championsCount}
-                    onChange={handleInputChange}
-                    className="input"
-                    min="0"
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-2">Availability *</label>
-                  <input
-                    type="text"
-                    name="availability"
-                    value={formData.availability}
-                    onChange={handleInputChange}
-                    className="input"
-                    placeholder="e.g., Mon-Fri: 6AM-9AM, 4PM-8PM | Sat: 7AM-12PM"
-                    required
-                  />
-                </div>
-
-                {/* Profile Image Upload */}
-                <div className="md:col-span-2 space-y-4">
-                  <label className="block text-sm font-medium">Profile Image</label>
-                  
-                  {/* Upload Button */}
-                  <input
-                    type="file"
-                    id="coach-image-upload"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    disabled={uploading}
-                  />
-                  <label
-                    htmlFor="coach-image-upload"
-                    className={`btn-outline flex items-center justify-center space-x-2 cursor-pointer w-full ${
-                      uploading ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                  >
-                    {uploading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-brand-accent border-t-transparent" />
-                        <span>Uploading...</span>
-                      </>
-                    ) : (
-                      <>
-                        <FaUpload />
-                        <span>Upload Profile Image</span>
-                      </>
-                    )}
-                  </label>
-
-                  {/* Image Preview */}
-                  {formData.image && (
-                    <div className="relative group">
-                      <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 border border-gray-200 max-w-xs mx-auto">
-                        <img
-                          src={formData.image}
-                          alt="Profile preview"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setFormData({ ...formData, image: '' })}
-                        className="absolute top-2 right-2 bg-blue-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <FaTimes />
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Or use URL */}
-                  <div>
-                    <label className="block text-sm text-gray-600 mb-2">Or paste image URL</label>
-                    <input
-                      type="text"
-                      name="image"
-                      value={formData.image}
-                      onChange={handleInputChange}
-                      className="input"
-                      placeholder="https://example.com/image.jpg"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Bio */}
-              <div>
-                <label className="block text-sm font-medium mb-2">Bio *</label>
-                <textarea
-                  name="bio"
-                  value={formData.bio}
-                  onChange={handleInputChange}
-                  className="input"
-                  rows={4}
-                  required
-                />
-              </div>
-
-              {/* Specializations */}
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Specializations (comma separated)
-                </label>
-                <input
-                  type="text"
-                  name="specializations"
-                  value={formData.specializations}
-                  onChange={handleInputChange}
-                  className="input"
-                  placeholder="Olympic Weightlifting, Strength & Conditioning, Competition Preparation"
-                />
-              </div>
-
-              {/* Certifications */}
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Certifications (comma separated)
-                </label>
-                <input
-                  type="text"
-                  name="certifications"
-                  value={formData.certifications}
-                  onChange={handleInputChange}
-                  className="input"
-                  placeholder="IWF Level 3 Coach, NSCA-CSCS, Sports Nutrition Specialist"
-                />
-              </div>
-
-              {/* Featured */}
-              <div>
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    name="featured"
-                    checked={formData.featured}
-                    onChange={handleInputChange}
-                    className="w-5 h-5"
-                  />
-                  <span className="text-sm font-medium">Featured Coach</span>
-                </label>
-              </div>
-
-              {/* Form Actions */}
-              <div className="flex space-x-4">
-                <button type="submit" className="btn-primary">
-                  {editingCoach ? 'Update Coach' : 'Add Coach'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowForm(false)
-                    setEditingCoach(null)
-                    resetForm()
-                  }}
-                  className="btn-outline"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
+        {error && (
+          <Toast tone="error" message={error} onDismiss={() => setError('')} />
+        )}
+        {success && (
+          <Toast tone="success" message={success} onDismiss={() => setSuccess('')} />
         )}
 
-        {/* Coaches List */}
-        <div>
-          <h2 className="text-2xl font-bold mb-6">Current Coaches ({coaches.length})</h2>
-          
-          {loading ? (
-            <div className="text-center py-12">
-              <p className="text-gray-600">Loading coaches...</p>
+        {/* List */}
+        {loading ? (
+          <div className="text-center py-12">
+            <Loader2 className="w-6 h-6 animate-spin mx-auto text-blue-600" />
+          </div>
+        ) : orderedCoaches.length === 0 ? (
+          <div className="bg-white rounded-xl border border-gray-200 py-14 text-center">
+            <div className="mx-auto w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
+              <User2 className="w-6 h-6 text-gray-400" />
             </div>
-          ) : coaches.length === 0 ? (
-            <div className="card text-center py-12">
-              <p className="text-gray-600 mb-4">No coaches found</p>
-              <button
-                onClick={() => {
-                  setShowForm(true)
-                  resetForm()
-                }}
-                className="btn-primary"
+            <h3 className="text-base font-semibold text-gray-900">No coaches yet</h3>
+            <p className="mt-1 text-sm text-gray-500">Add your first coach to get started.</p>
+            <Link
+              href="/admin/coaches/new"
+              className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold"
+            >
+              <Plus className="w-4 h-4" />
+              Add coach
+            </Link>
+          </div>
+        ) : (
+          <ul className="space-y-2">
+            {orderedCoaches.map((coach) => (
+              <li
+                key={coach.id}
+                className="flex items-center gap-4 p-3 bg-white border border-gray-200 rounded-lg"
               >
-                Add First Coach
+                <div className="relative w-14 h-14 flex-shrink-0 rounded-md overflow-hidden bg-gray-200">
+                  {coach.image ? (
+                    <Image
+                      src={coach.image}
+                      alt={coach.name}
+                      fill
+                      sizes="56px"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+                      <User2 className="w-5 h-5" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-semibold text-gray-900 truncate">
+                      {coach.name}
+                    </h3>
+                    {coach.featured && (
+                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold uppercase">
+                        <Star className="w-2.5 h-2.5 fill-amber-500 text-amber-500" />
+                        Featured
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 truncate">{coach.title}</p>
+                  <p className="text-[11px] text-gray-400 mt-0.5 truncate">
+                    {coach.champions_count ?? 0} champions · {coach.experience ?? 0} yrs ·{' '}
+                    {coach.email}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-1">
+                  <Link
+                    href={`/admin/coaches/${coach.id}/edit`}
+                    aria-label="Edit coach"
+                    className="p-1.5 rounded text-gray-500 hover:bg-gray-100"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => setDeleteId(coach.id)}
+                    aria-label="Delete coach"
+                    className="p-1.5 rounded text-red-600 hover:bg-red-50"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* Delete confirm */}
+      {deleteId && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl max-w-sm w-full p-5">
+            <h3 className="text-lg font-bold text-gray-900 mb-1">Delete coach?</h3>
+            <p className="text-sm text-gray-600 mb-5">
+              This permanently removes the coach profile. Cannot be undone.
+            </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setDeleteId(null)}
+                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDelete(deleteId)}
+                disabled={deleting}
+                className="flex-1 px-3 py-2 text-sm bg-red-600 hover:bg-red-700 disabled:bg-red-300 text-white rounded-lg font-medium"
+              >
+                {deleting ? 'Deleting…' : 'Delete'}
               </button>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-6">
-              {coaches.map((coach) => (
-                <div key={coach.id} className="card">
-                  <div className="flex flex-col md:flex-row gap-6">
-                    {/* Coach Image */}
-                    <div className="w-full md:w-48 h-48 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                      {coach.image ? (
-                        <img
-                          src={coach.image}
-                          alt={coach.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-300 text-6xl font-bold">
-                          {coach.name.split(' ').map(n => n[0]).join('')}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Coach Info */}
-                    <div className="flex-1 space-y-4">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-2xl font-bold">{coach.name}</h3>
-                            {coach.featured && (
-                              <FaStar className="text-yellow-500" title="Featured Coach" />
-                            )}
-                          </div>
-                          <p className="text-blue-600">{coach.title}</p>
-                        </div>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleEdit(coach)}
-                            className="btn-outline p-2"
-                            title="Edit"
-                          >
-                            <FaEdit />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(coach.id)}
-                            className="btn-outline p-2 text-blue-500 hover:bg-blue-500/10"
-                            title="Delete"
-                          >
-                            <FaTrash />
-                          </button>
-                        </div>
-                      </div>
-
-                      <p className="text-gray-700">{coach.bio}</p>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div className="flex items-center gap-2">
-                          <FaMedal className="text-blue-600 flex-shrink-0" />
-                          <span>{coach.championsCount} Champions Trained</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <FaEnvelope className="text-blue-600 flex-shrink-0" />
-                          <span className="truncate">{coach.email}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <FaPhone className="text-blue-600 flex-shrink-0" />
-                          <span>{coach.phone}</span>
-                        </div>
-                        <div>
-                          <span className="text-gray-600">Experience: </span>
-                          <span className="font-semibold">{coach.experience} years</span>
-                        </div>
-                      </div>
-
-                      {coach.specializations.length > 0 && (
-                        <div>
-                          <span className="text-gray-600 text-sm">Specializations: </span>
-                          <div className="flex flex-wrap gap-2 mt-1">
-                            {coach.specializations.map((spec, idx) => (
-                              <span
-                                key={idx}
-                                className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs"
-                              >
-                                {spec}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {coach.certifications.length > 0 && (
-                        <div>
-                          <span className="text-gray-600 text-sm">Certifications: </span>
-                          <div className="flex flex-wrap gap-2 mt-1">
-                            {coach.certifications.map((cert, idx) => (
-                              <span
-                                key={idx}
-                                className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs"
-                              >
-                                {cert}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="text-sm text-gray-600">
-                        <span className="font-semibold">Availability: </span>
-                        {coach.availability}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
+    </div>
+  )
+}
+
+function Toast({
+  tone,
+  message,
+  onDismiss,
+}: {
+  tone: 'error' | 'success'
+  message: string
+  onDismiss: () => void
+}) {
+  const cls =
+    tone === 'error'
+      ? 'bg-red-50 border-red-200 text-red-700'
+      : 'bg-emerald-50 border-emerald-200 text-emerald-700'
+  return (
+    <div
+      className={`mb-4 flex items-start justify-between gap-3 p-3 border rounded-lg ${cls}`}
+    >
+      <p className="text-sm">{message}</p>
+      <button
+        type="button"
+        onClick={onDismiss}
+        aria-label="Dismiss"
+        className="opacity-60 hover:opacity-100"
+      >
+        <X className="w-4 h-4" />
+      </button>
     </div>
   )
 }
