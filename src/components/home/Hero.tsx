@@ -1,16 +1,9 @@
 'use client'
 
+import * as React from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import { Autoplay, EffectCoverflow, Navigation, Pagination } from 'swiper/modules'
+import { useRouter } from 'next/navigation'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-
-import 'swiper/css'
-import 'swiper/css/effect-coverflow'
-import 'swiper/css/pagination'
-import 'swiper/css/navigation'
 
 interface HeroSlide {
   id: string
@@ -18,13 +11,18 @@ interface HeroSlide {
   link_url?: string | null
 }
 
+const AUTOPLAY_MS = 5000
+
 export default function Hero() {
-  const [slides, setSlides] = useState<HeroSlide[]>([])
-  const [loaded, setLoaded] = useState(false)
+  const router = useRouter()
+  const [slides, setSlides] = React.useState<HeroSlide[]>([])
+  const [loaded, setLoaded] = React.useState(false)
+  const [index, setIndex] = React.useState(0)
+  const [paused, setPaused] = React.useState(false)
+  const count = slides.length
 
-  useEffect(() => {
+  React.useEffect(() => {
     let cancelled = false
-
     const fetchSlides = async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hero-carousel`)
@@ -38,153 +36,209 @@ export default function Hero() {
         if (!cancelled) setLoaded(true)
       }
     }
-
     fetchSlides()
     return () => {
       cancelled = true
     }
   }, [])
 
-  const enableLoop = slides.length >= 2
+  const go = React.useCallback(
+    (next: number) => {
+      if (count === 0) return
+      setIndex(((next % count) + count) % count)
+    },
+    [count]
+  )
+
+  React.useEffect(() => {
+    if (paused || count <= 1) return
+    const t = setInterval(() => setIndex((i) => (i + 1) % count), AUTOPLAY_MS)
+    return () => clearInterval(t)
+  }, [paused, count])
+
+  React.useEffect(() => {
+    const onVis = () => setPaused(document.hidden)
+    document.addEventListener('visibilitychange', onVis)
+    return () => document.removeEventListener('visibilitychange', onVis)
+  }, [])
+
+  // Shortest-path circular offset — keeps the slide direction intuitive when
+  // wrapping (last → first should slide forward, not spin all the way back).
+  const offsetOf = React.useCallback(
+    (i: number) => {
+      const raw = i - index
+      const half = count / 2
+      if (raw > half) return raw - count
+      if (raw < -half) return raw + count
+      return raw
+    },
+    [index, count]
+  )
+
+  const handleSlideClick = (slide: HeroSlide, i: number) => {
+    if (i !== index) {
+      go(i)
+      return
+    }
+    if (!slide.link_url) return
+    if (slide.link_url.startsWith('http')) {
+      window.open(slide.link_url, '_blank', 'noopener,noreferrer')
+    } else {
+      router.push(slide.link_url)
+    }
+  }
 
   return (
-    <section className="relative w-full min-h-screen overflow-hidden bg-gradient-to-b from-zinc-50 via-white to-zinc-100">
+    <section
+      className="relative overflow-hidden bg-gradient-to-b from-zinc-50 via-white to-zinc-100 min-h-screen flex flex-col items-center justify-center py-10"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      aria-roledescription="carousel"
+      aria-label="Featured slides"
+    >
       <div className="absolute inset-0 -z-10 opacity-60 pointer-events-none">
         <div className="absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-accent/10 blur-3xl" />
         <div className="absolute bottom-0 right-0 w-[520px] h-[520px] rounded-full bg-amber-200/30 blur-3xl" />
       </div>
 
-      <div className="relative h-screen w-full flex flex-col items-center justify-center">
-        {loaded && slides.length === 0 ? (
-          <div className="text-center max-w-xl px-6">
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-zinc-900 mb-3">
-              Hero carousel is empty
-            </h2>
-            <p className="text-zinc-600">
-              Upload slides from the admin panel to see them appear here.
-            </p>
-          </div>
-        ) : (
-        <div className="relative w-full">
-          <Swiper
-            modules={[EffectCoverflow, Autoplay, Pagination, Navigation]}
-            effect="coverflow"
-            grabCursor
-            centeredSlides
-            loop={enableLoop}
-            loopAdditionalSlides={Math.max(slides.length, 3)}
-            watchSlidesProgress
-            slidesPerView="auto"
-            spaceBetween={0}
-            autoplay={{ delay: 4500, disableOnInteraction: false, pauseOnMouseEnter: true }}
-            coverflowEffect={{
-              rotate: 35,
-              stretch: 0,
-              depth: 320,
-              modifier: 1,
-              slideShadows: false,
-            }}
-            pagination={{ clickable: true, el: '.hero-carousel-pagination' }}
-            navigation={{
-              prevEl: '.hero-carousel-prev',
-              nextEl: '.hero-carousel-next',
-            }}
-            className="hero-coverflow !pb-14"
-          >
-            {slides.map((slide) => {
-              const card = (
-                <div className="relative w-full aspect-square rounded-2xl overflow-hidden shadow-2xl ring-1 ring-black/5 bg-zinc-900">
-                  <Image
-                    src={slide.image_url}
-                    alt=""
-                    fill
-                    aria-hidden
-                    sizes="(min-width: 1280px) min(70vh, 1080px), (min-width: 1024px) min(65vh, 1080px), (min-width: 768px) min(60vh, 720px), 85vw"
-                    className="object-cover scale-110 blur-2xl opacity-60"
-                  />
-                  <Image
-                    src={slide.image_url}
-                    alt="Hero slide"
-                    fill
-                    priority
-                    sizes="(min-width: 1280px) min(70vh, 1080px), (min-width: 1024px) min(65vh, 1080px), (min-width: 768px) min(60vh, 720px), 85vw"
-                    className="object-contain"
-                  />
-                </div>
-              )
-
-              return (
-                <SwiperSlide
-                  key={slide.id}
-                  className="!w-[min(85vw,70vh)] md:!w-[min(60vh,720px)] lg:!w-[min(65vh,1080px)] xl:!w-[min(70vh,1080px)]"
-                >
-                  {slide.link_url ? (
-                    slide.link_url.startsWith('http') ? (
-                      <a href={slide.link_url} target="_blank" rel="noopener noreferrer" className="block">
-                        {card}
-                      </a>
-                    ) : (
-                      <Link href={slide.link_url} className="block">
-                        {card}
-                      </Link>
-                    )
-                  ) : (
-                    card
-                  )}
-                </SwiperSlide>
-              )
-            })}
-          </Swiper>
-
-          <button
-            type="button"
-            aria-label="Previous slide"
-            className="hero-carousel-prev hidden md:flex absolute left-2 lg:left-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/90 hover:bg-white text-zinc-900 shadow-lg items-center justify-center transition-transform hover:scale-105"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <button
-            type="button"
-            aria-label="Next slide"
-            className="hero-carousel-next hidden md:flex absolute right-2 lg:right-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/90 hover:bg-white text-zinc-900 shadow-lg items-center justify-center transition-transform hover:scale-105"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
-
-          <div className="hero-carousel-pagination relative mt-6 flex justify-center gap-2" />
+      {loaded && count === 0 ? (
+        <div className="text-center max-w-xl px-6">
+          <h2 className="font-display text-3xl md:text-4xl font-bold text-zinc-900 mb-3">
+            Hero carousel is empty
+          </h2>
+          <p className="text-zinc-600">
+            Upload slides from the admin panel to see them appear here.
+          </p>
         </div>
-        )}
+      ) : (
+        <>
+          {/* 3D stage — perspective on outer, preserve-3d on inner so child rotateY renders in depth.
+              Heights scale with viewport so the active square card feels full-screen on desktop
+              while staying contained on mobile. */}
+          <div
+            className="relative mx-auto w-full max-w-7xl px-3 sm:px-6 h-[55vh] sm:h-[60vh] lg:h-[70vh] xl:h-[78vh]"
+            style={{ perspective: '1600px' }}
+          >
+            <div
+              className="relative h-full w-full"
+              style={{ transformStyle: 'preserve-3d' }}
+            >
+              {slides.map((slide, i) => (
+                <Slide
+                  key={slide.id}
+                  slide={slide}
+                  offset={offsetOf(i)}
+                  onClick={() => handleSlideClick(slide, i)}
+                />
+              ))}
+            </div>
 
-        {!loaded && (
-          <p className="sr-only">Loading hero carousel…</p>
-        )}
-      </div>
+            {count > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => go(index - 1)}
+                  aria-label="Previous slide"
+                  className="absolute left-1 top-1/2 z-40 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-zinc-200 bg-white/80 text-zinc-900 shadow-sm backdrop-blur-sm transition hover:bg-white sm:left-6 sm:h-11 sm:w-11"
+                >
+                  <ChevronLeft className="h-5 w-5 sm:h-7 sm:w-7" strokeWidth={2.5} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => go(index + 1)}
+                  aria-label="Next slide"
+                  className="absolute right-1 top-1/2 z-40 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-zinc-200 bg-white/80 text-zinc-900 shadow-sm backdrop-blur-sm transition hover:bg-white sm:right-6 sm:h-11 sm:w-11"
+                >
+                  <ChevronRight className="h-5 w-5 sm:h-7 sm:w-7" strokeWidth={2.5} />
+                </button>
+              </>
+            )}
+          </div>
 
-      <style jsx global>{`
-        .hero-coverflow .swiper-slide {
-          transition: opacity 400ms ease, transform 400ms ease;
-          opacity: 0.55;
-        }
-        .hero-coverflow .swiper-slide-active {
-          opacity: 1;
-        }
-        .hero-coverflow .swiper-slide-prev,
-        .hero-coverflow .swiper-slide-next {
-          opacity: 0.85;
-        }
-        .hero-carousel-pagination .swiper-pagination-bullet {
-          width: 0.5rem;
-          height: 0.5rem;
-          background-color: rgba(15, 15, 15, 0.25);
-          opacity: 1;
-          transition: width 200ms ease, background-color 200ms ease;
-        }
-        .hero-carousel-pagination .swiper-pagination-bullet-active {
-          width: 1.75rem;
-          border-radius: 9999px;
-          background-color: rgb(37, 99, 235);
-        }
-      `}</style>
+          {count > 1 && (
+            <div className="mt-6 flex items-center justify-center gap-2">
+              {slides.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => go(i)}
+                  aria-label={`Go to slide ${i + 1}`}
+                  aria-current={i === index}
+                  className={`h-1 rounded-full transition-all ${
+                    i === index
+                      ? 'w-8 bg-accent'
+                      : 'w-5 bg-zinc-300 hover:bg-zinc-400'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+        </>
+      )}
     </section>
+  )
+}
+
+function Slide({
+  slide,
+  offset,
+  onClick,
+}: {
+  slide: HeroSlide
+  offset: number
+  onClick: () => void
+}) {
+  const abs = Math.abs(offset)
+  const isActive = offset === 0
+  const isAdjacent = abs === 1
+  const visible = abs <= 1
+
+  // Horizontal travel grows past the center so peek cards sit just inside the edges.
+  const translateX = offset === 0 ? 0 : offset * 58
+  // Active sits forward; peeks recede into the scene.
+  const translateZ = isActive ? 0 : -220
+  // Coverflow tilt — angle the side cards toward the viewer.
+  const rotateY = offset === 0 ? 0 : offset > 0 ? -32 : 32
+  const scale = isActive ? 1 : 0.85
+  const opacity = isActive ? 1 : isAdjacent ? 0.6 : 0
+  const zIndex = isActive ? 30 : isAdjacent ? 20 : 0
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={isActive ? 'Featured slide' : 'Go to slide'}
+      aria-hidden={!visible}
+      tabIndex={isActive ? 0 : -1}
+      className="absolute left-1/2 top-1/2 aspect-square h-full overflow-hidden rounded-2xl shadow-2xl ring-1 ring-black/10 transition-all duration-700 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-accent bg-zinc-900"
+      style={{
+        transform: `translate(-50%, -50%) translateX(${translateX}%) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
+        transformStyle: 'preserve-3d',
+        opacity,
+        zIndex,
+        pointerEvents: visible ? 'auto' : 'none',
+        filter: isActive ? 'none' : 'brightness(0.5)',
+        willChange: 'transform, opacity, filter',
+      }}
+    >
+      <Image
+        src={slide.image_url}
+        alt=""
+        fill
+        aria-hidden
+        sizes="(min-width: 1280px) 78vh, (min-width: 1024px) 70vh, (min-width: 640px) 60vh, 55vh"
+        className="object-cover scale-110 blur-2xl opacity-60"
+        draggable={false}
+      />
+      <Image
+        src={slide.image_url}
+        alt="Hero slide"
+        fill
+        priority={isActive}
+        sizes="(min-width: 1280px) 78vh, (min-width: 1024px) 70vh, (min-width: 640px) 60vh, 55vh"
+        className="object-contain"
+        draggable={false}
+      />
+    </button>
   )
 }
