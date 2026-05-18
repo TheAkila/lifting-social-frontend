@@ -119,6 +119,15 @@ export default function CoachDetailPage() {
   const certs = coach.certifications ?? []
   const competitive = coach.competitive_achievements ?? []
   const coachingAch = coach.coaching_achievements ?? []
+  const hasChampions = !!coach.champions_count && coach.champions_count > 0
+  const hasExperience = !!coach.experience && coach.experience > 0
+  const hasStats = hasChampions || hasExperience
+  const hasContact = !!coach.email || !!coach.phone
+  const hasBio = !!coach.bio && coach.bio.trim().length > 0
+  const hasAvailability = !!coach.availability && coach.availability.trim().length > 0
+  const hasMainContent =
+    hasBio || specs.length > 0 || competitive.length > 0 || coachingAch.length > 0 || certs.length > 0
+  const hasSidebar = hasContact || hasAvailability
 
   return (
     <main className="min-h-screen bg-zinc-50">
@@ -170,20 +179,20 @@ export default function CoachDetailPage() {
                 {coach.name}
               </h1>
 
-              {/* Stats strip */}
-              {(coach.champions_count != null || coach.experience != null) && (
+              {/* Stats strip — only renders when at least one stat has a positive value */}
+              {hasStats && (
                 <div className="mt-5 sm:mt-6 flex items-stretch justify-center md:justify-start gap-3 sm:gap-4">
-                  {coach.champions_count != null && (
+                  {hasChampions && (
                     <StatChip
                       icon={<Trophy className="w-4 h-4 text-amber-400" />}
-                      value={coach.champions_count}
+                      value={coach.champions_count!}
                       label="Champions"
                     />
                   )}
-                  {coach.experience != null && (
+                  {hasExperience && (
                     <StatChip
                       icon={<Award className="w-4 h-4 text-zinc-300" />}
-                      value={coach.experience}
+                      value={coach.experience!}
                       suffix="yrs"
                       label="Experience"
                     />
@@ -195,16 +204,28 @@ export default function CoachDetailPage() {
         </div>
       </section>
 
-      {/* Content */}
+      {/* Content — only renders when there's actually something to show */}
+      {(hasMainContent || hasSidebar) && (
       <section className="container mx-auto px-4 max-w-5xl py-10 sm:py-14">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr,320px] gap-6 lg:gap-8 items-start">
+        <div
+          className={`grid grid-cols-1 gap-6 lg:gap-8 items-start ${
+            hasMainContent && hasSidebar ? 'lg:grid-cols-[1fr,320px]' : ''
+          }`}
+        >
           {/* Main column */}
+          {hasMainContent && (
           <div className="space-y-6">
-            {coach.bio && (
+            {hasBio && (
               <Panel title="About">
-                <p className="text-sm sm:text-base text-zinc-700 leading-relaxed whitespace-pre-line">
-                  {coach.bio}
-                </p>
+                <div className="space-y-3 text-sm sm:text-base text-zinc-700 leading-relaxed">
+                  {coach.bio
+                    .split(/\r?\n+/)
+                    .map((p) => p.trim())
+                    .filter(Boolean)
+                    .map((paragraph, idx) => (
+                      <p key={idx}>{paragraph}</p>
+                    ))}
+                </div>
               </Panel>
             )}
 
@@ -262,50 +283,51 @@ export default function CoachDetailPage() {
               </Panel>
             )}
           </div>
+          )}
 
-          {/* Sidebar */}
+          {/* Sidebar — only renders if there's contact info or availability */}
+          {hasSidebar && (
           <aside className="space-y-4 lg:sticky lg:top-24">
-            <Panel title="Get in touch" tight>
-              <div className="space-y-2">
-                {coach.email && (
-                  <a
-                    href={`mailto:${coach.email}`}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-[10px] border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 transition-colors group"
-                  >
-                    <div className="w-9 h-9 rounded-full bg-zinc-100 group-hover:bg-zinc-900 group-hover:text-white flex items-center justify-center text-zinc-600 transition-colors">
-                      <Mail className="w-4 h-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold">
-                        Email
-                      </p>
-                      <p className="text-sm font-medium text-zinc-900 truncate">{coach.email}</p>
-                    </div>
-                  </a>
-                )}
-                {coach.phone && (
-                  <a
-                    href={`tel:${coach.phone}`}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-[10px] border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 transition-colors group"
-                  >
-                    <div className="w-9 h-9 rounded-full bg-zinc-100 group-hover:bg-zinc-900 group-hover:text-white flex items-center justify-center text-zinc-600 transition-colors">
-                      <Phone className="w-4 h-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold">
-                        Phone
-                      </p>
-                      <p className="text-sm font-medium text-zinc-900 truncate">{coach.phone}</p>
-                    </div>
-                  </a>
-                )}
-                {!coach.email && !coach.phone && (
-                  <p className="text-sm text-zinc-500 py-2">No contact details listed.</p>
-                )}
-              </div>
-            </Panel>
+            {hasContact && (
+              <Panel title="Get in touch" tight>
+                <div className="space-y-2">
+                  {coach.email && (
+                    <a
+                      href={`mailto:${coach.email}`}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-[10px] border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 transition-colors group"
+                    >
+                      <div className="w-9 h-9 rounded-full bg-zinc-100 group-hover:bg-zinc-900 group-hover:text-white flex items-center justify-center text-zinc-600 transition-colors">
+                        <Mail className="w-4 h-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold">
+                          Email
+                        </p>
+                        <p className="text-sm font-medium text-zinc-900 truncate">{coach.email}</p>
+                      </div>
+                    </a>
+                  )}
+                  {coach.phone && (
+                    <a
+                      href={`tel:${coach.phone}`}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-[10px] border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 transition-colors group"
+                    >
+                      <div className="w-9 h-9 rounded-full bg-zinc-100 group-hover:bg-zinc-900 group-hover:text-white flex items-center justify-center text-zinc-600 transition-colors">
+                        <Phone className="w-4 h-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold">
+                          Phone
+                        </p>
+                        <p className="text-sm font-medium text-zinc-900 truncate">{coach.phone}</p>
+                      </div>
+                    </a>
+                  )}
+                </div>
+              </Panel>
+            )}
 
-            {coach.availability && (
+            {hasAvailability && (
               <Panel title="Availability" tight>
                 <div className="flex items-start gap-2.5">
                   <Clock className="w-4 h-4 text-zinc-400 flex-shrink-0 mt-0.5" />
@@ -316,8 +338,10 @@ export default function CoachDetailPage() {
               </Panel>
             )}
           </aside>
+          )}
         </div>
       </section>
+      )}
     </main>
   )
 }

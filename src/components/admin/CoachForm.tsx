@@ -332,8 +332,9 @@ export default function CoachForm({
               label="Bio"
               value={form.bio}
               onChange={(v) => setField('bio', v)}
-              rows={4}
+              rows={5}
               placeholder="Background, coaching philosophy, notable achievements…"
+              hint="Press Enter to start a new paragraph."
             />
           </Section>
 
@@ -473,12 +474,14 @@ function TextAreaField({
   onChange,
   rows = 3,
   placeholder,
+  hint,
 }: {
   label: string
   value: string
   onChange: (v: string) => void
   rows?: number
   placeholder?: string
+  hint?: string
 }) {
   return (
     <label className="block">
@@ -490,6 +493,7 @@ function TextAreaField({
         placeholder={placeholder}
         className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
       />
+      {hint && <span className="block mt-1 text-[11px] text-gray-400">{hint}</span>}
     </label>
   )
 }
