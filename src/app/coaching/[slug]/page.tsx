@@ -24,6 +24,8 @@ interface Coach {
   bio: string
   specializations?: string[]
   certifications?: string[]
+  competitive_achievements?: string[]
+  coaching_achievements?: string[]
   experience?: number
   availability?: string
   email?: string
@@ -115,6 +117,8 @@ export default function CoachDetailPage() {
 
   const specs = coach.specializations ?? []
   const certs = coach.certifications ?? []
+  const competitive = coach.competitive_achievements ?? []
+  const coachingAch = coach.coaching_achievements ?? []
 
   return (
     <main className="min-h-screen bg-zinc-50">
@@ -219,8 +223,34 @@ export default function CoachDetailPage() {
               </Panel>
             )}
 
+            {competitive.length > 0 && (
+              <Panel title="Competitive Achievements">
+                <ul className="space-y-2.5">
+                  {competitive.map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5 text-sm text-zinc-700">
+                      <Trophy className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Panel>
+            )}
+
+            {coachingAch.length > 0 && (
+              <Panel title="Coaching Achievements">
+                <ul className="space-y-2.5">
+                  {coachingAch.map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5 text-sm text-zinc-700">
+                      <Award className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Panel>
+            )}
+
             {certs.length > 0 && (
-              <Panel title="Certifications">
+              <Panel title="Education & Certifications">
                 <ul className="space-y-2.5">
                   {certs.map((cert, idx) => (
                     <li key={idx} className="flex items-start gap-2.5 text-sm text-zinc-700">

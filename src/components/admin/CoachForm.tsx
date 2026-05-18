@@ -27,6 +27,8 @@ export interface CoachFormInitial {
   image?: string
   specializations?: string[]
   certifications?: string[]
+  competitive_achievements?: string[]
+  coaching_achievements?: string[]
   featured?: boolean
 }
 
@@ -42,6 +44,8 @@ interface CoachFormState {
   image: string
   specializations: string[]
   certifications: string[]
+  competitiveAchievements: string[]
+  coachingAchievements: string[]
   featured: boolean
 }
 
@@ -62,6 +66,12 @@ function toFormState(initial?: CoachFormInitial): CoachFormState {
       : [],
     certifications: Array.isArray(initial?.certifications)
       ? initial!.certifications!
+      : [],
+    competitiveAchievements: Array.isArray(initial?.competitive_achievements)
+      ? initial!.competitive_achievements!
+      : [],
+    coachingAchievements: Array.isArray(initial?.coaching_achievements)
+      ? initial!.coaching_achievements!
       : [],
     featured: !!initial?.featured,
   }
@@ -119,8 +129,8 @@ export default function CoachForm({
   }
 
   const handleSave = async () => {
-    if (!form.name.trim() || !form.title.trim() || !form.email.trim()) {
-      setError('Name, title and email are required')
+    if (!form.name.trim() || !form.title.trim() || !form.phone.trim()) {
+      setError('Name, title and phone are required')
       return
     }
     try {
@@ -138,6 +148,8 @@ export default function CoachForm({
         image: form.image.trim() || undefined,
         specializations: form.specializations,
         certifications: form.certifications,
+        competitiveAchievements: form.competitiveAchievements,
+        coachingAchievements: form.coachingAchievements,
         featured: form.featured,
       }
       if (mode === 'edit' && initial?.id) {
@@ -287,17 +299,17 @@ export default function CoachForm({
                 placeholder="Head Coach"
               />
               <TextField
-                label="Email *"
-                type="email"
-                value={form.email}
-                onChange={(v) => setField('email', v)}
-              />
-              <TextField
-                label="Phone"
+                label="Phone *"
                 type="tel"
                 value={form.phone}
                 onChange={(v) => setField('phone', v)}
                 placeholder="+94 77 123 4567"
+              />
+              <TextField
+                label="Email"
+                type="email"
+                value={form.email}
+                onChange={(v) => setField('email', v)}
               />
               <TextField
                 label="Years of experience"
@@ -345,11 +357,27 @@ export default function CoachForm({
             />
           </Section>
 
-          <Section label="Certifications">
+          <Section label="Competitive achievements">
+            <ChipInput
+              chips={form.competitiveAchievements}
+              onChange={(next) => setField('competitiveAchievements', next)}
+              placeholder="e.g. National Champion 77kg (2003–2009)"
+            />
+          </Section>
+
+          <Section label="Coaching achievements">
+            <ChipInput
+              chips={form.coachingAchievements}
+              onChange={(next) => setField('coachingAchievements', next)}
+              placeholder="e.g. Coach of Ushan Vidanapathirana — SA Games Silver"
+            />
+          </Section>
+
+          <Section label="Education & certifications">
             <ChipInput
               chips={form.certifications}
               onChange={(next) => setField('certifications', next)}
-              placeholder="Add certification and press Enter…"
+              placeholder="e.g. Diploma — Sri Lanka Institute of Sports Science"
             />
           </Section>
 
