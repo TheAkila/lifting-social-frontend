@@ -187,7 +187,7 @@ export default function Hero() {
             </p>
             <nav className="mt-3 sm:mt-4 flex items-center justify-center gap-6 sm:gap-8 text-[11px] sm:text-xs font-semibold uppercase tracking-[0.18em] sm:tracking-[0.22em] text-zinc-700">
               <Link href="/shop" className="hover:text-accent active:text-accent transition-colors">Shop</Link>
-              <Link href="/coaching" className="hover:text-accent active:text-accent transition-colors">Coach</Link>
+              <Link href="/coaching" className="hover:text-accent active:text-accent transition-colors">Coaching</Link>
               <Link href="/events" className="hover:text-accent active:text-accent transition-colors">Events</Link>
               <Link href="/sports-media" className="hover:text-accent active:text-accent transition-colors">Media</Link>
             </nav>
