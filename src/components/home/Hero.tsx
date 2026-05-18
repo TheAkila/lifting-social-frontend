@@ -101,16 +101,27 @@ export default function Hero() {
   )
 
   const handleSlideClick = (slide: HeroSlide, i: number) => {
-    if (i !== index) {
-      go(i)
+    const raw = slide.link_url?.trim()
+
+    // If this slide has a link, always navigate — regardless of whether it's
+    // the active slide or a side peek. External links (http/https/mailto/tel
+    // or anything with `://`) open in a new tab; internal app paths navigate
+    // in the same tab via the router.
+    if (raw) {
+      const isExternal =
+        /^[a-z][a-z0-9+.-]*:/i.test(raw) || raw.startsWith('//')
+      if (isExternal) {
+        window.open(raw, '_blank', 'noopener,noreferrer')
+      } else {
+        router.push(raw.startsWith('/') ? raw : `/${raw}`)
+      }
       return
     }
-    const raw = slide.link_url?.trim()
-    if (!raw) return
-    if (raw.startsWith('http://') || raw.startsWith('https://')) {
-      window.open(raw, '_blank', 'noopener,noreferrer')
-    } else {
-      router.push(raw.startsWith('/') ? raw : `/${raw}`)
+
+    // No link on this slide — fall back to advancing the carousel if a side
+    // peek was tapped so the user can still browse.
+    if (i !== index) {
+      go(i)
     }
   }
 
