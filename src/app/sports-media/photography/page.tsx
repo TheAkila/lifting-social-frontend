@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { Camera, X, Phone, Mail, MapPin, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { ArrowLeft, Camera, Mail, Phone, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface GalleryImage {
@@ -14,222 +14,193 @@ interface GalleryImage {
   category: string
 }
 
+const OFFERINGS = [
+  'Competition photography',
+  'Training session documentation',
+  'Athlete portraits and profiles',
+  'Event highlights and coverage',
+  'Team and gym photography',
+  'High-resolution digital delivery',
+]
+
 export default function PhotographyPage() {
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([])
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchGalleryImages()
+    ;(async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL
+        if (!apiUrl) throw new Error('API URL not configured')
+        const response = await fetch(`${apiUrl}/gallery?limit=100`, {
+          headers: { 'Content-Type': 'application/json' },
+        })
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        const json = await response.json()
+        const data = json.data || json
+        if (Array.isArray(data)) {
+          setGalleryImages(data.filter((img: GalleryImage) => img.category === 'Competition'))
+        }
+      } catch (err) {
+        console.warn('Photography gallery fetch failed', err)
+      } finally {
+        setLoading(false)
+      }
+    })()
   }, [])
 
-  const fetchGalleryImages = async () => {
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL
-      if (!apiUrl) {
-        console.warn('NEXT_PUBLIC_API_URL not configured, using fallback images')
-        throw new Error('API URL not configured')
-      }
-
-      const response = await fetch(`${apiUrl}/gallery?limit=100`, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: Failed to fetch gallery images`)
-      }
-
-      const json = await response.json()
-      console.log('Gallery API response:', json)
-      const data = json.data || json
-
-      if (Array.isArray(data) && data.length > 0) {
-        // Filter to only show Competition category images for Photography page
-        const filteredImages = data.filter((img: GalleryImage) => img.category === 'Competition')
-        console.log(`Total images: ${data.length}, Competition images: ${filteredImages.length}`)
-        setGalleryImages(filteredImages)
-      } else {
-        console.warn('No gallery images found - data is:', data)
-        throw new Error('No gallery images found in response')
-      }
-    } catch (error) {
-      console.error('Error fetching gallery images:', error)
-      // Don't use placeholder images - show empty gallery
-      setGalleryImages([])
-    } finally {
-      setLoading(false)
-    }
-  }
-
   return (
-    <div className="min-h-screen pt-20">
+    <main className="min-h-screen bg-white">
       {/* Breadcrumb */}
-      <div className="bg-zinc-50 border-b border-zinc-100 py-4">
-        <div className="container mx-auto px-4">
-          <Link href="/sports-media" className="inline-flex items-center gap-2 text-zinc-600 hover:text-zinc-900 transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm font-medium">Back to Sports Media</span>
+      <div className="bg-zinc-50 border-b border-zinc-100 pt-20">
+        <div className="container mx-auto px-4 py-3">
+          <Link
+            href="/sports-media"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-500 hover:text-zinc-900 transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Sports Media
           </Link>
         </div>
       </div>
 
-      {/* Hero Section */}
-      <section className="bg-black text-white py-16 sm:py-20 md:py-24">
+      {/* Hero */}
+      <section className="bg-zinc-950 py-10 sm:py-14 md:py-16">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            
-            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-2xl mx-auto text-center"
+          >
+            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4">
               Sports Photography
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-zinc-300">
-              Professional photography services capturing the power, intensity, and emotion of weightlifting sports
+            <p className="text-sm sm:text-base md:text-lg text-zinc-400">
+              Capturing the power, intensity, and emotion of weightlifting.
             </p>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Description Section */}
-      <section className="py-10 sm:py-16 md:py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-zinc-900 mb-4 sm:mb-6">
-              What We Offer
-            </h2>
-            <div className="space-y-3 sm:space-y-4 text-zinc-600">
-              <p className="text-base sm:text-lg">
-                Our sports photography services are designed specifically for weightlifting athletes, coaches, and event organizers. We understand the unique challenges of capturing the explosive power and technical precision of Olympic weightlifting.
-              </p>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-6 sm:mt-8">
-                <li className="flex items-start gap-3 text-base sm:text-base">
-                  <span className="w-2 h-2 bg-black rounded-full mt-2.5 flex-shrink-0" />
-                  <span>Competition photography</span>
-                </li>
-                <li className="flex items-start gap-3 text-base sm:text-base">
-                  <span className="w-2 h-2 bg-black rounded-full mt-2.5 flex-shrink-0" />
-                  <span>Training session documentation</span>
-                </li>
-                <li className="flex items-start gap-3 text-base sm:text-base">
-                  <span className="w-2 h-2 bg-black rounded-full mt-2.5 flex-shrink-0" />
-                  <span>Athlete portraits and profiles</span>
-                </li>
-                <li className="flex items-start gap-3 text-base sm:text-base">
-                  <span className="w-2 h-2 bg-black rounded-full mt-2.5 flex-shrink-0" />
-                  <span>Event highlights and coverage</span>
-                </li>
-                <li className="flex items-start gap-3 text-base sm:text-base">
-                  <span className="w-2 h-2 bg-black rounded-full mt-2.5 flex-shrink-0" />
-                  <span>Team and gym photography</span>
-                </li>
-                <li className="flex items-start gap-3 text-base sm:text-base">
-                  <span className="w-2 h-2 bg-black rounded-full mt-2.5 flex-shrink-0" />
-                  <span>High-resolution digital delivery</span>
-                </li>
-              </ul>
-            </div>
-          </div>
+      {/* What we offer */}
+      <section className="container mx-auto px-4 max-w-5xl py-10 sm:py-14">
+        <div className="max-w-3xl mx-auto text-center mb-8">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">What we offer</p>
+          <h2 className="mt-2 font-display text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">
+            Photography for serious athletes & meets
+          </h2>
         </div>
+        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
+          {OFFERINGS.map((item) => (
+            <li
+              key={item}
+              className="flex items-center gap-2.5 px-4 py-2.5 bg-white border border-zinc-100 shadow-soft rounded-[12px] text-sm text-zinc-700"
+            >
+              <span className="w-1.5 h-1.5 bg-zinc-900 rounded-full flex-shrink-0" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
       </section>
 
-      {/* Gallery Section */}
-      <section className="py-10 sm:py-16 md:py-20 bg-zinc-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-10 sm:mb-12">
-            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-zinc-900 mb-3 sm:mb-4">
-              Our Work
+      {/* Gallery */}
+      <section className="bg-zinc-50 py-10 sm:py-14 border-t border-zinc-100">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="text-center mb-6 sm:mb-8">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Our work</p>
+            <h2 className="mt-2 font-display text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">
+              Recent captures
             </h2>
-            <p className="text-base sm:text-lg text-zinc-600">
-              Browse through our collection of captured moments
-            </p>
           </div>
 
           {loading ? (
-            <div className="flex items-center justify-center h-96">
-              <div className="text-center">
-                <div className="w-12 h-12 border-4 border-zinc-300 border-t-black rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-zinc-600">Loading gallery...</p>
-              </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="aspect-square rounded-[12px] bg-zinc-200 animate-pulse"
+                />
+              ))}
+            </div>
+          ) : galleryImages.length === 0 ? (
+            <div className="bg-white border border-zinc-100 rounded-[12px] py-14 text-center">
+              <Camera className="w-10 h-10 text-zinc-300 mx-auto mb-3" />
+              <p className="text-sm text-zinc-500">No gallery images yet.</p>
+              <p className="text-xs text-zinc-400 mt-1">Images appear here as soon as they're uploaded from the admin.</p>
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-                {galleryImages.length > 0 ? (
-                  galleryImages.map((image, index) => (
-                    <motion.div
-                      key={image.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: index * 0.1 }}
-                      className="group relative aspect-square bg-zinc-200 rounded-xl overflow-hidden cursor-pointer"
-                      onClick={() => setSelectedImage(image)}
-                    >
-                      <Image
-                        src={image.image_url}
-                        alt={image.alt_text}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors" />
-                    </motion.div>
-                  ))
-                ) : (
-                  <div className="col-span-2 md:col-span-3 text-center py-12">
-                    <Camera className="w-12 h-12 text-zinc-300 mx-auto mb-4" />
-                    <p className="text-zinc-600">No gallery images available yet</p>
-                  </div>
-                )}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3">
+                {galleryImages.map((image, idx) => (
+                  <motion.button
+                    key={image.id}
+                    type="button"
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.35, delay: Math.min(idx, 8) * 0.04 }}
+                    onClick={() => setSelectedImage(image)}
+                    className="group relative aspect-square bg-zinc-200 rounded-[12px] overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
+                    aria-label={`View ${image.title || 'gallery image'}`}
+                  >
+                    <Image
+                      src={image.image_url}
+                      alt={image.alt_text || image.title}
+                      fill
+                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+                      className="object-cover group-hover:scale-[1.04] transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors" />
+                  </motion.button>
+                ))}
               </div>
-
-              <div className="text-center mt-6 sm:mt-8">
-                <p className="text-zinc-500 text-xs sm:text-sm px-4">
-                  {galleryImages.length === 0
-                    ? 'Gallery images will appear here once added through the admin dashboard'
-                    : 'Click images to view in full screen'}
-                </p>
-              </div>
+              <p className="mt-5 text-center text-xs text-zinc-400">
+                Tap any image to view it full size
+              </p>
             </>
           )}
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section className="py-12 sm:py-16 md:py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-10 sm:mb-12">
-              <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-zinc-900 mb-3 sm:mb-4">
-                Book Your Session
-              </h2>
-              <p className="text-base sm:text-lg text-zinc-600">
-                Get in touch to discuss your photography needs
-              </p>
+      {/* Book */}
+      <section className="container mx-auto px-4 max-w-3xl py-10 sm:py-14">
+        <div className="text-center mb-6 sm:mb-8">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Book a session</p>
+          <h2 className="mt-2 font-display text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">
+            Let's talk
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <a
+            href="tel:+94764829645"
+            className="group flex items-center gap-3 p-4 bg-white rounded-[12px] border border-zinc-100 shadow-soft hover:shadow-card-hover hover:-translate-y-0.5 transition-all"
+          >
+            <div className="w-10 h-10 rounded-full bg-zinc-100 group-hover:bg-zinc-900 group-hover:text-white flex items-center justify-center text-zinc-700 transition-colors">
+              <Phone className="w-4 h-4" />
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-              <div className="bg-zinc-50 rounded-xl p-5 sm:p-6 text-center">
-                <div className="w-12 h-12 bg-black/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                  <Phone className="w-6 h-6 text-black" />
-                </div>
-                <h3 className="font-semibold text-zinc-900 mb-2 text-sm sm:text-base">Phone</h3>
-                <p className="text-zinc-600 text-sm sm:text-base">+94 76 482 9645</p>
-              </div>
-
-              <div className="bg-zinc-50 rounded-xl p-5 sm:p-6 text-center">
-                <div className="w-12 h-12 bg-black/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                  <Mail className="w-6 h-6 text-black" />
-                </div>
-                <h3 className="font-semibold text-zinc-900 mb-2 text-sm sm:text-base">Email</h3>
-                <p className="text-zinc-600 text-sm sm:text-base">theliftingsocial@gmail.com</p>
-              </div>
-
-              
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Phone</p>
+              <p className="text-sm font-semibold text-zinc-900 truncate">+94 76 482 9645</p>
             </div>
-          </div>
+          </a>
+          <a
+            href="mailto:theliftingsocial@gmail.com"
+            className="group flex items-center gap-3 p-4 bg-white rounded-[12px] border border-zinc-100 shadow-soft hover:shadow-card-hover hover:-translate-y-0.5 transition-all"
+          >
+            <div className="w-10 h-10 rounded-full bg-zinc-100 group-hover:bg-zinc-900 group-hover:text-white flex items-center justify-center text-zinc-700 transition-colors">
+              <Mail className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Email</p>
+              <p className="text-sm font-semibold text-zinc-900 truncate">theliftingsocial@gmail.com</p>
+            </div>
+          </a>
         </div>
       </section>
 
-      {/* Image Modal */}
+      {/* Image lightbox */}
       <AnimatePresence>
         {selectedImage && (
           <motion.div
@@ -240,28 +211,28 @@ export default function PhotographyPage() {
             onClick={() => setSelectedImage(null)}
           >
             <button
-              onClick={() => setSelectedImage(null)}
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                setSelectedImage(null)
+              }}
               className="absolute top-4 right-4 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors z-10"
-              aria-label="Close image modal"
+              aria-label="Close image"
             >
               <X className="w-6 h-6 text-white" />
             </button>
             <div className="relative w-full h-full flex items-center justify-center p-4">
-              {selectedImage.image_url ? (
-                <Image
-                  src={selectedImage.image_url}
-                  alt={selectedImage.alt_text}
-                  fill
-                  className="object-contain"
-                  onClick={(e) => e.stopPropagation()}
-                />
-              ) : (
-                <Camera className="w-20 h-20 text-white/20" />
-              )}
+              <Image
+                src={selectedImage.image_url}
+                alt={selectedImage.alt_text || selectedImage.title}
+                fill
+                className="object-contain"
+                onClick={(e) => e.stopPropagation()}
+              />
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </main>
   )
 }
