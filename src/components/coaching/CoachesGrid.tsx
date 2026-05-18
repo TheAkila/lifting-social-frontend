@@ -137,6 +137,13 @@ function SectionHeading({ title, subtitle }: { title: string; subtitle?: string 
 
 function CoachCard({ coach }: { coach: Coach }) {
   const href = `/coaching/${coach.slug || coach.id}`
+  const champs = coach.champions_count && coach.champions_count > 0 ? coach.champions_count : null
+  const years = coach.experience && coach.experience > 0 ? coach.experience : null
+  const specs = (coach.specializations ?? []).filter(Boolean).slice(0, 2)
+  const hasTitle = !!coach.title && coach.title.trim().length > 0
+  const hasMeta = champs != null || years != null
+  const hasSpecs = specs.length > 0
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -175,32 +182,51 @@ function CoachCard({ coach }: { coach: Coach }) {
 
         {/* Info */}
         <div className="p-4 flex flex-col flex-grow">
-          <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider line-clamp-1">
-            {coach.title}
-          </span>
-          <h3 className="font-display font-semibold text-base text-zinc-900 mt-1 mb-2 line-clamp-2 group-hover:text-brand-accent transition-colors">
+          {hasTitle && (
+            <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider line-clamp-1">
+              {coach.title}
+            </span>
+          )}
+          <h3
+            className={`font-display font-semibold text-base text-zinc-900 line-clamp-2 group-hover:text-brand-accent transition-colors ${
+              hasTitle ? 'mt-1' : ''
+            }`}
+          >
             {coach.name}
           </h3>
 
-          {(coach.champions_count != null || coach.experience != null) && (
-            <div className="flex items-center gap-3 text-xs text-zinc-600 mb-2">
-              {coach.champions_count != null && (
+          {hasMeta && (
+            <div className="mt-2 flex items-center gap-3 text-xs text-zinc-600">
+              {champs != null && (
                 <span className="inline-flex items-center gap-1">
                   <Trophy className="w-3 h-3 text-amber-500" />
-                  <span className="font-semibold text-zinc-900">{coach.champions_count}</span>
+                  <span className="font-semibold text-zinc-900">{champs}</span>
                   <span className="text-zinc-500">champs</span>
                 </span>
               )}
-              {coach.experience != null && (
+              {years != null && (
                 <span>
-                  <span className="font-semibold text-zinc-900">{coach.experience}</span>
+                  <span className="font-semibold text-zinc-900">{years}</span>
                   <span className="text-zinc-500"> yrs</span>
                 </span>
               )}
             </div>
           )}
 
-          <div className="mt-auto flex items-center justify-between">
+          {hasSpecs && (
+            <div className="mt-2 flex flex-wrap gap-1">
+              {specs.map((spec, i) => (
+                <span
+                  key={i}
+                  className="px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-600 text-[10px] font-medium line-clamp-1"
+                >
+                  {spec}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-auto pt-3 flex items-center justify-between">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 group-hover:text-brand-accent transition-colors">
               View Profile
             </span>
