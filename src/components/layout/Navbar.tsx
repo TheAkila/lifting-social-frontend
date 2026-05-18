@@ -14,6 +14,7 @@ const mainNavLinks = [
   { name: 'Home', href: '/' },
   { name: 'Live', href: '/live' },
   { name: 'Shop', href: '/shop' },
+  { name: 'Coach', href: '/coaching' },
   { name: 'Media', href: '/sports-media' },
   { name: 'Events', href: '/events' },
 ]

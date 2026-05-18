@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { FaBox, FaNewspaper, FaChartBar, FaCalendar, FaRss, FaShoppingCart, FaStar, FaHeart, FaDollarSign, FaImages, FaGift, FaPhotoVideo } from 'react-icons/fa'
+import { FaBox, FaNewspaper, FaChartBar, FaCalendar, FaRss, FaShoppingCart, FaStar, FaHeart, FaDollarSign, FaImages, FaGift, FaPhotoVideo, FaUserTie } from 'react-icons/fa'
 import api from '@/lib/api'
 
 interface ShopStats {
@@ -166,6 +166,21 @@ export default function AdminDashboard() {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">Blog Feeds</h3>
                   <p className="text-gray-600 text-sm">RSS aggregation</p>
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          {/* Coaches Card */}
+          <Link href="/admin/coaches">
+            <div className="bg-white rounded-[12px] p-6 hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200 shadow-sm">
+              <div className="flex items-center space-x-4">
+                <div className="w-14 h-14 rounded-[10px] bg-emerald-500/10 flex items-center justify-center">
+                  <FaUserTie className="text-xl text-emerald-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Coaches</h3>
+                  <p className="text-gray-600 text-sm">Manage coaching team</p>
                 </div>
               </div>
             </div>
