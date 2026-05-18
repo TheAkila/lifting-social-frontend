@@ -54,7 +54,7 @@ export default function Hero() {
         <div className="absolute bottom-0 right-0 w-[520px] h-[520px] rounded-full bg-amber-200/30 blur-3xl" />
       </div>
 
-      <div className="container-custom relative h-screen flex flex-col items-center justify-center py-16">
+      <div className="relative h-screen w-full flex flex-col items-center justify-center">
         {loaded && slides.length === 0 ? (
           <div className="text-center max-w-xl px-6">
             <h2 className="font-display text-3xl md:text-4xl font-bold text-zinc-900 mb-3">
@@ -65,7 +65,7 @@ export default function Hero() {
             </p>
           </div>
         ) : (
-        <div className="relative w-full max-w-6xl">
+        <div className="relative w-full">
           <Swiper
             modules={[EffectCoverflow, Autoplay, Pagination, Navigation]}
             effect="coverflow"
@@ -76,9 +76,9 @@ export default function Hero() {
             spaceBetween={0}
             autoplay={{ delay: 4500, disableOnInteraction: false, pauseOnMouseEnter: true }}
             coverflowEffect={{
-              rotate: 32,
+              rotate: 35,
               stretch: 0,
-              depth: 220,
+              depth: 320,
               modifier: 1,
               slideShadows: false,
             }}
@@ -87,18 +87,26 @@ export default function Hero() {
               prevEl: '.hero-carousel-prev',
               nextEl: '.hero-carousel-next',
             }}
-            className="hero-coverflow !pb-16"
+            className="hero-coverflow !pb-14"
           >
             {slides.map((slide) => {
               const card = (
-                <div className="relative w-[260px] sm:w-[320px] md:w-[380px] lg:w-[440px] aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl ring-1 ring-black/5 bg-zinc-200">
+                <div className="relative w-full aspect-square rounded-2xl overflow-hidden shadow-2xl ring-1 ring-black/5 bg-zinc-900">
+                  <Image
+                    src={slide.image_url}
+                    alt=""
+                    fill
+                    aria-hidden
+                    sizes="(min-width: 1280px) min(70vh, 1080px), (min-width: 1024px) min(65vh, 1080px), (min-width: 768px) min(60vh, 720px), 85vw"
+                    className="object-cover scale-110 blur-2xl opacity-60"
+                  />
                   <Image
                     src={slide.image_url}
                     alt="Hero slide"
                     fill
                     priority
-                    sizes="(min-width: 1024px) 440px, (min-width: 768px) 380px, (min-width: 640px) 320px, 260px"
-                    className="object-cover"
+                    sizes="(min-width: 1280px) min(70vh, 1080px), (min-width: 1024px) min(65vh, 1080px), (min-width: 768px) min(60vh, 720px), 85vw"
+                    className="object-contain"
                   />
                 </div>
               )
@@ -106,7 +114,7 @@ export default function Hero() {
               return (
                 <SwiperSlide
                   key={slide.id}
-                  className="!w-[260px] sm:!w-[320px] md:!w-[380px] lg:!w-[440px]"
+                  className="!w-[min(85vw,70vh)] md:!w-[min(60vh,720px)] lg:!w-[min(65vh,1080px)] xl:!w-[min(70vh,1080px)]"
                 >
                   {slide.link_url ? (
                     slide.link_url.startsWith('http') ? (

@@ -340,7 +340,7 @@ export default function HeroCarouselAdminPage() {
                   <Upload className="w-10 h-10 text-gray-400" />
                   <span className="font-semibold text-gray-900">Drop image here or click to select</span>
                   <span className="text-xs text-gray-500">
-                    PNG, JPG, GIF, WebP · max 10MB · portrait poster recommended (3:4)
+                    PNG, JPG, GIF, WebP · max 10MB · standard size 1080×1080 (1:1 square)
                   </span>
                 </div>
               )}
@@ -373,7 +373,7 @@ export default function HeroCarouselAdminPage() {
                     key={slide.id}
                     className="flex flex-col md:flex-row md:items-center gap-4 p-4 border border-gray-200 rounded-xl bg-gray-50"
                   >
-                    <div className="relative w-full md:w-32 aspect-[3/4] flex-shrink-0 rounded-lg overflow-hidden bg-gray-200">
+                    <div className="relative w-full md:w-32 aspect-square flex-shrink-0 rounded-lg overflow-hidden bg-gray-200">
                       <Image
                         src={slide.image_url}
                         alt={`Slide ${idx + 1}`}
