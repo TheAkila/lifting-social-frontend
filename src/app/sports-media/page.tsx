@@ -1,9 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { Camera, Video, ArrowRight, Phone, Mail, MapPin } from 'lucide-react'
-import { useEffect, useState } from 'react'
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+import { ArrowRight, Camera, Video } from 'lucide-react'
 
 interface GalleryImage {
   id: string
@@ -13,139 +14,147 @@ interface GalleryImage {
   category: string
 }
 
+interface ServiceCardProps {
+  href: string
+  eyebrow: string
+  title: string
+  description: string
+  image: GalleryImage | null
+  icon: React.ReactNode
+  delay?: number
+}
+
 export default function SportsMediaPage() {
-  const [coverImages, setCoverImages] = useState<{ photography: GalleryImage | null; events: GalleryImage | null }>({
-    photography: null,
-    events: null,
-  })
+  const [coverImages, setCoverImages] = useState<{
+    photography: GalleryImage | null
+    events: GalleryImage | null
+  }>({ photography: null, events: null })
 
   useEffect(() => {
-    fetchCoverImages()
+    ;(async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL
+        if (!apiUrl) return
+        const response = await fetch(`${apiUrl}/gallery?limit=100`)
+        if (!response.ok) throw new Error('Failed to fetch')
+        const json = await response.json()
+        const images = json.data || json
+        const list: GalleryImage[] = Array.isArray(images) ? images : []
+        const photographyImage =
+          list.find((img) => ['Competition', 'Training', 'Moments'].includes(img.category)) || null
+        const eventsImage = list.find((img) => img.category === 'Events') || null
+        setCoverImages({ photography: photographyImage, events: eventsImage })
+      } catch (err) {
+        console.warn('Sports media covers fetch failed', err)
+      }
+    })()
   }, [])
 
-  const fetchCoverImages = async () => {
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL
-      if (!apiUrl) return
-
-      const response = await fetch(`${apiUrl}/gallery?limit=100`)
-      if (!response.ok) throw new Error('Failed to fetch')
-
-      const json = await response.json()
-      console.log('Sports media hub gallery API response:', json)
-      const images = json.data || json
-      const imageArray = Array.isArray(images) ? images : []
-      console.log('Gallery images available:', imageArray.length)
-
-      // Get first image from Competition/Training category for photography
-      const photographyImage = imageArray.find((img: GalleryImage) => ['Competition', 'Training', 'Moments'].includes(img.category))
-      console.log('Photography cover image found:', !!photographyImage)
-
-      // Get first image from Events category for live events
-      const eventsImage = imageArray.find((img: GalleryImage) => img.category === 'Events')
-      console.log('Events cover image found:', !!eventsImage)
-
-      setCoverImages({
-        photography: photographyImage || null,
-        events: eventsImage || null,
-      })
-    } catch (error) {
-      console.error('Error fetching cover images:', error)
-    }
-  }
-
   return (
-    <div className="min-h-screen pt-20">
-      {/* Hero Section */}
-      <section className="bg-black text-white py-16 sm:py-20 md:py-24">
+    <main className="min-h-screen bg-white">
+      {/* Hero — matches events / coaching dark header */}
+      <section className="bg-zinc-950 pt-24 sm:pt-28 pb-10 sm:pb-14">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-2xl mx-auto text-center"
+          >
+            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4">
               Sports Media Services
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-zinc-300 mb-6 sm:mb-8">
-              Capturing the power, passion, and precision of weightlifting through professional photography and live event coverage
+            <p className="text-sm sm:text-base md:text-lg text-zinc-400">
+              Professional photography and live event coverage built for weightlifting.
             </p>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Services Grid */}
-      <section className="py-12 sm:py-16 md:py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-            {/* Sports Photography */}
-            <Link
-              href="/sports-media/photography"
-              className="group bg-zinc-50 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-            >
-              <div className="aspect-video bg-black flex items-center justify-center overflow-hidden relative">
-                {coverImages.photography ? (
-                  <>
-                    <Image
-                      src={coverImages.photography.image_url}
-                      alt={coverImages.photography.alt_text}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors" />
-                  </>
-                ) : (
-                  <Camera className="w-16 sm:w-20 h-16 sm:h-20 text-white/50" />
-                )}
-              </div>
-              <div className="p-6 sm:p-8">
-                <h2 className="font-display text-2xl font-bold text-zinc-900 mb-4 group-hover:text-brand-accent transition-colors">
-                  Sports Photography
-                </h2>
-                <p className="text-zinc-600 mb-6">
-                  Professional photography services capturing the intensity and athleticism of weightlifting competitions and training sessions.
-                </p>
-                <div className="flex items-center gap-2 text-brand-accent font-medium">
-                  <span>View Gallery</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            </Link>
-
-            {/* Live Sports Events */}
-            <Link
-              href="/sports-media/live-events"
-              className="group bg-zinc-50 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-            >
-              <div className="aspect-video bg-black flex items-center justify-center overflow-hidden relative">
-                {coverImages.events ? (
-                  <>
-                    <Image
-                      src={coverImages.events.image_url}
-                      alt={coverImages.events.alt_text}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors" />
-                  </>
-                ) : (
-                  <Video className="w-16 sm:w-20 h-16 sm:h-20 text-white/50" />
-                )}
-              </div>
-              <div className="p-6 sm:p-8">
-                <h2 className="font-display text-2xl font-bold text-zinc-900 mb-4 group-hover:text-brand-accent transition-colors">
-                  Live Sports Events
-                </h2>
-                <p className="text-zinc-600 mb-6">
-                  Complete live event coverage including live streaming, real-time updates, and comprehensive event documentation.
-                </p>
-                <div className="flex items-center gap-2 text-brand-accent font-medium">
-                  <span>Learn More</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            </Link>
-          </div>
+      {/* Service cards */}
+      <section className="container mx-auto px-4 max-w-6xl py-10 sm:py-14">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          <ServiceCard
+            href="/sports-media/photography"
+            eyebrow="Sports Photography"
+            title="Capture the lift"
+            description="High-impact photography of competitions, training and athlete portraits — delivered ready to publish."
+            image={coverImages.photography}
+            icon={<Camera className="w-12 h-12 text-white/40" />}
+          />
+          <ServiceCard
+            href="/sports-media/live-events"
+            eyebrow="Live Events"
+            title="Stream every PR"
+            description="Multi-camera live streaming, real-time graphics, and a polished highlight reel after the event."
+            image={coverImages.events}
+            icon={<Video className="w-12 h-12 text-white/40" />}
+            delay={0.05}
+          />
         </div>
       </section>
+    </main>
+  )
+}
 
-     
-    </div>
+function ServiceCard({
+  href,
+  eyebrow,
+  title,
+  description,
+  image,
+  icon,
+  delay = 0,
+}: ServiceCardProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.4, delay }}
+      className="group h-full"
+    >
+      <Link
+        href={href}
+        className="block bg-white rounded-[12px] overflow-hidden border border-zinc-100 shadow-soft hover:shadow-card-hover transition-all duration-350 hover:-translate-y-1 h-full flex flex-col"
+      >
+        {/* Cover */}
+        <div className="relative aspect-[16/10] bg-zinc-900 overflow-hidden">
+          {image ? (
+            <>
+              <Image
+                src={image.image_url}
+                alt={image.alt_text || title}
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+            </>
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">{icon}</div>
+          )}
+          <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-white/90 backdrop-blur text-[10px] font-bold uppercase tracking-wider text-zinc-900">
+            {eyebrow}
+          </span>
+        </div>
+
+        {/* Info */}
+        <div className="p-5 flex flex-col flex-grow">
+          <h2 className="font-display text-xl sm:text-2xl font-bold text-zinc-900 group-hover:text-brand-accent transition-colors">
+            {title}
+          </h2>
+          <p className="mt-2 text-sm text-zinc-600 leading-relaxed line-clamp-3">
+            {description}
+          </p>
+          <div className="mt-auto pt-4 flex items-center justify-between">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 group-hover:text-brand-accent transition-colors">
+              Explore
+            </span>
+            <ArrowRight className="w-4 h-4 text-zinc-300 group-hover:text-brand-accent group-hover:translate-x-0.5 transition-all" />
+          </div>
+        </div>
+      </Link>
+    </motion.div>
   )
 }
