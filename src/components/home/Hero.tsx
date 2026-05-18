@@ -2,8 +2,9 @@
 
 import * as React from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { Camera, ChevronLeft, ChevronRight, Dumbbell, ShoppingBag, Trophy } from 'lucide-react'
 
 interface HeroSlide {
   id: string
@@ -114,7 +115,7 @@ export default function Hero() {
 
   return (
     <section
-      className="relative overflow-hidden bg-gradient-to-b from-zinc-50 via-white to-zinc-100 min-h-screen flex flex-col items-center justify-center py-10"
+      className="relative overflow-hidden bg-gradient-to-b from-zinc-50 via-white to-zinc-100 min-h-screen flex flex-col items-center justify-start sm:justify-center pt-24 pb-10 sm:py-10"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       aria-roledescription="carousel"
@@ -136,6 +137,47 @@ export default function Hero() {
         </div>
       ) : (
         <>
+          {/* Mobile-only intro — fills the navbar→carousel gap on small screens.
+              Hidden on sm+ where the centered carousel naturally fills the viewport. */}
+          <div className="sm:hidden w-full max-w-md px-5 mb-6 text-center">
+            <h1 className="font-display text-3xl font-bold text-zinc-900 leading-tight">
+              Built for Champions
+            </h1>
+            <p className="mt-2 text-zinc-600 text-sm">
+              Engineered for Performance
+            </p>
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              <Link
+                href="/shop"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-zinc-200 text-zinc-800 text-xs font-semibold shadow-sm active:bg-zinc-100"
+              >
+                <ShoppingBag className="w-3.5 h-3.5" />
+                Shop
+              </Link>
+              <Link
+                href="/coaching"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-zinc-200 text-zinc-800 text-xs font-semibold shadow-sm active:bg-zinc-100"
+              >
+                <Dumbbell className="w-3.5 h-3.5" />
+                Coaching
+              </Link>
+              <Link
+                href="/events"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-zinc-200 text-zinc-800 text-xs font-semibold shadow-sm active:bg-zinc-100"
+              >
+                <Trophy className="w-3.5 h-3.5" />
+                Events
+              </Link>
+              <Link
+                href="/sports-media"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-zinc-200 text-zinc-800 text-xs font-semibold shadow-sm active:bg-zinc-100"
+              >
+                <Camera className="w-3.5 h-3.5" />
+                Media
+              </Link>
+            </div>
+          </div>
+
           {/* 3D stage — perspective on outer, preserve-3d on inner so child rotateY renders in depth.
               Heights scale with viewport so the active square card feels full-screen on desktop
               while staying contained on mobile. */}
@@ -232,7 +274,6 @@ function Slide({
       type="button"
       onClick={onClick}
       aria-label={isActive ? 'Featured slide' : 'Go to slide'}
-      aria-hidden={visible ? 'false' : 'true'}
       tabIndex={isActive ? 0 : -1}
       className="absolute left-1/2 top-1/2 aspect-square h-full overflow-hidden rounded-2xl shadow-2xl ring-1 ring-black/10 transition-all duration-700 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-accent bg-zinc-900"
       style={{
