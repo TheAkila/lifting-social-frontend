@@ -140,7 +140,9 @@ function CoachCard({ coach }: { coach: Coach }) {
   const champs = coach.champions_count && coach.champions_count > 0 ? coach.champions_count : null
   const years = coach.experience && coach.experience > 0 ? coach.experience : null
   const specs = (coach.specializations ?? []).filter(Boolean).slice(0, 2)
+  const bio = (coach.bio ?? '').trim()
   const hasTitle = !!coach.title && coach.title.trim().length > 0
+  const hasBio = bio.length > 0
   const hasMeta = champs != null || years != null
   const hasSpecs = specs.length > 0
 
@@ -195,19 +197,25 @@ function CoachCard({ coach }: { coach: Coach }) {
             {coach.name}
           </h3>
 
+          {hasBio && (
+            <p className="mt-2 text-xs text-zinc-600 leading-relaxed line-clamp-2">
+              {bio}
+            </p>
+          )}
+
           {hasMeta && (
-            <div className="mt-2 flex items-center gap-3 text-xs text-zinc-600">
+            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-600">
               {champs != null && (
                 <span className="inline-flex items-center gap-1">
                   <Trophy className="w-3 h-3 text-amber-500" />
                   <span className="font-semibold text-zinc-900">{champs}</span>
-                  <span className="text-zinc-500">champs</span>
+                  <span className="text-zinc-500">{champs === 1 ? 'champion' : 'champions'}</span>
                 </span>
               )}
               {years != null && (
                 <span>
                   <span className="font-semibold text-zinc-900">{years}</span>
-                  <span className="text-zinc-500"> yrs</span>
+                  <span className="text-zinc-500"> {years === 1 ? 'yr' : 'yrs'} experience</span>
                 </span>
               )}
             </div>
