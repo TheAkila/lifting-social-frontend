@@ -105,11 +105,12 @@ export default function Hero() {
       go(i)
       return
     }
-    if (!slide.link_url) return
-    if (slide.link_url.startsWith('http')) {
-      window.open(slide.link_url, '_blank', 'noopener,noreferrer')
+    const raw = slide.link_url?.trim()
+    if (!raw) return
+    if (raw.startsWith('http://') || raw.startsWith('https://')) {
+      window.open(raw, '_blank', 'noopener,noreferrer')
     } else {
-      router.push(slide.link_url)
+      router.push(raw.startsWith('/') ? raw : `/${raw}`)
     }
   }
 
@@ -279,7 +280,7 @@ function Slide({
         fill
         aria-hidden
         sizes="(min-width: 1280px) 55vh, (min-width: 1024px) 48vh, (min-width: 640px) 42vh, 70vw"
-        className="object-cover scale-110 blur-2xl opacity-60"
+        className="object-cover scale-110 blur-2xl opacity-60 pointer-events-none"
         draggable={false}
       />
       <Image
@@ -288,7 +289,7 @@ function Slide({
         fill
         priority={isActive}
         sizes="(min-width: 1280px) 55vh, (min-width: 1024px) 48vh, (min-width: 640px) 42vh, 70vw"
-        className="object-contain"
+        className="object-contain pointer-events-none"
         draggable={false}
       />
     </button>
