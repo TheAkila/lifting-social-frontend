@@ -26,6 +26,30 @@ const STAGE_DESKTOP: StageMetrics = { tx: 58, tz: 220, ry: 32, scale: 0.85, pers
 const STAGE_TABLET: StageMetrics = { tx: 52, tz: 200, ry: 28, scale: 0.82, perspective: 1500 }
 const STAGE_MOBILE: StageMetrics = { tx: 38, tz: 140, ry: 22, scale: 0.72, perspective: 1200 }
 
+/**
+ * Normalize an admin-provided link string into a `{url, external}` pair so
+ * the hero carousel can route correctly regardless of how the admin typed it.
+ *
+ *   "https://eventbrite.com/x"  → external https URL, new tab
+ *   "//cdn.example.com/foo"     → external, new tab
+ *   "mailto:a@b.com" / "tel:..." → external (browser handles it)
+ *   "www.example.com"           → treated as external, prefixed https://
+ *   "example.com/foo"           → treated as external, prefixed https://
+ *   "/events/foo"               → internal, same tab via router
+ *   "events/foo"                → internal, normalized to /events/foo
+ */
+function parseSlideLink(raw: string): { url: string; external: boolean } {
+  if (raw.startsWith('//')) return { url: raw, external: true }
+  if (/^[a-z][a-z0-9+.-]*:/i.test(raw)) return { url: raw, external: true }
+  if (raw.startsWith('/')) return { url: raw, external: false }
+  // Looks like a bare hostname (contains a dot, no whitespace) — treat as external.
+  if (raw.includes('.') && !/\s/.test(raw)) {
+    return { url: `https://${raw}`, external: true }
+  }
+  // Plain word — treat as an internal app path.
+  return { url: `/${raw}`, external: false }
+}
+
 export default function Hero() {
   const router = useRouter()
   const [slides, setSlides] = React.useState<HeroSlide[]>([])
@@ -103,23 +127,20 @@ export default function Hero() {
   const handleSlideClick = (slide: HeroSlide, i: number) => {
     const raw = slide.link_url?.trim()
 
-    // If this slide has a link, always navigate — regardless of whether it's
-    // the active slide or a side peek. External links (http/https/mailto/tel
-    // or anything with `://`) open in a new tab; internal app paths navigate
-    // in the same tab via the router.
     if (raw) {
-      const isExternal =
-        /^[a-z][a-z0-9+.-]*:/i.test(raw) || raw.startsWith('//')
-      if (isExternal) {
-        window.open(raw, '_blank', 'noopener,noreferrer')
+      const { url, external } = parseSlideLink(raw)
+      // Lightweight debug log so you can see in the browser console why a
+      // click did or didn't navigate. Remove once everything's verified.
+      console.log('[hero-carousel] click →', { raw, url, external })
+      if (external) {
+        window.open(url, '_blank', 'noopener,noreferrer')
       } else {
-        router.push(raw.startsWith('/') ? raw : `/${raw}`)
+        router.push(url)
       }
       return
     }
 
-    // No link on this slide — fall back to advancing the carousel if a side
-    // peek was tapped so the user can still browse.
+    console.log('[hero-carousel] click: slide has no link_url, advancing carousel', slide)
     if (i !== index) {
       go(i)
     }
