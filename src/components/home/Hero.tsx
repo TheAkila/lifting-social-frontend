@@ -45,7 +45,7 @@ export default function Hero() {
     }
   }, [])
 
-  const enableLoop = slides.length >= 3
+  const enableLoop = slides.length >= 2
 
   return (
     <section className="relative w-full min-h-screen overflow-hidden bg-gradient-to-b from-zinc-50 via-white to-zinc-100">
@@ -72,6 +72,8 @@ export default function Hero() {
             grabCursor
             centeredSlides
             loop={enableLoop}
+            loopAdditionalSlides={Math.max(slides.length, 3)}
+            watchSlidesProgress
             slidesPerView="auto"
             spaceBetween={0}
             autoplay={{ delay: 4500, disableOnInteraction: false, pauseOnMouseEnter: true }}
