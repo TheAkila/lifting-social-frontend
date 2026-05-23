@@ -388,7 +388,7 @@ export default function CheckoutPage() {
                         <p className="text-xs text-gray-600">3-5 business days</p>
                       </div>
                     </div>
-                    <span className="text-sm font-semibold">LKR 400</span>
+                    <span className="text-sm font-semibold">{shipping === 0 ? 'FREE' : `LKR ${shipping.toLocaleString()}`}</span>
                   </label>
                 </div>
               </motion.div>
@@ -452,7 +452,7 @@ export default function CheckoutPage() {
                 {/* Items */}
                 <div className="space-y-2 sm:space-y-3 mb-3 sm:mb-4 pb-3 sm:pb-4 border-b-2 border-gray-200">
                   {items.map((item) => (
-                    <div key={`${item.id}-${item.size}`} className="flex items-center gap-2 sm:gap-3">
+                    <div key={`${item.id}-${item.size}-${item.color || ''}`} className="flex items-center gap-2 sm:gap-3">
                       <img 
                         src={item.image} 
                         alt={item.name} 

@@ -48,11 +48,11 @@ export default function OrderConfirmationPage() {
     fetchOrder()
   }, [params.orderId])
 
+  // Reaching this page means an order was placed — clear the cart once.
   useEffect(() => {
-    if (order) {
-      clearCart()
-    }
-  }, [order, clearCart])
+    clearCart()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const fetchOrder = async () => {
     try {
@@ -63,7 +63,7 @@ export default function OrderConfirmationPage() {
       }
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/orders/${params.orderId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/orders/${params.orderId}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,

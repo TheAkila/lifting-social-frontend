@@ -17,8 +17,8 @@ export interface CartItem {
 interface CartContextType {
   items: CartItem[]
   addItem: (item: CartItem) => void
-  removeItem: (id: string, size: string) => void
-  updateQuantity: (id: string, size: string, quantity: number) => void
+  removeItem: (id: string, size: string, color?: string) => void
+  updateQuantity: (id: string, size: string, quantity: number, color?: string) => void
   clearCart: () => void
   totalItems: number
   totalPrice: number
@@ -26,6 +26,11 @@ interface CartContextType {
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
+
+// A cart line is uniquely identified by product + size + color, so the same
+// product in two colours/sizes stays as separate lines.
+const sameLine = (a: { id: string; size: string; color?: string }, b: { id: string; size: string; color?: string }) =>
+  a.id === b.id && a.size === b.size && (a.color || '') === (b.color || '')
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
@@ -51,15 +56,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addItem = (item: CartItem) => {
     setItems((prevItems) => {
-      const existingItem = prevItems.find(
-        (i) => i.id === item.id && i.size === item.size
-      )
+      const existingItem = prevItems.find((i) => sameLine(i, item))
 
       if (existingItem) {
         return prevItems.map((i) =>
-          i.id === item.id && i.size === item.size
-            ? { 
-                ...i, 
+          sameLine(i, item)
+            ? {
+                ...i,
                 quantity: i.quantity + item.quantity,
                 shippingType: item.shippingType || i.shippingType,
                 shippingAmount: item.shippingAmount ?? i.shippingAmount,
@@ -72,23 +75,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
     })
   }
 
-  const removeItem = (id: string, size: string) => {
+  const removeItem = (id: string, size: string, color?: string) => {
     setItems((prevItems) =>
-      prevItems.filter((item) => !(item.id === id && item.size === size))
+      prevItems.filter((item) => !sameLine(item, { id, size, color }))
     )
   }
 
-  const updateQuantity = (id: string, size: string, quantity: number) => {
+  const updateQuantity = (id: string, size: string, quantity: number, color?: string) => {
     if (quantity <= 0) {
-      removeItem(id, size)
+      removeItem(id, size, color)
       return
     }
 
     setItems((prevItems) =>
       prevItems.map((item) =>
-        item.id === id && item.size === size
-          ? { ...item, quantity }
-          : item
+        sameLine(item, { id, size, color }) ? { ...item, quantity } : item
       )
     )
   }

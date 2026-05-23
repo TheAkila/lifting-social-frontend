@@ -64,7 +64,7 @@ export default function CartPage() {
             <div className="lg:col-span-2 space-y-3 sm:space-y-4">
               {items.map((item, index) => (
                 <motion.div
-                  key={`${item.id}-${item.size}`}
+                  key={`${item.id}-${item.size}-${item.color || ''}`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
@@ -91,7 +91,7 @@ export default function CartPage() {
                     {/* Quantity Controls */}
                     <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-between gap-2">
                       <button
-                        onClick={() => removeItem(item.id, item.size)}
+                        onClick={() => removeItem(item.id, item.size, item.color)}
                         className="text-blue-600 hover:text-blue-700 transition-colors p-2 order-last sm:order-first"
                         title="Remove item"
                       >
@@ -100,7 +100,7 @@ export default function CartPage() {
 
                       <div className="flex items-center gap-2 bg-gray-100 border border-gray-300 rounded-lg px-2 py-1">
                         <button
-                          onClick={() => updateQuantity(item.id, item.size, item.quantity - 1)}
+                          onClick={() => updateQuantity(item.id, item.size, item.quantity - 1, item.color)}
                           className="text-black hover:text-gray-700 transition-colors p-1"
                           disabled={item.quantity <= 1}
                         >
@@ -108,7 +108,7 @@ export default function CartPage() {
                         </button>
                         <span className="font-bold w-8 text-center text-black">{item.quantity}</span>
                         <button
-                          onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)}
+                          onClick={() => updateQuantity(item.id, item.size, item.quantity + 1, item.color)}
                           className="text-black hover:text-gray-700 transition-colors p-1"
                         >
                           <FaPlus className="w-3 h-3" />
