@@ -2,93 +2,73 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
-import { useAuth } from '@/contexts/AuthContext'
+import { GOOGLE_OAUTH_STATE_KEY } from '@/lib/googleAuth'
 
 export default function AuthCallbackPage() {
   const router = useRouter()
-  const { login: contextLogin } = useAuth()
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Implicit OAuth flow returns tokens in the URL hash fragment.
-        const hashParams = new URLSearchParams(window.location.hash.substring(1))
-        const accessToken = hashParams.get('access_token')
-        const refreshToken = hashParams.get('refresh_token') || ''
+        const params = new URLSearchParams(window.location.search)
+        const code = params.get('code')
+        const returnedState = params.get('state')
+        const oauthError = params.get('error')
 
-        if (!accessToken) {
-          throw new Error('No authentication data found. Please try signing in again.')
+        if (oauthError) {
+          throw new Error(oauthError === 'access_denied' ? 'Sign in was cancelled.' : oauthError)
+        }
+        if (!code) {
+          throw new Error('No authorization code returned. Please try signing in again.')
         }
 
-        // Establish the Supabase session from the URL tokens.
-        const { data: { session }, error: sessionError } = await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken,
-        })
+        // CSRF check: state must match what we stored before redirecting to Google.
+        const savedState = sessionStorage.getItem(GOOGLE_OAUTH_STATE_KEY)
+        if (!returnedState || returnedState !== savedState) {
+          throw new Error('Invalid sign-in state. Please try again.')
+        }
+        sessionStorage.removeItem(GOOGLE_OAUTH_STATE_KEY)
 
-        if (sessionError) throw sessionError
-        if (!session?.user) throw new Error('No user in session')
-
-        const supabaseUser = session.user
-
-        // Sync the user to our backend and get the application JWT.
-        // The backend uses the service-role key, so it is the single source of
-        // truth for the user's id and role (the anon client cannot read the
-        // website_users table because RLS is enabled with no public policy).
+        // The backend exchanges the code with Google (using the client secret),
+        // upserts the user, and returns our application JWT. It is the single
+        // source of truth for the user's id and role.
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+        const redirectUri = `${window.location.origin}/auth/callback`
 
-        const backendResponse = await fetch(`${API_URL}/auth/google/callback`, {
+        const response = await fetch(`${API_URL}/auth/google/callback`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id: supabaseUser.id, // align website_users.id with the Supabase auth uid
-            email: supabaseUser.email,
-            name: supabaseUser.user_metadata?.full_name || supabaseUser.email,
-            avatar: supabaseUser.user_metadata?.avatar_url,
-            googleId: supabaseUser.user_metadata?.sub,
-          }),
+          body: JSON.stringify({ code, redirectUri }),
         })
 
-        if (!backendResponse.ok) {
-          const body = await backendResponse.text().catch(() => '')
-          console.error('Backend sync failed:', backendResponse.status, body)
+        if (!response.ok) {
+          const body = await response.text().catch(() => '')
+          console.error('Google sync failed:', response.status, body)
           throw new Error('Could not complete sign in. Please try again.')
         }
 
-        const backendData = await backendResponse.json()
-        const backendUser = backendData.data?.user || backendData.user
-        const backendToken = backendData.data?.token || backendData.token
+        const data = await response.json()
+        const user = data.data?.user || data.user
+        const token = data.data?.token || data.token
 
-        if (!backendToken) {
+        if (!token || !user) {
           throw new Error('Could not complete sign in (no token returned). Please try again.')
         }
 
-        // The backend response is authoritative for id and role.
         const userData = {
-          id: backendUser?.id || supabaseUser.id,
-          email: supabaseUser.email,
-          name: backendUser?.name || supabaseUser.user_metadata?.full_name || supabaseUser.email,
-          avatar: backendUser?.avatar || supabaseUser.user_metadata?.avatar_url,
-          role: backendUser?.role || 'user',
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          avatar: user.avatar,
+          role: user.role || 'user',
         }
 
-        // Supabase tokens are used to restore the Supabase session; the backend
-        // JWT (authToken) is used as the Bearer token for our own API. Never
-        // store the Supabase token under authToken.
-        localStorage.setItem('supabaseToken', session.access_token)
-        localStorage.setItem('refreshToken', session.refresh_token || '')
-        sessionStorage.setItem('supabaseToken', session.access_token)
-        sessionStorage.setItem('refreshToken', session.refresh_token || '')
-
-        localStorage.setItem('authToken', backendToken)
-        sessionStorage.setItem('authToken', backendToken)
-
+        localStorage.setItem('authToken', token)
+        sessionStorage.setItem('authToken', token)
         localStorage.setItem('userData', JSON.stringify(userData))
         sessionStorage.setItem('userData', JSON.stringify(userData))
 
-        // Redirect based on the authoritative role.
         window.location.href = userData.role === 'admin' ? '/admin' : '/'
       } catch (err: any) {
         console.error('Auth callback error:', err)
@@ -100,7 +80,7 @@ export default function AuthCallbackPage() {
     }
 
     handleCallback()
-  }, [router, contextLogin])
+  }, [router])
 
   if (error) {
     return (

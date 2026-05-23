@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { signInWithGoogle } from '@/lib/supabase'
+import { startGoogleLogin } from '@/lib/googleAuth'
 import { Loader2 } from 'lucide-react'
 import Logo from '@/components/layout/Logo'
 
@@ -37,9 +37,8 @@ export default function LoginPage() {
     setError('')
     
     try {
-      // Use Supabase OAuth for Google
-      await signInWithGoogle()
-      // Supabase will handle the redirect to /auth/callback
+      // Redirects the browser to Google; control returns at /auth/callback.
+      startGoogleLogin()
     } catch (err: any) {
       console.error('Google sign in error:', err)
       setError(err.message || 'Google sign in failed. Please try again.')
