@@ -175,10 +175,7 @@ export default function AboutPage() {
               className="lg:col-span-7 mt-12 lg:mt-0"
             >
               <h3 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-zinc-900 tracking-tight">
-                Akila Nishan{' '}
-                <span className="bg-gradient-to-r from-zinc-900 to-zinc-500 bg-clip-text text-transparent">
-                  Jayakody
-                </span>
+                Akila Nishan Jayakody
               </h3>
               <p className="mt-2 text-sm sm:text-base font-medium text-zinc-700 uppercase tracking-[0.2em]">
                 Founder · Director · National Athlete
