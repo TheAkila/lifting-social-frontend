@@ -74,8 +74,7 @@ export default function ContactPage() {
                     <div>
                       <h4 className="font-semibold mb-1">Address</h4>
                       <p className="text-zinc-600 text-sm">
-                        123 Galle Road<br />
-                        Colombo 03, Sri Lanka
+                        Colombo, Sri Lanka
                       </p>
                     </div>
                   </div>
@@ -85,8 +84,7 @@ export default function ContactPage() {
                     <div>
                       <h4 className="font-semibold mb-1">Phone</h4>
                       <p className="text-zinc-600 text-sm">
-                        +94 77 123 4567<br />
-                        
+                        +94 76 482 9645
                       </p>
                     </div>
                   </div>
@@ -96,8 +94,7 @@ export default function ContactPage() {
                     <div>
                       <h4 className="font-semibold mb-1">Email</h4>
                       <p className="text-zinc-600 text-sm">
-                        info@liftingsocial.com
-                        
+                        theliftingsocial@gmail.com
                       </p>
                     </div>
                   </div>
@@ -108,7 +105,7 @@ export default function ContactPage() {
                   <h4 className="font-semibold mb-4">Follow Us</h4>
                   <div className="flex space-x-4">
                     <a
-                      href="https://facebook.com/liftingsocial"
+                      href="https://web.facebook.com/profile.php?id=61568217705957"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors"
@@ -116,7 +113,7 @@ export default function ContactPage() {
                       <FaFacebook className="text-xl" />
                     </a>
                     <a
-                      href="https://instagram.com/liftingsocial"
+                      href="https://www.instagram.com/theliftingsocial/"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors"
@@ -124,7 +121,7 @@ export default function ContactPage() {
                       <FaInstagram className="text-xl" />
                     </a>
                     <a
-                      href="https://whatsapp.com/channel/0029Vb6anfUDjiOUZhVkSe1h"
+                      href="https://wa.me/94764829645"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors"

@@ -76,7 +76,7 @@ export default function Footer() {
                   <Youtube className="w-4 h-4 text-zinc-400 group-hover:text-white" />
                 </a>
                 <a
-                  href="https://whatsapp.com/channel/0029Vb6anfUDjiOUZhVkSe1h"
+                  href="https://wa.me/94764829645"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-10 h-10 bg-zinc-800 hover:bg-brand-accent rounded-[10px] flex items-center justify-center transition-all duration-250 group"
