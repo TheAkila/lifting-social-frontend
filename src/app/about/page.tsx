@@ -4,15 +4,6 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 
-const founderAchievements = [
-  { label: 'BSc in Computer Science', detail: 'University of Colombo' },
-  { label: 'Software Engineer', detail: 'Tech & product builder' },
-  { label: 'Weightlifter since 2018', detail: 'Over 7 years on the platform' },
-  { label: 'University Records Holder', detail: 'University of Colombo' },
-  { label: 'National Athlete', detail: 'Sri Lanka' },
-  { label: 'Founder of Lifting Social', detail: 'Est. 2023' },
-]
-
 export default function AboutPage() {
   return (
     <div className="min-h-screen pt-20 bg-white">
@@ -183,48 +174,19 @@ export default function AboutPage() {
 
               <div className="mt-6 space-y-4 text-zinc-700 text-base sm:text-lg leading-relaxed">
                 <p>
-                  Akila is a software engineer and a BSc in Computer Science graduate from the
-                  University of Colombo. He has been an Olympic weightlifter since 2018, going on to
-                  set university records and represent Sri Lanka as a national athlete.
+                  Akila is a <span className="text-zinc-900 font-semibold">software engineer</span> and
+                  a <span className="text-zinc-900 font-semibold">BSc in Computer Science</span> graduate
+                  from the <span className="text-zinc-900 font-semibold">University of Colombo</span>.
+                  An Olympic weightlifter since 2018, he holds
+                  {' '}<span className="text-zinc-900 font-semibold">University of Colombo records</span> and
+                  represents Sri Lanka as a <span className="text-zinc-900 font-semibold">national athlete</span>.
                 </p>
                 <p>
-                  In 2023, he founded <span className="text-zinc-900 font-semibold">Lifting Social</span> to
-                  bridge two worlds he knows intimately, technology and the iron platform, and to give
-                  Sri Lankan lifters the brand, community, and tools they deserve.
+                  In <span className="text-zinc-900 font-semibold">2023</span>, he founded{' '}
+                  <span className="text-zinc-900 font-semibold">Lifting Social</span> to bridge two
+                  worlds he knows intimately, technology and the iron platform, and to give Sri Lankan
+                  lifters the brand, community, and tools they deserve.
                 </p>
-              </div>
-
-              {/* Achievements grid */}
-              <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {founderAchievements.map((item, idx) => (
-                  <motion.div
-                    key={item.label}
-                    initial={{ opacity: 0, y: 12 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: 0.15 + idx * 0.05 }}
-                    className="group flex items-start gap-3 rounded-xl bg-white p-3.5 ring-1 ring-inset ring-zinc-200 shadow-soft hover:ring-zinc-900/40 hover:shadow-card transition-all"
-                  >
-                    <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-zinc-900 text-white ring-1 ring-inset ring-zinc-900">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        className="h-4 w-4"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </span>
-                    <div>
-                      <p className="text-sm font-semibold text-zinc-900">{item.label}</p>
-                      <p className="text-xs text-zinc-500 mt-0.5">{item.detail}</p>
-                    </div>
-                  </motion.div>
-                ))}
               </div>
 
               {/* Quote */}
