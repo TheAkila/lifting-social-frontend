@@ -95,8 +95,8 @@ export default function AboutPage() {
       <section className="relative overflow-hidden bg-gradient-to-b from-white via-zinc-50 to-white py-16 sm:py-20 md:py-28 px-4">
         {/* Decorative background */}
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-blue-500/15 blur-3xl" />
-          <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-indigo-400/15 blur-3xl" />
+          <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-zinc-400/15 blur-3xl" />
+          <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-zinc-300/20 blur-3xl" />
           <div className="absolute inset-0 opacity-[0.05] bg-[linear-gradient(to_right,#09090b_1px,transparent_1px),linear-gradient(to_bottom,#09090b_1px,transparent_1px)] bg-[size:48px_48px]" />
         </div>
 
@@ -127,7 +127,7 @@ export default function AboutPage() {
             >
               <div className="relative mx-auto max-w-md lg:max-w-none">
                 {/* Glow */}
-                <div className="absolute -inset-6 rounded-3xl bg-gradient-to-tr from-blue-500/20 via-indigo-400/15 to-transparent blur-2xl" />
+                <div className="absolute -inset-6 rounded-3xl bg-gradient-to-tr from-zinc-400/25 via-zinc-300/15 to-transparent blur-2xl" />
 
                 {/* Primary image */}
                 <div className="relative rounded-2xl overflow-hidden ring-1 ring-zinc-200 shadow-card-hover">
@@ -176,11 +176,11 @@ export default function AboutPage() {
             >
               <h3 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-zinc-900 tracking-tight">
                 Akila Nishan{' '}
-                <span className="bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-zinc-900 to-zinc-500 bg-clip-text text-transparent">
                   Jayakody
                 </span>
               </h3>
-              <p className="mt-2 text-sm sm:text-base font-medium text-blue-600 uppercase tracking-[0.2em]">
+              <p className="mt-2 text-sm sm:text-base font-medium text-zinc-700 uppercase tracking-[0.2em]">
                 Founder · Director · National Athlete
               </p>
 
@@ -206,9 +206,9 @@ export default function AboutPage() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.4, delay: 0.15 + idx * 0.05 }}
-                    className="group flex items-start gap-3 rounded-xl bg-white p-3.5 ring-1 ring-inset ring-zinc-200 shadow-soft hover:ring-blue-500/40 hover:shadow-card transition-all"
+                    className="group flex items-start gap-3 rounded-xl bg-white p-3.5 ring-1 ring-inset ring-zinc-200 shadow-soft hover:ring-zinc-900/40 hover:shadow-card transition-all"
                   >
-                    <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 ring-1 ring-inset ring-blue-100">
+                    <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-zinc-900 text-white ring-1 ring-inset ring-zinc-900">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
@@ -236,7 +236,7 @@ export default function AboutPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.45 }}
-                className="mt-8 border-l-2 border-blue-500 pl-4 sm:pl-5"
+                className="mt-8 border-l-2 border-zinc-900 pl-4 sm:pl-5"
               >
                 <p className="text-base sm:text-lg italic text-zinc-800">
                   &ldquo;Every lift in Sri Lanka deserves a stage. Lifting Social is that stage,
