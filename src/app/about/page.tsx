@@ -103,7 +103,7 @@ export default function AboutPage() {
               Meet the Visionary Behind Lifting Social
             </h2>
             <p className="mt-3 text-sm sm:text-base text-zinc-600 max-w-2xl mx-auto">
-              An engineer, athlete, and builder driving Sri Lankan weightlifting forward.
+              Akila Nishan Jayakody — the owner of Lifting Social — an engineer, athlete, and builder driving Sri Lankan weightlifting forward.
             </p>
           </motion.div>
 
@@ -169,12 +169,14 @@ export default function AboutPage() {
                 Akila Nishan Jayakody
               </h3>
               <p className="mt-2 text-sm sm:text-base font-medium text-zinc-700 uppercase tracking-[0.2em]">
-                Founder · Director · National Athlete
+                Owner · Founder · Director · National Athlete
               </p>
 
               <div className="mt-6 space-y-4 text-zinc-700 text-base sm:text-lg leading-relaxed">
                 <p>
-                  Akila is a <span className="text-zinc-900 font-semibold">software engineer</span> and
+                  <span className="text-zinc-900 font-semibold">Akila Nishan Jayakody is the owner of Lifting Social</span>,
+                  as well as its founder and director. He is a{' '}
+                  <span className="text-zinc-900 font-semibold">software engineer</span> and
                   a <span className="text-zinc-900 font-semibold">BSc in Computer Science</span> graduate
                   from the <span className="text-zinc-900 font-semibold">University of Colombo</span>.
                   An Olympic weightlifter since 2018, he holds
@@ -182,10 +184,11 @@ export default function AboutPage() {
                   represents Sri Lanka as a <span className="text-zinc-900 font-semibold">national athlete</span>.
                 </p>
                 <p>
-                  In <span className="text-zinc-900 font-semibold">2023</span>, he founded{' '}
+                  In <span className="text-zinc-900 font-semibold">2023</span>, Akila founded and now owns{' '}
                   <span className="text-zinc-900 font-semibold">Lifting Social</span> to bridge two
                   worlds he knows intimately, technology and the iron platform, and to give Sri Lankan
-                  lifters the brand, community, and tools they deserve.
+                  lifters the brand, community, and tools they deserve. As the sole owner of Lifting
+                  Social, he leads the brand&rsquo;s vision, operations, and growth.
                 </p>
               </div>
 

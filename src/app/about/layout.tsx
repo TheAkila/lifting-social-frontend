@@ -5,16 +5,26 @@ const ABOUT_URL = `${SITE_URL}/about`
 const FOUNDER_IMAGE = `${SITE_URL}/images/founder-1.jpg`
 
 export const metadata: Metadata = {
-  title: 'About Akila Nishan Jayakody — Founder of Lifting Social',
+  title: 'About Akila Nishan Jayakody — Owner & Founder of Lifting Social',
   description:
-    'Akila Nishan Jayakody is a software engineer, BSc in Computer Science graduate of the University of Colombo, national weightlifter, University of Colombo records holder, and the founder of Lifting Social (est. 2023).',
+    'Akila Nishan Jayakody is the owner and founder of Lifting Social. A software engineer, BSc in Computer Science graduate of the University of Colombo, national weightlifter, and University of Colombo records holder, Akila owns and directs Lifting Social (est. 2023).',
+  keywords: [
+    'Lifting Social owner',
+    'who is the owner of Lifting Social',
+    'Akila Nishan Jayakody',
+    'Akila Nishan',
+    'founder of Lifting Social',
+    'director of Lifting Social',
+    'Lifting Social Sri Lanka',
+    'Sri Lankan weightlifting',
+  ],
   alternates: {
     canonical: ABOUT_URL,
   },
   openGraph: {
-    title: 'About Akila Nishan Jayakody — Founder of Lifting Social',
+    title: 'About Akila Nishan Jayakody — Owner & Founder of Lifting Social',
     description:
-      'Software engineer, national weightlifter, and founder of Lifting Social — Sri Lanka’s premier Olympic weightlifting platform.',
+      'Akila Nishan Jayakody is the owner and founder of Lifting Social — Sri Lanka’s premier Olympic weightlifting platform. Software engineer, national weightlifter, and brand director.',
     url: ABOUT_URL,
     siteName: 'Lifting Social',
     images: [
@@ -22,7 +32,7 @@ export const metadata: Metadata = {
         url: FOUNDER_IMAGE,
         width: 1200,
         height: 1500,
-        alt: 'Akila Nishan Jayakody — Founder & Director of Lifting Social',
+        alt: 'Akila Nishan Jayakody — Owner, Founder & Director of Lifting Social',
       },
     ],
     locale: 'en_LK',
@@ -30,9 +40,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'About Akila Nishan Jayakody — Founder of Lifting Social',
+    title: 'About Akila Nishan Jayakody — Owner & Founder of Lifting Social',
     description:
-      'Software engineer, national weightlifter, and founder of Lifting Social.',
+      'Akila Nishan Jayakody is the owner and founder of Lifting Social, a software engineer, and a national weightlifter.',
     images: [FOUNDER_IMAGE],
   },
 }
@@ -51,9 +61,14 @@ const personJsonLd = {
     '@type': 'Country',
     name: 'Sri Lanka',
   },
-  jobTitle: ['Founder & Director, Lifting Social', 'Software Engineer', 'National Weightlifter'],
+  jobTitle: [
+    'Owner, Lifting Social',
+    'Founder & Director, Lifting Social',
+    'Software Engineer',
+    'National Weightlifter',
+  ],
   description:
-    'Software engineer, BSc in Computer Science graduate of the University of Colombo, University of Colombo records holder in Olympic weightlifting, national athlete representing Sri Lanka, and founder of Lifting Social (2023).',
+    'Akila Nishan Jayakody is the owner, founder, and director of Lifting Social. A software engineer, BSc in Computer Science graduate of the University of Colombo, University of Colombo records holder in Olympic weightlifting, and national athlete representing Sri Lanka. He founded and owns Lifting Social (est. 2023).',
   url: ABOUT_URL,
   image: FOUNDER_IMAGE,
   alumniOf: {
@@ -68,6 +83,12 @@ const personJsonLd = {
     url: SITE_URL,
     founder: 'Akila Nishan Jayakody',
     foundingDate: '2023',
+  },
+  owns: {
+    '@type': 'Organization',
+    '@id': `${SITE_URL}#organization`,
+    name: 'Lifting Social',
+    url: SITE_URL,
   },
   knowsAbout: [
     'Olympic Weightlifting',
@@ -88,10 +109,14 @@ const organizationJsonLd = {
   '@type': 'Organization',
   '@id': `${SITE_URL}#organization`,
   name: 'Lifting Social',
+  alternateName: 'The Lifting Social',
   url: SITE_URL,
   logo: `${SITE_URL}/lifting-social-logo.svg`,
   foundingDate: '2023',
   founder: {
+    '@id': `${ABOUT_URL}#akila-nishan-jayakody`,
+  },
+  owner: {
     '@id': `${ABOUT_URL}#akila-nishan-jayakody`,
   },
   address: {
@@ -114,6 +139,37 @@ const organizationJsonLd = {
   ],
 }
 
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Who is the owner of Lifting Social?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Akila Nishan Jayakody is the owner of Lifting Social. He founded the brand in 2023 and serves as its director. Akila is a software engineer, a BSc in Computer Science graduate of the University of Colombo, and a national weightlifter representing Sri Lanka.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Who founded Lifting Social?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Lifting Social was founded in 2023 by Akila Nishan Jayakody, who is also its current owner and director.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Who is the director of Lifting Social?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Akila Nishan Jayakody is the director of Lifting Social, as well as its founder and owner.',
+      },
+    },
+  ],
+}
+
 export default function AboutLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
@@ -124,6 +180,10 @@ export default function AboutLayout({ children }: { children: React.ReactNode })
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       {children}
     </>
