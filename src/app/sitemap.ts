@@ -101,18 +101,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     safeFetch<any>('/coaches'),
   ])
 
-  const productEntries: MetadataRoute.Sitemap = products
-    .map((p) => {
-      const id = p?._id ?? p?.id
-      if (!id) return null
-      return {
-        url: `${SITE_URL}/shop/product/${id}`,
-        lastModified: pickDate(p?.updated_at ?? p?.updatedAt ?? p?.created_at ?? p?.createdAt),
-        changeFrequency: 'weekly' as const,
-        priority: 0.6,
-      }
-    })
-    .filter((e): e is SitemapEntry => e !== null)
+  const productEntries: MetadataRoute.Sitemap = products.flatMap((p) => {
+    const id = p?._id ?? p?.id
+    if (!id) return []
+    const entry: SitemapEntry = {
+      url: `${SITE_URL}/shop/product/${id}`,
+      lastModified: pickDate(p?.updated_at ?? p?.updatedAt ?? p?.created_at ?? p?.createdAt),
+      changeFrequency: 'weekly',
+      priority: 0.6,
+    }
+    return [entry]
+  })
 
   const eventEntries: MetadataRoute.Sitemap = events.flatMap((e) => {
     const slug = e?.slug
@@ -133,18 +132,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return [detail, live]
   })
 
-  const coachEntries: MetadataRoute.Sitemap = coaches
-    .map((c) => {
-      const handle = c?.slug ?? c?._id ?? c?.id
-      if (!handle) return null
-      return {
-        url: `${SITE_URL}/coaching/${handle}`,
-        lastModified: pickDate(c?.updated_at ?? c?.updatedAt ?? c?.created_at ?? c?.createdAt),
-        changeFrequency: 'monthly' as const,
-        priority: 0.6,
-      }
-    })
-    .filter((e): e is SitemapEntry => e !== null)
+  const coachEntries: MetadataRoute.Sitemap = coaches.flatMap((c) => {
+    const handle = c?.slug ?? c?._id ?? c?.id
+    if (!handle) return []
+    const entry: SitemapEntry = {
+      url: `${SITE_URL}/coaching/${handle}`,
+      lastModified: pickDate(c?.updated_at ?? c?.updatedAt ?? c?.created_at ?? c?.createdAt),
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    }
+    return [entry]
+  })
 
   return [...staticEntries, ...productEntries, ...eventEntries, ...coachEntries]
 }
