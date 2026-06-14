@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import api from '@/lib/api'
 import Link from 'next/link'
-import { FaPlus, FaEdit, FaTrash, FaArrowLeft, FaUpload, FaTimes, FaImage } from 'react-icons/fa'
+import { FaPlus, FaEdit, FaTrash, FaArrowLeft, FaUpload, FaTimes, FaImage, FaEye, FaEyeSlash } from 'react-icons/fa'
 
 export default function AdminProducts() {
   const { user } = useAuth()
@@ -51,6 +51,7 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
     inventory: '0',
     inStock: true,
     featured: false,
+    visible: true,
     sizes: [] as string[],
     colors: [] as string[],
     material: '',
@@ -70,12 +71,22 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
 
   const loadProducts = async () => {
     try {
-      const res = await api.get('/products')
+      const res = await api.get('/products?includeHidden=true')
       setProducts(res.data)
       setLoading(false)
     } catch (err) {
       console.error('Failed to load products', err)
       setLoading(false)
+    }
+  }
+
+  const toggleVisible = async (product: any) => {
+    try {
+      const next = product.visible === false
+      await api.put(`/products/${product.id}`, { visible: next })
+      setProducts(prev => prev.map(p => p.id === product.id ? { ...p, visible: next } : p))
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to update visibility')
     }
   }
 
@@ -193,6 +204,7 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
       inventory: product.inventory?.toString() || '0',
       inStock: product.inStock !== false,
       featured: product.featured || false,
+      visible: product.visible !== false,
       sizes: product.sizes || [],
       colors: product.colors || [],
       material: product.material || '',
@@ -219,6 +231,7 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
       inventory: '0',
       inStock: true,
       featured: false,
+      visible: true,
       sizes: [],
       colors: [],
       material: '',
@@ -758,6 +771,15 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
                   />
                   <span>Featured Product</span>
                 </label>
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.visible}
+                    onChange={(e) => setFormData({ ...formData, visible: e.target.checked })}
+                    className="w-5 h-5"
+                  />
+                  <span>Visible on Shop</span>
+                </label>
               </div>
 
               {/* Submit Buttons */}
@@ -805,7 +827,10 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
                 </thead>
                 <tbody>
                   {products.map((product) => (
-                    <tr key={product.id} className="border-b border-gray-200 hover:bg-gray-50">
+                    <tr
+                      key={product.id}
+                      className={`border-b border-gray-200 hover:bg-gray-50 ${product.visible === false ? 'opacity-60' : ''}`}
+                    >
                       <td className="py-3 px-4">
                         {product.image ? (
                           <img src={product.image} alt={product.name} className="w-12 h-12 object-cover rounded" />
@@ -815,7 +840,16 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
                           </div>
                         )}
                       </td>
-                      <td className="py-3 px-4 font-semibold">{product.name}</td>
+                      <td className="py-3 px-4 font-semibold">
+                        <div className="flex items-center gap-2">
+                          <span>{product.name}</span>
+                          {product.visible === false && (
+                            <span className="text-[10px] uppercase tracking-wide bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
+                              Hidden
+                            </span>
+                          )}
+                        </div>
+                      </td>
                       <td className="py-3 px-4">LKR {product.price?.toLocaleString()}</td>
                       <td className="py-3 px-4">
                         <span className="capitalize inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-zinc-100 text-zinc-700">
@@ -837,6 +871,13 @@ function AdminProductsContent({ user, router }: { user: any; router: any }) {
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex items-center justify-end space-x-2">
+                          <button
+                            onClick={() => toggleVisible(product)}
+                            title={product.visible === false ? 'Show product on shop' : 'Hide product from shop'}
+                            className={`p-2 ${product.visible === false ? 'text-gray-400 hover:text-gray-600' : 'text-green-600 hover:text-green-700'}`}
+                          >
+                            {product.visible === false ? <FaEyeSlash /> : <FaEye />}
+                          </button>
                           <button
                             onClick={() => handleEdit(product)}
                             className="text-brand-accent hover:text-brand-primary p-2"
