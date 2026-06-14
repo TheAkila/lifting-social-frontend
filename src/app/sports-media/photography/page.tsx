@@ -14,6 +14,15 @@ interface GalleryImage {
   category: string
 }
 
+const OFFERINGS = [
+  'Competition photography',
+  'Training session documentation',
+  'Athlete portraits and profiles',
+  'Event highlights and coverage',
+  'Team and gym photography',
+  'High-resolution digital delivery',
+]
+
 const PHOTOGRAPHERS = [
   {
     name: 'Bhanuka Gamachige',
@@ -84,6 +93,27 @@ export default function PhotographyPage() {
         </div>
       </section>
 
+      {/* What we offer */}
+      <section className="container mx-auto px-4 max-w-5xl py-10 sm:py-14">
+        <div className="max-w-3xl mx-auto text-center mb-8">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">What we offer</p>
+          <h2 className="mt-2 font-display text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">
+            Photography for serious athletes & meets
+          </h2>
+        </div>
+        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
+          {OFFERINGS.map((item) => (
+            <li
+              key={item}
+              className="flex items-center gap-2.5 px-4 py-2.5 bg-white border border-zinc-100 shadow-soft rounded-[12px] text-sm text-zinc-700"
+            >
+              <span className="w-1.5 h-1.5 bg-zinc-900 rounded-full flex-shrink-0" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
       {/* Gallery */}
       <section className="bg-zinc-50 py-10 sm:py-14 border-t border-zinc-100">
         <div className="container mx-auto px-4 max-w-6xl">
@@ -151,7 +181,7 @@ export default function PhotographyPage() {
             Our photographers
           </h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 max-w-3xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 max-w-2xl mx-auto">
           {PHOTOGRAPHERS.map((p) => (
             <motion.article
               key={p.name}
@@ -159,14 +189,14 @@ export default function PhotographyPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4 }}
-              className="group bg-white border border-zinc-100 rounded-[16px] overflow-hidden shadow-soft hover:shadow-card-hover transition-shadow"
+              className="group bg-white border border-zinc-100 rounded-[16px] overflow-hidden shadow-soft hover:shadow-card-hover transition-shadow max-w-[260px] sm:max-w-none mx-auto w-full"
             >
-              <div className="relative aspect-[3/4] bg-zinc-100 overflow-hidden">
+              <div className="relative aspect-[4/5] bg-zinc-100 overflow-hidden">
                 <Image
                   src={p.image}
                   alt={`${p.name}, ${p.role}`}
                   fill
-                  sizes="(min-width: 640px) 360px, 100vw"
+                  sizes="(min-width: 640px) 280px, 260px"
                   className="object-cover object-top group-hover:scale-[1.03] transition-transform duration-500"
                 />
               </div>
