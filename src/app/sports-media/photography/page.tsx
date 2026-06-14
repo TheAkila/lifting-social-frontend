@@ -23,6 +23,15 @@ const OFFERINGS = [
   'High-resolution digital delivery',
 ]
 
+const PHOTOGRAPHERS = [
+  {
+    name: 'Bhanuka Gamachige',
+    role: 'Lead Photographer',
+    image: '/images/photographers/bhanuka-gamachige.jpg',
+    bio: 'Professional photographer at Lifting Social. Bhanuka specialises in capturing the raw intensity of competition lifts and the quieter moments behind the platform — turning training sessions, meets, and athlete portraits into images worth keeping.',
+  },
+]
+
 export default function PhotographyPage() {
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([])
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null)
@@ -161,6 +170,43 @@ export default function PhotographyPage() {
               </p>
             </>
           )}
+        </div>
+      </section>
+
+      {/* Photographers */}
+      <section className="container mx-auto px-4 max-w-5xl py-10 sm:py-14">
+        <div className="text-center mb-8 sm:mb-10">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Meet the team</p>
+          <h2 className="mt-2 font-display text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">
+            Our photographers
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 max-w-3xl mx-auto">
+          {PHOTOGRAPHERS.map((p) => (
+            <motion.article
+              key={p.name}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4 }}
+              className="group bg-white border border-zinc-100 rounded-[16px] overflow-hidden shadow-soft hover:shadow-card-hover transition-shadow"
+            >
+              <div className="relative aspect-[3/4] bg-zinc-100 overflow-hidden">
+                <Image
+                  src={p.image}
+                  alt={`${p.name} — ${p.role}`}
+                  fill
+                  sizes="(min-width: 640px) 360px, 100vw"
+                  className="object-cover object-top group-hover:scale-[1.03] transition-transform duration-500"
+                />
+              </div>
+              <div className="p-4 sm:p-5">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">{p.role}</p>
+                <h3 className="mt-1 font-display text-lg sm:text-xl font-bold text-zinc-900">{p.name}</h3>
+                <p className="mt-2 text-sm text-zinc-600 leading-relaxed">{p.bio}</p>
+              </div>
+            </motion.article>
+          ))}
         </div>
       </section>
 
