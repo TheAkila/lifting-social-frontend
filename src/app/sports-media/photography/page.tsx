@@ -189,7 +189,7 @@ export default function PhotographyPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4 }}
-              className="group bg-white border border-zinc-100 rounded-[16px] overflow-hidden shadow-soft hover:shadow-card-hover transition-shadow max-w-[260px] sm:max-w-none mx-auto w-full"
+              className="group bg-white border border-zinc-100 rounded-[16px] overflow-hidden shadow-sm hover:shadow transition-shadow max-w-[260px] sm:max-w-none mx-auto w-full"
             >
               <div className="relative aspect-[4/5] bg-zinc-100 overflow-hidden">
                 <Image
