@@ -203,6 +203,16 @@ export default function ProductReviews({ productId, productName }: ProductReview
           </button>
         )}
 
+        {/* Sign-in prompt for logged-out visitors */}
+        {!user && (
+          <a
+            href={`/login?redirect=${typeof window !== 'undefined' ? encodeURIComponent(window.location.pathname) : ''}`}
+            className="inline-block w-full sm:w-auto text-center px-4 sm:px-6 py-2.5 sm:py-3 bg-zinc-900 hover:bg-zinc-800 text-white font-medium text-sm sm:text-base rounded-md sm:rounded-[8px] transition-colors"
+          >
+            Sign in to write a review
+          </a>
+        )}
+
         {/* User's Review Card */}
         {userReview && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg sm:rounded-[12px] p-4 sm:p-6 mb-4 sm:mb-6">
