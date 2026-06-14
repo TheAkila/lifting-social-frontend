@@ -14,21 +14,12 @@ interface GalleryImage {
   category: string
 }
 
-const OFFERINGS = [
-  'Competition photography',
-  'Training session documentation',
-  'Athlete portraits and profiles',
-  'Event highlights and coverage',
-  'Team and gym photography',
-  'High-resolution digital delivery',
-]
-
 const PHOTOGRAPHERS = [
   {
     name: 'Bhanuka Gamachige',
     role: 'Lead Photographer',
     image: '/images/photographers/bhanuka-gamachige.jpg',
-    bio: 'Professional photographer at Lifting Social. Bhanuka specialises in capturing the raw intensity of competition lifts and the quieter moments behind the platform — turning training sessions, meets, and athlete portraits into images worth keeping.',
+    bio: 'Professional photographer at Lifting Social. Bhanuka specialises in capturing the raw intensity of competition lifts and the quieter moments behind the platform, turning training sessions, meets, and athlete portraits into images worth keeping.',
   },
 ]
 
@@ -91,27 +82,6 @@ export default function PhotographyPage() {
             </p>
           </motion.div>
         </div>
-      </section>
-
-      {/* What we offer */}
-      <section className="container mx-auto px-4 max-w-5xl py-10 sm:py-14">
-        <div className="max-w-3xl mx-auto text-center mb-8">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">What we offer</p>
-          <h2 className="mt-2 font-display text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">
-            Photography for serious athletes & meets
-          </h2>
-        </div>
-        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
-          {OFFERINGS.map((item) => (
-            <li
-              key={item}
-              className="flex items-center gap-2.5 px-4 py-2.5 bg-white border border-zinc-100 shadow-soft rounded-[12px] text-sm text-zinc-700"
-            >
-              <span className="w-1.5 h-1.5 bg-zinc-900 rounded-full flex-shrink-0" />
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
       </section>
 
       {/* Gallery */}
@@ -194,7 +164,7 @@ export default function PhotographyPage() {
               <div className="relative aspect-[3/4] bg-zinc-100 overflow-hidden">
                 <Image
                   src={p.image}
-                  alt={`${p.name} — ${p.role}`}
+                  alt={`${p.name}, ${p.role}`}
                   fill
                   sizes="(min-width: 640px) 360px, 100vw"
                   className="object-cover object-top group-hover:scale-[1.03] transition-transform duration-500"
