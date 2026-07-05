@@ -5,16 +5,12 @@ const ABOUT_URL = `${SITE_URL}/about`
 const FOUNDER_IMAGE = `${SITE_URL}/images/founder-1.jpg`
 
 export const metadata: Metadata = {
-  title: 'About Akila Nishan Jayakody — Owner & Founder of Lifting Social',
+  title: 'About Lifting Social',
   description:
-    'Akila Nishan Jayakody is the owner and founder of Lifting Social. A software engineer, BSc in Computer Science graduate of the University of Colombo, national weightlifter, and University of Colombo records holder, Akila owns and directs Lifting Social (est. 2023).',
+    'Learn the story behind Lifting Social, the Sri Lankan weightlifting lifestyle brand built around premium gear, coaching, media support, and fitness events.',
   keywords: [
-    'Lifting Social owner',
-    'who is the owner of Lifting Social',
-    'Akila Nishan Jayakody',
-    'Akila Nishan',
-    'founder of Lifting Social',
-    'director of Lifting Social',
+    'About Lifting Social',
+    'Lifting Social story',
     'Lifting Social Sri Lanka',
     'Sri Lankan weightlifting',
   ],
@@ -22,9 +18,9 @@ export const metadata: Metadata = {
     canonical: ABOUT_URL,
   },
   openGraph: {
-    title: 'About Akila Nishan Jayakody — Owner & Founder of Lifting Social',
+    title: 'About Lifting Social',
     description:
-      'Akila Nishan Jayakody is the owner and founder of Lifting Social — Sri Lanka’s premier Olympic weightlifting platform. Software engineer, national weightlifter, and brand director.',
+      'Discover the story, mission, and community behind Lifting Social — Sri Lanka’s premier Olympic weightlifting platform.',
     url: ABOUT_URL,
     siteName: 'Lifting Social',
     images: [
@@ -40,9 +36,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'About Akila Nishan Jayakody — Owner & Founder of Lifting Social',
-    description:
-      'Akila Nishan Jayakody is the owner and founder of Lifting Social, a software engineer, and a national weightlifter.',
+    title: 'About Lifting Social',
+    description: 'Discover the story, mission, and community behind Lifting Social.',
     images: [FOUNDER_IMAGE],
   },
 }

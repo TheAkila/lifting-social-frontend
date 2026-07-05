@@ -16,7 +16,7 @@ export default function EventsHeader() {
           
           
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-white mb-3 sm:mb-4">
-            Events & Competitions
+            Fitness Events
           </h1>
           <p className="text-sm sm:text-base md:text-lg text-zinc-400 px-4">
             Join us at competitions, training camps, and seminars across Sri Lanka

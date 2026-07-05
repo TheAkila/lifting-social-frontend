@@ -62,7 +62,7 @@ export default function SportsMediaPage() {
             className="max-w-2xl mx-auto text-center"
           >
             <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4">
-              Sports Media Services
+              Booking Media Support
             </h1>
             <p className="text-sm sm:text-base md:text-lg text-zinc-400">
               Professional photography and live event coverage built for weightlifting.
@@ -116,7 +116,7 @@ function ServiceCard({
     >
       <Link
         href={href}
-        className="block bg-white rounded-[12px] overflow-hidden border border-zinc-100 shadow-soft hover:shadow-card-hover transition-all duration-350 hover:-translate-y-1 h-full flex flex-col"
+        className="bg-white rounded-[12px] overflow-hidden border border-zinc-100 shadow-soft hover:shadow-card-hover transition-all duration-350 hover:-translate-y-1 h-full flex flex-col"
       >
         {/* Cover */}
         <div className="relative aspect-[4/3] bg-zinc-900 overflow-hidden">

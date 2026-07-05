@@ -26,16 +26,17 @@ const ibmPlexSans = IBM_Plex_Sans({
 })
 
 export const metadata: Metadata = {
-  title: 'Lifting Social',
-  description: 'A lifestyle brand fusing Olympic weightlifting culture, Sri Lankan athletic pride, and modern fitness fashion. Shop apparel, join the movement.',
-  keywords: 'Olympic weightlifting, Sri Lanka, fitness apparel, weightlifting culture',
+  title: 'Premium Gear for Champions',
+  description:
+    'Premium gear for champions with supplements and nutrition, coaching, media support, fitness events, and the Lifting Social story.',
+  keywords: 'premium gear, supplements, nutrition, coaching, media support, fitness events, lifting social',
   authors: [{ name: 'Lifting Social' }],
   icons: {
     icon: '/logo.svg',
   },
   openGraph: {
-    title: 'Lifting Social',
-    description: 'Sri Lankan Olympic Weightlifting Lifestyle Brand',
+    title: 'Premium Gear for Champions',
+    description: 'Shop premium gear, supplements, coaching, media support, and fitness events from Lifting Social.',
     type: 'website',
   },
   verification: {

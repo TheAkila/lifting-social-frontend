@@ -1,6 +1,7 @@
 'use client'
 
 import { Suspense, useState, useEffect } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
@@ -21,7 +22,7 @@ interface ProductSection {
 
 const SECTION_CONFIG = [
   { title: 'Premium Gear for Champions', category: 'Accessories', slug: 'accessories' },
-  { title: 'Nutrition for Champions', category: 'Supplements', slug: 'supplements' },
+  { title: 'Shop Supplements / Nutrition', category: 'Supplements', slug: 'supplements' },
   { title: 'LiftingSocial Merch for Champions', category: 'Apparel', slug: 'apparel' }
 ]
 
@@ -39,9 +40,12 @@ function ProductCard({ product }: { product: any }) {
           {/* Product Image */}
           <div className="relative aspect-square bg-zinc-100 overflow-hidden">
             {product.image ? (
-              <div 
-                className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" 
-                style={{ backgroundImage: `url(${product.image})` }} 
+              <Image
+                src={product.image}
+                alt={product.name}
+                width={800}
+                height={800}
+                className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
             ) : (
               <div className="absolute inset-0 bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
