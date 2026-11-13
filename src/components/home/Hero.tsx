@@ -183,7 +183,7 @@ export default function Hero() {
               Engineered for Performance
             </p>
             <p className="mt-2 mx-auto max-w-[280px] sm:max-w-md text-zinc-500 text-[11px] sm:text-[13px] leading-relaxed">
-              Sri Lanka&apos;s home for weightlifting — premium gear, elite coaching, and live competition coverage in one place.
+              Sri Lanka&apos;s home for weightlifting: premium gear, elite coaching, and live competition coverage in one place.
             </p>
             <nav className="mt-3 sm:mt-4 flex items-center justify-center gap-6 sm:gap-8 text-[11px] sm:text-xs font-semibold uppercase tracking-[0.18em] sm:tracking-[0.22em] text-zinc-700">
               <Link href="/shop" className="hover:text-accent active:text-accent transition-colors">Shop</Link>

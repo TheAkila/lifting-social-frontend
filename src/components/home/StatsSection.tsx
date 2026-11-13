@@ -105,7 +105,7 @@ export default function StatsSection() {
                 
                 <div className="font-display text-3xl lg:text-4xl font-bold text-white mb-1">
                   {loading ? (
-                    <span className="text-zinc-600">—</span>
+                    <span className="text-zinc-600">-</span>
                   ) : (
                     <>
                       {stat.value.toLocaleString()}

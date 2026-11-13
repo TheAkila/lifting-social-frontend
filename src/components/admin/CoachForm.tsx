@@ -370,7 +370,7 @@ export default function CoachForm({
             <ChipInput
               chips={form.coachingAchievements}
               onChange={(next) => setField('coachingAchievements', next)}
-              placeholder="e.g. Coach of Ushan Vidanapathirana — SA Games Silver"
+              placeholder="e.g. Coach of Ushan Vidanapathirana, SA Games Silver"
             />
           </Section>
 
@@ -378,7 +378,7 @@ export default function CoachForm({
             <ChipInput
               chips={form.certifications}
               onChange={(next) => setField('certifications', next)}
-              placeholder="e.g. Diploma — Sri Lanka Institute of Sports Science"
+              placeholder="e.g. Diploma, Sri Lanka Institute of Sports Science"
             />
           </Section>
 
@@ -392,7 +392,7 @@ export default function CoachForm({
                 className="w-4 h-4 accent-blue-600"
               />
               <span className="text-sm text-gray-700">
-                Featured — appears in the highlighted Head Coaches section
+                Featured: appears in the highlighted Head Coaches section
               </span>
             </label>
           </Section>

@@ -50,6 +50,7 @@ const config: Config = {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
         display: ['var(--font-outfit)', 'var(--font-inter)', 'system-ui', 'sans-serif'],
         body: ['var(--font-ibm-plex)', 'var(--font-inter)', 'system-ui', 'sans-serif'],
+        nav: ['var(--font-nav)', 'var(--font-inter)', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
       },
       fontSize: {

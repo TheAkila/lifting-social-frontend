@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'About Lifting Social',
     description:
-      'Discover the story, mission, and community behind Lifting Social — Sri Lanka’s premier Olympic weightlifting platform.',
+      'Discover the story, mission, and community behind Lifting Social, Sri Lanka’s premier Olympic weightlifting platform.',
     url: ABOUT_URL,
     siteName: 'Lifting Social',
     images: [
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
         url: FOUNDER_IMAGE,
         width: 1200,
         height: 1500,
-        alt: 'Akila Nishan Jayakody — Owner, Founder & Director of Lifting Social',
+        alt: 'Akila Nishan Jayakody, Owner, Founder & Director of Lifting Social',
       },
     ],
     locale: 'en_LK',

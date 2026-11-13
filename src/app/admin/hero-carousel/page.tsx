@@ -288,7 +288,7 @@ export default function HeroCarouselAdminPage() {
           </div>
         ) : slides.length === 0 ? (
           <div className="text-center py-10 text-gray-500 text-sm">
-            No slides yet — upload your first above.
+            No slides yet. Upload your first above.
           </div>
         ) : (
           <ul className="space-y-2">

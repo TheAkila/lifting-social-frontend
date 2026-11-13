@@ -175,15 +175,15 @@ export default function Navbar() {
             </Link>
 
             {/* Main Navigation - Desktop - Centered */}
-            <div className="hidden md:flex items-center space-x-0.5 sm:space-x-1 absolute left-1/2 transform -translate-x-1/2">
+            <div className="hidden md:flex items-center space-x-1 sm:space-x-3 md:space-x-6 lg:space-x-8 absolute left-1/2 transform -translate-x-1/2">
               {mainNavLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 text-xs sm:text-sm md:text-base font-medium rounded-[8px] sm:rounded-[10px] transition-all duration-200 ${
+                  className={`font-nav py-2 text-xs sm:text-sm md:text-[15px] font-bold uppercase tracking-wide transition-colors duration-200 ${
                     isActive(link.href)
-                      ? 'text-zinc-900 bg-zinc-100'
-                      : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
+                      ? 'text-zinc-900'
+                      : 'text-zinc-500 hover:text-zinc-900'
                   }`}
                 >
                   <span className="inline-flex items-center gap-1.5">
@@ -202,10 +202,10 @@ export default function Navbar() {
               <div className="relative hidden sm:block" ref={searchRef}>
                 <button
                   onClick={() => setSearchOpen(!searchOpen)}
-                  className="p-2 sm:p-2.5 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-[8px] sm:rounded-[10px] transition-all duration-200"
+                  className="p-2 sm:p-2.5 text-zinc-700 hover:text-zinc-900 transition-colors duration-200"
                   aria-label="Search products"
                 >
-                  <Search className="w-5 h-5 sm:w-5 sm:h-5" />
+                  <Search className="w-5 h-5 sm:w-5 sm:h-5" strokeWidth={2.25} />
                 </button>
 
                 {/* Search Dropdown */}
@@ -301,9 +301,9 @@ export default function Navbar() {
               {/* Cart */}
               <Link
                 href="/cart"
-                className="relative p-2 sm:p-2.5 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-[8px] sm:rounded-[10px] transition-all duration-200"
+                className="relative p-2 sm:p-2.5 text-zinc-700 hover:text-zinc-900 transition-colors duration-200"
               >
-                <ShoppingCart className="w-5 h-5 sm:w-5 sm:h-5" />
+                <ShoppingCart className="w-5 h-5 sm:w-5 sm:h-5" strokeWidth={2.25} />
                 {totalItems > 0 && (
                   <motion.span
                     initial={{ scale: 0 }}
@@ -322,9 +322,9 @@ export default function Navbar() {
                 aria-label="Toggle menu"
               >
                 {isMobileMenuOpen ? (
-                  <X className="w-6 h-6" />
+                  <X className="w-6 h-6" strokeWidth={2.25} />
                 ) : (
-                  <Menu className="w-6 h-6" />
+                  <Menu className="w-6 h-6" strokeWidth={2.25} />
                 )}
               </button>
 
@@ -333,7 +333,7 @@ export default function Navbar() {
                 <div className="hidden md:block relative" ref={userMenuRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-sm font-medium text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-[8px] sm:rounded-[10px] transition-all duration-200"
+                    className="flex items-center gap-2 px-2 sm:px-3 py-2 sm:py-2.5 text-sm font-medium text-zinc-700 hover:text-zinc-900 transition-colors duration-200"
                   >
                     <span className="hidden lg:inline text-sm">{user.name?.split(' ')[0]}</span>
                     <ChevronDown className={`w-4 h-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />

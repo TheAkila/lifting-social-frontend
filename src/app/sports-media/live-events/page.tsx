@@ -9,13 +9,13 @@ const SERVICES = [
     icon: Wifi,
     title: 'Live Streaming',
     description:
-      'Multi-camera live streams to YouTube, Facebook, or a custom platform — with professional commentary support.',
+      'Multi-camera live streams to YouTube, Facebook, or a custom platform, with professional commentary support.',
   },
   {
     icon: Camera,
     title: 'Event Documentation',
     description:
-      'Full video capture of every lift, ceremony, and key moment — edited highlight reel delivered post-event.',
+      'Full video capture of every lift, ceremony, and key moment, edited into a highlight reel delivered post-event.',
   },
   {
     icon: Radio,
@@ -85,7 +85,7 @@ export default function LiveEventsPage() {
             Complete event coverage
           </h2>
           <p className="mt-3 text-sm sm:text-base text-zinc-600 leading-relaxed">
-            From local meets to national championships — we handle the technical side so you can run a great event.
+            From local meets to national championships, we handle the technical side so you can run a great event.
           </p>
         </div>
 

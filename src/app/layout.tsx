@@ -1,27 +1,38 @@
 import type { Metadata } from 'next'
-import { Inter, IBM_Plex_Sans, Outfit } from 'next/font/google'
+import { Inter, IBM_Plex_Sans, Outfit, Archivo } from 'next/font/google'
 import './globals.css'
 import AnnouncementBar from '@/components/layout/AnnouncementBar'
 import Navbar from '@/components/layout/Navbar'
+import TrustBar from '@/components/layout/TrustBar'
 import Footer from '@/components/layout/Footer'
 import { Providers } from './providers'
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
   display: 'swap',
 })
 
-const outfit = Outfit({ 
+const outfit = Outfit({
   subsets: ['latin'],
   variable: '--font-outfit',
   display: 'swap',
 })
 
-const ibmPlexSans = IBM_Plex_Sans({ 
+const ibmPlexSans = IBM_Plex_Sans({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
   variable: '--font-ibm-plex',
+  display: 'swap',
+})
+
+// Used only for the announcement bar and main nav bar, matching the bold
+// grotesk look of the reference site (store.weightliftinghouse.com), which
+// uses proprietary uploaded fonts we can't license/reuse directly.
+const archivo = Archivo({
+  subsets: ['latin'],
+  weight: ['600', '700', '800'],
+  variable: '--font-nav',
   display: 'swap',
 })
 
@@ -53,11 +64,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${outfit.variable} ${ibmPlexSans.variable}`}>
+    <html lang="en" className={`${inter.variable} ${outfit.variable} ${ibmPlexSans.variable} ${archivo.variable}`}>
       <body className={`${inter.className} antialiased bg-white text-slate-900`}>
         <Providers>
           <AnnouncementBar />
           <Navbar />
+          <TrustBar />
           <main className="min-h-screen">
             {children}
           </main>

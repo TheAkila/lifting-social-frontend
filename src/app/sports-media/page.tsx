@@ -72,15 +72,15 @@ export default function SportsMediaPage() {
       </section>
 
       {/* Service cards */}
-      <section className="container mx-auto px-4 max-w-3xl py-10 sm:py-14">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+      <section className="container mx-auto px-4 max-w-5xl py-10 sm:py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
           <ServiceCard
             href="/sports-media/photography"
             eyebrow="Sports Photography"
             title="Capture the lift"
-            description="High-impact photography of competitions, training and athlete portraits — delivered ready to publish."
+            description="High-impact photography of competitions, training and athlete portraits, delivered ready to publish."
             image={coverImages.photography}
-            icon={<Camera className="w-12 h-12 text-white/40" />}
+            icon={<Camera className="w-14 h-14 text-white/40" />}
           />
           <ServiceCard
             href="/sports-media/live-events"
@@ -88,7 +88,7 @@ export default function SportsMediaPage() {
             title="Stream every PR"
             description="Multi-camera live streaming, real-time graphics, and a polished highlight reel after the event."
             image={coverImages.events}
-            icon={<Video className="w-12 h-12 text-white/40" />}
+            icon={<Video className="w-14 h-14 text-white/40" />}
             delay={0.05}
           />
         </div>
@@ -116,10 +116,10 @@ function ServiceCard({
     >
       <Link
         href={href}
-        className="bg-white rounded-[12px] overflow-hidden border border-zinc-100 shadow-soft hover:shadow-card-hover transition-all duration-350 hover:-translate-y-1 h-full flex flex-col"
+        className="bg-white rounded-2xl overflow-hidden border border-zinc-100 shadow-soft hover:shadow-card-hover transition-all duration-350 hover:-translate-y-1 h-full flex flex-col"
       >
         {/* Cover */}
-        <div className="relative aspect-[4/3] bg-zinc-900 overflow-hidden">
+        <div className="relative aspect-[16/10] bg-zinc-900 overflow-hidden">
           {image ? (
             <>
               <Image
@@ -134,24 +134,24 @@ function ServiceCard({
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">{icon}</div>
           )}
-          <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full bg-white/90 backdrop-blur text-[9px] font-bold uppercase tracking-wider text-zinc-900">
+          <span className="absolute top-4 left-4 px-3 py-1 rounded-badge bg-white/90 backdrop-blur text-xs font-bold uppercase tracking-wider text-zinc-900">
             {eyebrow}
           </span>
         </div>
 
         {/* Info */}
-        <div className="p-3 sm:p-4 flex flex-col flex-grow">
-          <h2 className="font-display text-base sm:text-lg font-bold text-zinc-900 group-hover:text-brand-accent transition-colors leading-tight">
+        <div className="p-5 sm:p-6 flex flex-col flex-grow">
+          <h2 className="font-display text-xl sm:text-2xl font-bold text-zinc-900 group-hover:text-brand-accent transition-colors leading-tight">
             {title}
           </h2>
-          <p className="mt-1.5 text-xs text-zinc-600 leading-relaxed line-clamp-2">
+          <p className="mt-2 text-sm text-zinc-600 leading-relaxed">
             {description}
           </p>
-          <div className="mt-auto pt-3 flex items-center justify-between">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 group-hover:text-brand-accent transition-colors">
+          <div className="mt-5 pt-4 border-t border-zinc-100 flex items-center justify-between">
+            <span className="text-xs font-semibold uppercase tracking-widest text-zinc-900 group-hover:text-brand-accent transition-colors">
               Explore
             </span>
-            <ArrowRight className="w-3.5 h-3.5 text-zinc-300 group-hover:text-brand-accent group-hover:translate-x-0.5 transition-all" />
+            <ArrowRight className="w-4 h-4 text-zinc-400 group-hover:text-brand-accent group-hover:translate-x-0.5 transition-all" />
           </div>
         </div>
       </Link>

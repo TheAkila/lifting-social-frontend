@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Radio, Calendar, MapPin, Trophy, ArrowRight } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Calendar, MapPin, Trophy, ArrowRight } from 'lucide-react'
 import api from '@/lib/api'
 
 interface EventItem {
@@ -23,8 +24,19 @@ interface EventItem {
 
 const LIVE_STATUSES = ['in_progress', 'live', 'active', 'ongoing']
 
+const STATUS_LABELS: Record<string, string> = {
+  in_progress: 'In Progress',
+  live: 'Live',
+  active: 'Live',
+  ongoing: 'Ongoing',
+}
+
 function getStatus(event: EventItem) {
   return (event.competition_status || event.event_status || event.status || '').toLowerCase()
+}
+
+function getStatusLabel(event: EventItem) {
+  return STATUS_LABELS[getStatus(event)] || 'Live'
 }
 
 function getDate(event: EventItem) {
@@ -38,6 +50,38 @@ function getTitle(event: EventItem) {
 function getEventPath(event: EventItem, preferLive: boolean) {
   const identifier = event.slug || event.id
   return preferLive ? `/events/${identifier}/live` : `/events/${identifier}`
+}
+
+function formatEventDate(value: string) {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return null
+  return date.toLocaleString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  })
+}
+
+function EventThumbnail({ event, className }: { event: EventItem; className?: string }) {
+  if (!event.cover_image) {
+    return (
+      <div className={`bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center ${className}`}>
+        <Trophy className="w-1/3 h-1/3 text-zinc-600" />
+      </div>
+    )
+  }
+
+  return (
+    <Image
+      src={event.cover_image}
+      alt={getTitle(event)}
+      fill
+      className={`object-cover ${className}`}
+      sizes="(min-width: 768px) 50vw, 100vw"
+    />
+  )
 }
 
 export default function LiveNowSection() {
@@ -76,113 +120,100 @@ export default function LiveNowSection() {
     [events]
   )
 
-  if (loading) {
+  if (loading || liveEvents.length === 0) {
     return null
   }
 
-  if (liveEvents.length === 0) {
-    return null
-  }
-
-  const featuredEvent = liveEvents[0]
+  const [featuredEvent, ...otherLiveEvents] = liveEvents
+  const formattedDate = getDate(featuredEvent) ? formatEventDate(getDate(featuredEvent)) : null
+  const place = featuredEvent.location || featuredEvent.venue
 
   return (
-    <section className="bg-zinc-50 border-y border-zinc-100">
-      <div className="container mx-auto px-4 py-8 sm:py-10 md:py-12">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 sm:gap-6 mb-6 sm:mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center relative">
-              <span className="absolute inset-0 rounded-full bg-red-100 animate-ping opacity-75" />
-              <Radio className="w-5 h-5 text-red-600 relative z-10" />
+    <section className="bg-white py-6 sm:py-14 md:py-16 px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="max-w-6xl mx-auto"
+      >
+        <Link href={getEventPath(featuredEvent, true)} className="group grid md:grid-cols-2 gap-3 md:gap-12 items-center">
+          <div>
+            <div className="inline-flex items-center gap-2 text-red-600 text-xs font-semibold uppercase tracking-widest mb-1.5 sm:mb-3">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600" />
+              </span>
+              Live Now
             </div>
-            <div>
-              <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-zinc-900">
-                Live Right Now
-              </h2>
-              <p className="text-zinc-500 mt-1.5 text-sm sm:text-base font-medium">
-                Tune in to the action happening straight from the platform
-              </p>
+            <h2 className="font-display text-xl sm:text-4xl font-black uppercase tracking-tight text-zinc-900 mb-2 sm:mb-4">
+              Live Right Now
+            </h2>
+
+            <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-card-hover bg-zinc-900">
+              <EventThumbnail
+                event={featuredEvent}
+                className="absolute inset-0 group-hover:scale-105 transition-transform duration-500"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/0 to-black/0" />
+              <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-badge text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                {getStatusLabel(featuredEvent)}
+              </div>
             </div>
           </div>
-        </div>
 
-        <Link
-          href={getEventPath(featuredEvent, true)}
-          className="group bg-white rounded-2xl overflow-hidden border border-zinc-100 shadow-sm hover:shadow-md transition-all duration-300 relative max-w-[1200px] mx-auto flex flex-col md:flex-row"
-        >
-          <div className="relative w-full md:w-[55%] lg:w-[60%] aspect-video md:aspect-auto overflow-hidden bg-zinc-100">
-            {featuredEvent.cover_image ? (
-              <Image
-                src={featuredEvent.cover_image}
-                alt={getTitle(featuredEvent)}
-                fill
-                className="object-cover"
-                sizes="(min-width: 768px) 60vw, 100vw"
-              />
-            ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
-                <Trophy className="w-12 h-12 text-zinc-700" />
+          <div className="text-center md:text-left">
+            <span className="text-xs font-semibold text-red-600 uppercase tracking-wider">
+              Currently Happening
+            </span>
+            <h3 className="font-display text-lg sm:text-3xl font-bold text-zinc-900 leading-tight mt-1 sm:mt-2 mb-1.5 sm:mb-4">
+              {getTitle(featuredEvent)}
+            </h3>
+
+            {(formattedDate || place) && (
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-1 text-xs sm:text-sm text-zinc-600 mb-2 sm:mb-6">
+                {formattedDate && (
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-zinc-400 shrink-0" />
+                    <span>{formattedDate}</span>
+                  </div>
+                )}
+                {place && (
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-zinc-400 shrink-0" />
+                    <span className="line-clamp-1">{place}</span>
+                  </div>
+                )}
               </div>
             )}
-            {/* Fade Overlay for Text Readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent md:bg-gradient-to-l md:from-transparent to-black/10 md:bg-transparent" />
-            
-            <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider shadow-sm flex items-center gap-1.5 backdrop-blur-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-              LIVE
-            </div>
-          </div>
 
-          <div className="w-full md:w-[45%] lg:w-[40%] p-6 sm:p-8 flex flex-col justify-center bg-white relative z-10">
-            <div className="mb-auto">
-                <div className="flex items-center gap-2 text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">
-                  <span className="text-red-600 font-bold">Currently Happening</span>
-                  <span>•</span>
-                  <span>{getStatus(featuredEvent) || 'In Progress'}</span>
-                </div>
-                <h3 className="font-display text-xl sm:text-2xl lg:text-3xl font-bold text-zinc-900 leading-tight mb-5">
-                  {getTitle(featuredEvent)}
-                </h3>
-
-                <div className="hidden md:block space-y-3 text-sm text-zinc-600 bg-zinc-50 rounded-[12px] p-4 border border-zinc-100">
-                  {getDate(featuredEvent) && (
-                    <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-sm">
-                        <Calendar className="w-3.5 h-3.5 text-zinc-400" />
-                      </div>
-                      <span className="font-medium text-zinc-700">
-                        {new Date(getDate(featuredEvent)).toLocaleString('en-US', {
-                          weekday: 'long',
-                          month: 'long',
-                          day: 'numeric',
-                          hour: 'numeric',
-                          minute: '2-digit'
-                        })}
-                      </span>
-                    </div>
-                  )}
-                  {(featuredEvent.location || featuredEvent.venue) && (
-                    <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-sm">
-                        <MapPin className="w-3.5 h-3.5 text-zinc-400" />
-                      </div>
-                      <span className="font-medium text-zinc-700 line-clamp-1">
-                        {featuredEvent.location || featuredEvent.venue}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-            <div className="mt-8 flex items-center">
-              <div className="bg-red-600 hover:bg-red-700 text-white px-5 py-3 md:py-2.5 rounded-lg text-sm font-semibold w-full sm:w-auto text-center flex items-center justify-center gap-2 transition-colors shadow-sm">
-                <span>Go to Scoreboard</span>
-                <ArrowRight className="w-4 h-4" />
-              </div>
-            </div>
+            <span className="inline-flex flex-col items-center md:items-start text-xs font-semibold uppercase tracking-widest text-zinc-900">
+              <span className="inline-flex items-center gap-2">
+                Go to Scoreboard
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </span>
+              <span className="mt-1.5 sm:mt-2 h-px w-full bg-zinc-300 group-hover:bg-zinc-900 transition-colors" />
+            </span>
           </div>
         </Link>
-      </div>
+
+        {otherLiveEvents.length > 0 && (
+          <div className="mt-8 pt-6 border-t border-zinc-100 flex flex-wrap justify-center md:justify-start gap-x-8 gap-y-3">
+            {otherLiveEvents.map((event) => (
+              <Link
+                key={event.id}
+                href={getEventPath(event, true)}
+                className="group flex items-center gap-2 text-sm text-zinc-700 hover:text-zinc-900 transition-colors"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse shrink-0" />
+                <span className="font-medium line-clamp-1">{getTitle(event)}</span>
+                <ArrowRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+              </Link>
+            ))}
+          </div>
+        )}
+      </motion.div>
     </section>
   )
 }

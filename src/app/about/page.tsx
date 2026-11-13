@@ -20,94 +20,49 @@ export default function AboutPage() {
               About Lifting Social
             </h1>
             <p className="text-sm sm:text-base md:text-lg text-zinc-400 px-4">
-              More than a brand—we're a movement celebrating Sri Lankan weightlifting culture
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Mission */}
-      <section className="py-8 sm:py-12 md:py-16 px-4 bg-white">
-        <div className="container-custom max-w-4xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-2xl sm:text-3xl font-bold text-zinc-900 text-center mb-4 sm:mb-6">Our Mission</h2>
-            <p className="text-base sm:text-lg text-zinc-600 text-center mb-6 sm:mb-8">
-              To elevate Sri Lankan Olympic weightlifting by creating a platform that connects athletes, 
-              celebrates achievements, provides quality gear, and inspires the next generation of champions.
+              More than a brand. We're a movement celebrating Sri Lankan weightlifting culture
             </p>
           </motion.div>
         </div>
       </section>
 
       {/* Story */}
-      <section className="py-8 sm:py-12 md:py-16 px-4 bg-brand-dark">
+      <section className="relative overflow-hidden bg-white py-14 sm:py-20 md:py-24 px-4">
         <div className="container-custom max-w-4xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="space-y-4 sm:space-y-6 text-brand-light/80"
           >
-            <h2 className="text-2xl sm:text-3xl font-display font-bold text-center mb-6 sm:mb-8">Our Story</h2>
-            
-            <p className="text-base sm:text-lg">
-              Lifting Social was born from a simple observation: Sri Lankan weightlifters had incredible 
-              talent but lacked a unified platform to showcase their achievements, connect with supporters, 
-              and access quality training gear.
-            </p>
-            
-            <p className="text-base sm:text-lg">
-              Founded in 2023, we started with a vision to change this. What began as a small online 
-              community quickly grew into a comprehensive lifestyle brand that serves athletes, coaches, 
-              and fans across the island.
-            </p>
-            
-            <p className="text-base sm:text-lg">
-              Today, Lifting Social is proud to be Sri Lanka's premier Olympic weightlifting platform, 
-              offering premium apparel, connecting coaches with students, 
-              and building a community that celebrates every lift, every achievement, and every dream.
-            </p>
-            
-            <p className="text-base sm:text-lg font-semibold text-blue-600">
-              We're not just selling products—we're building a legacy. Join us in lifting Sri Lankan
-              weightlifting to new heights.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Founder / Director */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-white via-zinc-50 to-white py-16 sm:py-20 md:py-28 px-4">
-        {/* Decorative background */}
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-zinc-400/15 blur-3xl" />
-          <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-zinc-300/20 blur-3xl" />
-          <div className="absolute inset-0 opacity-[0.05] bg-[linear-gradient(to_right,#09090b_1px,transparent_1px),linear-gradient(to_bottom,#09090b_1px,transparent_1px)] bg-[size:48px_48px]" />
-        </div>
-
-        <div className="container-custom relative max-w-6xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-10 sm:mb-14"
-          >
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-zinc-900 tracking-tight">
-              Meet the Visionary Behind Lifting Social
+            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 text-center mb-8 sm:mb-10">
+              The Story Behind LiftingSocial
             </h2>
-            <p className="mt-3 text-sm sm:text-base text-zinc-600 max-w-2xl mx-auto">
-              Akila Nishan Jayakody — the owner of Lifting Social — an engineer, athlete, and builder driving Sri Lankan weightlifting forward.
+
+            <div className="max-w-3xl mx-auto space-y-5 sm:space-y-6 text-base sm:text-lg leading-relaxed text-zinc-600">
+              <p>
+                It all started in 2023, when founder Akila Jayakody recognised something missing in Sri
+                Lankan Olympic weightlifting: a genuine connection between the sport, its athletes, and
+                the people who support it. Athletes deserved greater recognition, competitions deserved
+                wider exposure, and fans deserved a closer connection to the sport.
+              </p>
+              <p>
+                Driven by this vision, Akila began documenting hundreds of athletes and competitions,
+                travelling across Sri Lanka to capture weightlifting in action. What started as a passion
+                for bringing the sport closer to its people grew into Sri Lanka&rsquo;s first Olympic
+                weightlifting brand and sports technology initiative.
+              </p>
+            </div>
+
+            <p className="mt-8 text-center text-xl sm:text-2xl font-display font-semibold text-zinc-900">
+              That vision became LiftingSocial.
+            </p>
+            <p className="mt-2 text-center text-sm sm:text-base text-zinc-500">
+              And the passion that started it all continues to shape everything we do.
             </p>
           </motion.div>
 
-          <div className="grid gap-10 lg:gap-16 lg:grid-cols-12 items-center">
+          <div className="mt-14 sm:mt-20 grid gap-10 lg:gap-16 lg:grid-cols-12 items-center">
             {/* Image collage */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -180,7 +135,7 @@ export default function AboutPage() {
                   a <span className="text-zinc-900 font-semibold">BSc in Computer Science</span> graduate
                   from the <span className="text-zinc-900 font-semibold">University of Colombo</span>.
                   An Olympic weightlifter since 2018, he holds
-                  {' '}<span className="text-zinc-900 font-semibold">University of Colombo records</span> and
+                  {' '}<span className="text-zinc-900 font-semibold">Sri Lanka University weightlifting meet records</span> and
                   represents Sri Lanka as a <span className="text-zinc-900 font-semibold">national athlete</span>.
                 </p>
                 <p>
@@ -210,6 +165,53 @@ export default function AboutPage() {
               </motion.blockquote>
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* Mission */}
+      <section className="py-14 sm:py-20 md:py-24 px-4 bg-zinc-50">
+        <div className="container-custom max-w-3xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 text-center mb-8 sm:mb-10">
+              Our Mission
+            </h2>
+
+            <blockquote className="border-l-2 border-zinc-900 pl-5 sm:pl-6 mb-8 sm:mb-10">
+              <p className="text-lg sm:text-xl italic text-zinc-800 leading-relaxed">
+                &ldquo;To elevate Sri Lankan Olympic weightlifting by creating a platform that connects
+                athletes, celebrates achievements, provides quality gear, and inspires the next
+                generation of champions.&rdquo;
+              </p>
+            </blockquote>
+
+            <div className="space-y-5 text-base sm:text-lg leading-relaxed text-zinc-600">
+              <p>
+                Today, we work alongside some of the greatest weightlifters of this generation, creating
+                performance-driven clothing and equipment designed to support their pursuit of
+                excellence. We bring these products to the fans who share the same passion, building a
+                community that stands behind its athletes, celebrates their achievements, and contributes
+                to the continued growth and accessibility of the sport.
+              </p>
+              <p>
+                We believe weightlifting is more than a sport. It is a community built on strength,
+                dedication, discipline, and passion.
+              </p>
+            </div>
+
+            <div className="mt-10 text-center space-y-1">
+              <p className="text-base sm:text-lg font-bold text-zinc-900">
+                When you choose LiftingSocial, you choose Weightlifting.
+              </p>
+              <p className="text-base sm:text-lg font-bold text-zinc-900">
+                LiftingSocial: Built by Champions&trade;.
+              </p>
+            </div>
+          </motion.div>
         </div>
       </section>
     </div>
