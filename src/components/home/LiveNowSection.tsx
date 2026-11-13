@@ -129,45 +129,48 @@ export default function LiveNowSection() {
   const place = featuredEvent.location || featuredEvent.venue
 
   return (
-    <section className="bg-white py-6 sm:py-14 md:py-16 px-4">
+    <section className="bg-zinc-50 py-10 sm:py-14 md:py-16 px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className="max-w-3xl mx-auto text-center mb-6 sm:mb-10"
+      >
+        <div className="inline-flex items-center gap-2 text-red-600 text-xs font-semibold uppercase tracking-widest mb-3">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600" />
+          </span>
+          Live Now
+        </div>
+        <h2 className="font-display text-3xl sm:text-4xl font-black uppercase tracking-tight text-zinc-900">
+          Live Right Now
+        </h2>
+      </motion.div>
+
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="max-w-6xl mx-auto"
+        className="max-w-6xl mx-auto bg-white rounded-2xl border border-zinc-100 shadow-soft hover:shadow-card-hover transition-shadow duration-350 p-4 sm:p-8"
       >
-        <Link href={getEventPath(featuredEvent, true)} className="group grid md:grid-cols-2 gap-3 md:gap-12 items-center">
-          <div>
-            <div className="inline-flex items-center gap-2 text-red-600 text-xs font-semibold uppercase tracking-widest mb-1.5 sm:mb-3">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600" />
-              </span>
-              Live Now
-            </div>
-            <h2 className="font-display text-xl sm:text-4xl font-black uppercase tracking-tight text-zinc-900 mb-2 sm:mb-4">
-              Live Right Now
-            </h2>
-
-            <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-card-hover bg-zinc-900">
-              <EventThumbnail
-                event={featuredEvent}
-                className="absolute inset-0 group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/0 to-black/0" />
-              <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-badge text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                {getStatusLabel(featuredEvent)}
-              </div>
+        <Link href={getEventPath(featuredEvent, true)} className="group grid md:grid-cols-2 gap-4 md:gap-12 items-center">
+          <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-zinc-900">
+            <EventThumbnail
+              event={featuredEvent}
+              className="absolute inset-0 group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/0 to-black/0" />
+            <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-badge text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              {getStatusLabel(featuredEvent)}
             </div>
           </div>
 
           <div className="text-center md:text-left">
-            <span className="text-xs font-semibold text-red-600 uppercase tracking-wider">
-              Currently Happening
-            </span>
-            <h3 className="font-display text-lg sm:text-3xl font-bold text-zinc-900 leading-tight mt-1 sm:mt-2 mb-1.5 sm:mb-4">
+            <h3 className="font-display text-lg sm:text-3xl font-bold text-zinc-900 leading-tight mb-1.5 sm:mb-4">
               {getTitle(featuredEvent)}
             </h3>
 
@@ -199,7 +202,7 @@ export default function LiveNowSection() {
         </Link>
 
         {otherLiveEvents.length > 0 && (
-          <div className="mt-8 pt-6 border-t border-zinc-100 flex flex-wrap justify-center md:justify-start gap-x-8 gap-y-3">
+          <div className="mt-6 pt-5 border-t border-zinc-100 flex flex-wrap justify-center md:justify-start gap-x-8 gap-y-3">
             {otherLiveEvents.map((event) => (
               <Link
                 key={event.id}
